@@ -1,3 +1,4 @@
+
 /* Reset some default styles */
 body, h2, p, ul {
     margin: 0;
@@ -7,33 +8,51 @@ body, h2, p, ul {
 /* Set a light background color and font for the body */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f4f8; /* Light background */
-    color: #333; /* Dark text */
+    display: flex; /* Sử dụng Flexbox */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    min-height: 100vh; /* Đảm bảo body chiếm toàn bộ chiều cao màn hình */
+    margin: 0;
+    background-color: #37383a;
 }
 
 /* Container styling */
 .container {
     max-width: 900px;
-    margin: 40px auto; /* Center the container */
+    margin: 85px auto 40px; /* Thêm 85px khoảng cách từ top */
     padding: 30px;
-    background-color: #ffffff; /* White background for the container */
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    background-color: #212121;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    color: #0a0a0a;
 }
 
-/* Heading styles */
-h2 {
-    margin-bottom: 20px;
-    font-size: 28px; /* Larger font size for headings */
-    color: #ff5722; /* Vibrant orange color for headings */
-    border-bottom: 2px solid #ff5722; /* Underline effect */
-    padding-bottom: 10px; /* Space below the heading */
+/* Optional: Add styles for h2, h3, p, etc. inside the container */
+.container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #f86706; /* White text for headings */
 }
 
-/* Paragraph styles */
-p {
-    margin-bottom: 15px; /* Space between paragraphs */
-    font-size: 16px; /* Standard font size */
+.container h3 {
+    margin-bottom: 15px;
+    color: #0f0f0f;
+}
+
+.container p {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #050505; /* Slightly lighter text for paragraphs */
+}
+
+.container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.container li {
+    padding: 12px 0;
+    border-bottom: 1px solid #333; /* Darker border for list items */
 }
 
 /* Wallet info styles */
@@ -41,7 +60,7 @@ p {
     border: 1px solid #e0e0e0; /* Light border */
     border-radius: 10px; /* Rounded corners */
     padding: 20px; /* Increased padding */
-    background-color: #e3f2fd; /* Light blue background for wallet info */
+    background-color: hsl(207, 6%, 70%); /* Light blue background for wallet info */
     margin-bottom: 20px; /* Space below wallet info */
 }
 
@@ -50,7 +69,7 @@ p {
     border: 1px solid #e0e0e0; /* Light border */
     border-radius: 10px; /* Rounded corners */
     padding: 20px; /* Increased padding */
-    background-color: #e3f2fd; /* Light blue background for transaction history */
+    background-color: hsl(207, 6%, 70%); /* Light blue background for transaction history */
 }
 
 /* List styles */
@@ -61,7 +80,7 @@ p {
 /* List item styles */
 #transactions-list li {
     padding: 15px; /* Padding for list items */
-    border-bottom: 1px solid #e0e0e0; /* Divider between transactions */
+    border-bottom: 1px solid #cc1818; /* Divider between transactions */
     transition: background-color 0.3s; /* Smooth background transition */
     border-radius: 8px; /* Rounded corners for list items */
 }
@@ -126,10 +145,10 @@ button:hover {
   
   #ton-connect button {
     padding: 12px 25px;
-    background-color: #007bff;
-    color: #ffffff;
+    background-color: #faf4f4;
+    color: #f0e9e9;
     border: none;
-    border-radius: 8px;
+    border-radius: 25px;
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
@@ -198,4 +217,61 @@ a {
 
 a:hover {
     color: #ff3300; /* Màu khi di chuột vào link */
+}
+
+
+
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #212121;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid #333;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.footer-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #ccc;
+    font-size: 14px;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 5px; /* Bo góc cho mục */
+}
+.footer-item img {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+.footer-itemm img {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 4px;
+}
+.footer-item:hover {
+    color: #fff;
+}
+
+.new-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    padding: 1.5px 3.25px;
+    border-radius: 3px;
+    font-size: 7px;
+    font-weight: bold;
+    z-index: 1;
 }
