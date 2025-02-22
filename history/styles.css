@@ -145,8 +145,8 @@ button:hover {
   
   #ton-connect button {
     padding: 12px 25px;
-    background-color: #faf4f4;
-    color: #f0e9e9;
+    background-color: #fff;
+    color: #000000;
     border: none;
     border-radius: 25px;
     cursor: pointer;
