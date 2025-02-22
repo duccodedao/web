@@ -48,7 +48,7 @@ async function fetchWalletData(wallet) {
         transactionData.transactions.forEach(tx => {
             const listItem = document.createElement('li');
             listItem.innerHTML = `
-                🔹 <strong>TX Hash:</strong> <a href="https://tonviewer.com/tx/${tx.hash}" target="_blank">${tx.hash.slice(0, 10)}...</a> <br>
+                🔹 <strong>TX Hash:</strong> <a href="https://tonviewer.com/transacton/${tx.hash}" target="_blank">${tx.hash.slice(0, 10)}...</a> <br>
                 🔄 <strong>Type:</strong> ${tx.in_msg ? 'Received' : 'Sent'} <br>
                 💰 <strong>Amount:</strong> ${(tx.in_msg ? tx.in_msg.value : tx.out_msgs[0].value) / 1e9} TON <br>
                 🕒 <strong>Time:</strong> ${new Date(tx.utime * 1000).toLocaleString()} <br>
