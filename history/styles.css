@@ -120,7 +120,26 @@ button:hover {
 
 #ton-connect {
     display: flex;
-}
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+  
+  #ton-connect button {
+    padding: 12px 25px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Thêm hiệu ứng chuyển đổi */
+  }
+  
+  #ton-connect button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* Hiệu ứng nâng lên khi di chuột qua */
+  }
 
 
 /* Add focus styles for buttons */
