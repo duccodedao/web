@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bán Crypto | By BmassHD</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark/dark.css">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Bán crypto | BmassHD">
+    <meta property="og:description" content="Bán tiền điện tử với BmassHD. Quy trình giao dịch dễ dàng và an toàn.">
+    <meta property="og:image" content="https://bmasshd.click/ton/nen.png">
+    <meta property="og:url" content="https://bmasshd.click/ton/sell.html">
+    <meta property="og:type" content="website">
+    
+    <link rel="shortcut icon" href="logo1.png" type="image/png">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+
+   
+    
+    <!-- Main Content -->
+    <div class="container">
+        <h1>BmassHD</h1>
+        <p class="notice">Hỗ trợ <a href="https://chatting.page/mupkccfp2hxw92zuqwnu3bkpytm4hb58" target="_blank">@buycoinvn</a> 24/24</p>
+        <form id="orderForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="coin">Coin:</label>
+                    <select id="coin" name="coin" required>
+                        <option value="" disabled selected>Chọn coin</option>
+                        <option value="TON">TON</option>
+                        <option value="DOGS">DOGS</option>
+                        <option value="USDT">USDT</option>
+                        <option value="CATI">CATI</option>
+                        <option value="NOT">NOT</option>
+                        <option value="HMSTR">HMSTR</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" id="purchaseButton" class="submit-button">Bán</button>
+            <button type="button" id="openWalletButton" class="submit-button">    
+                Wallet
+            </button>
+        </form>
+    </div>
+
+<div class="footer">
+    <a href="/tg-app.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/nha.png" alt="Home">
+            <span class="new-badge">New</span>
+        </div>
+        <span>Home</span>
+    </a>
+    <a href="/ton/ton.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/nap.png" alt="MuaCoin">
+            <span class="new-badge">New</span>
+        </div>
+        <span>MuaCoin</span>
+    </a>
+    <a href="/ton/sell.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/rut_live.png" alt="BánCoin">
+            
+        </div>
+        <span>BánCoin</span>
+    </a>
+    <a href="/ton/star.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/star.png" alt="MuaRef">
+            <span class="new-badge">New</span>
+        </div>
+        <span>MuaStar</span>
+    </a>
+    <a href="/wallet.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/vi.png" alt="Wallet">
+            <span class="new-badge">New</span>
+        </div>
+        <span>Wallet</span>
+    </a>   
+</div>
+
+<script>
+    function setActive(element) {
+        // Xóa lớp active khỏi tất cả các mục
+        const items = document.querySelectorAll('.footer-item');
+        items.forEach(item => item.classList.remove('active'));
+
+        // Thêm lớp active vào mục được nhấp vào
+        element.classList.add('active');
+    }
+</script>
+
+
+    
+
+
+
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="sell.js"></script>
+    <script src="/js.js"></script>
+</body>
+</html>

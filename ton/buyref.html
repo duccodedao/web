@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bán Crypto | By BmassHD</title>
+    <link rel="stylesheet" href="abc.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark/dark.css">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Bán crypto | BmassHD">
+    <meta property="og:description" content="Bán tiền điện tử với BmassHD. Quy trình giao dịch dễ dàng và an toàn.">
+    <meta property="og:image" content="https://bmasshd.click/ton/nen.png">
+    <meta property="og:url" content="https://bmasshd.click/ton/sell.html">
+    <meta property="og:type" content="website">
+    
+    <link rel="shortcut icon" href="logo1.png" type="image/png">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+
+</head>
+<body>
+
+<div class="container">
+    <!-- Nhúng trang web bằng iframe -->
+    <div class="iframe-container">
+        <iframe src="https://buffviewx.com/ref/bmasshd"></iframe> <!-- Đường dẫn bạn muốn nhúng -->
+    </div>
+
+    <!-- Footer cố định bên dưới -->
+<div class="footer">
+    <a href="/tg-app.html" class="footer-item">
+        <img src="home.svg" alt="Home">
+        <span>Home</span>
+    </a>
+    <a href="/ton/ton.html" class="footer-item">
+        <img src="buycoin.svg" alt="Deposit">
+        <span>MuaCoin</span>
+    </a>
+    <a href="/ton/sell.html" class="footer-item">
+        <img src="sellcoin.svg" alt="Withdraw">
+        <span>BánCoin</span>
+    </a>
+    <a href="https://buffviewx.com/ref/bmasshd" class="footer-item">
+        <img src="/logo-coin/buyref.svg" alt="Buy Referral">
+        <span>MuaRef</span>
+    </a>
+</div>
+
+
+<iframe id="myIframe" src="https://buffviewx.com/ref/bmasshd" frameborder="0"></iframe>
+<div id="iframeError" style="display: none;">
+    Không thể hiển thị nội dung. Vui lòng truy cập trực tiếp tại:
+    <a href="https://buffviewx.com/ref/bmasshd" target="_blank">Mở trang BuffviewX</a>
+</div>
+
+<script>
+    const iframe = document.getElementById('myIframe');
+    iframe.onload = () => {
+        try {
+            // Kiểm tra quyền truy cập nội dung iframe
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            if (!doc) throw new Error();
+        } catch (e) {
+            // Hiển thị thông báo nếu iframe bị chặn
+            iframe.style.display = 'none';
+            document.getElementById('iframeError').style.display = 'block';
+        }
+    };
+</script>
+    
+
+
+
+
+    
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="sell.js"></script>
+</body>
+</html>

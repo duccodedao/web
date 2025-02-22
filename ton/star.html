@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mua Star | By BmassHD</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark/dark.css">
+<link rel="stylesheet" href="styles.css">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Mua Star | BmassHD">
+    <meta property="og:description" content="Mua Star với BmassHD. Quy trình giao dịch dễ dàng và an toàn.">
+    <meta property="og:image" content="https://bmasshd.click/ton/nen.png">
+    <meta property="og:url" content="https://bmasshd.click/ton/stars.html">
+    <meta property="og:type" content="website">
+
+    <link rel="shortcut icon" href="logo1.png" type="image/png">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Mua Star bằng TON</h1>
+        
+        <form id="starForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="star">Nhập số lượng</label>
+                    <input type="number" id="star" name="star" required min="50" placeholder="Nhập số lượng sao">
+                </div>
+            </div>
+            <button type="submit" id="buyStarButton" class="submit-button">Mua Star</button>
+        </form>
+    </div>
+
+        <!-- Footer Section -->
+<div class="footer">
+    <a href="/tg-app.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/nha.png" alt="Home">
+            <span class="new-badge">New</span>
+        </div>
+        <span>Home</span>
+    </a>
+    <a href="/ton/ton.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/nap.png" alt="MuaCoin">
+            <span class="new-badge">New</span>
+        </div>
+        <span>MuaCoin</span>
+    </a>
+    <a href="/ton/sell.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/rut.png" alt="BánCoin">
+            <span class="new-badge">New</span>
+        </div>
+        <span>BánCoin</span>
+    </a>
+    <a href="/ton/star.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/star_live.png" alt="MuaRef">
+            
+        </div>
+        <span>MuaStar</span>
+    </a>
+    <a href="/wallet.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/vi.png" alt="Wallet">
+            <span class="new-badge">New</span>
+        </div>
+        <span>Wallet</span>
+    </a>   
+</div>
+    <script>
+        function setActive(element) {
+            // Xóa lớp active khỏi tất cả các mục
+            const items = document.querySelectorAll('.footer-item');
+            items.forEach(item => item.classList.remove('active'));
+
+            // Thêm lớp active vào mục được nhấp vào
+            element.classList.add('active');
+        }
+
+        // Xử lý form mua sao
+        document.getElementById('starForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const starQuantity = parseInt(document.getElementById('star').value, 10);
+
+            if (starQuantity >= 50) {
+                // Điều hướng đến URL mua sao với số lượng được nhập
+                window.location.href = `https://fragment.com/stars?quantity=${starQuantity}`;
+            } else {
+                // Hiển thị thông báo lỗi nếu số sao nhỏ hơn 50
+                Swal.fire({
+                    icon: "error",
+                    title: "Lỗi",
+                    text: "Số lượng tối thiểu là 50 sao!",
+                });
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>
