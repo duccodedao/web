@@ -78,11 +78,30 @@ async function fetchTransactionHistory(walletAddress) {
         response.data.transactions.forEach(tx => {
             const listItem = document.createElement('li');
             listItem.innerHTML = `
-                🔹 <strong>TX Hash:</strong> <a href="https://tonviewer.com/transaction/${tx.hash}" target="_blank">${tx.hash.slice(0, 10)}...</a> <br>
-                🔄 <strong>Type:</strong> ${tx.in_msg ? 'Received' : 'Sent'} <br>
-                💰 <strong>Amount:</strong> ${(tx.in_msg ? tx.in_msg.value : tx.out_msgs[0]. value) / 1e9} TON <br>
-                🕒 <strong>Time:</strong> ${new Date(tx.utime * 1000).toLocaleString()} <br>
-            `;
+            🎯 <strong>Address:</strong> ${
+                tx.out_msgs.length > 0 && tx.out_msgs[0].destination 
+                ? `<a href="https://tonviewer.com/${tx.out_msgs[0].destination.address}" target="_blank" style="text-decoration: none; color: #ff6600;">
+                    ${tx.out_msgs[0].destination.address.slice(0, 8)}...${tx.out_msgs[0].destination.address.slice(-8)}
+                   </a>` 
+                : 'Error'
+            } <br>
+            🔹 <strong>Transaction:</strong> <a href="https://tonviewer.com/transaction/${tx.hash}" target="_blank" style="text-decoration: none; color: #0084ff;">
+                ${tx.hash.slice(0, 10)}...</a> <br>
+            🔄 <strong>Type:</strong> <span style="color: ${tx.in_msg ? 'green' : 'red'}; font-weight: bold;">
+                ${tx.in_msg ? 'Received' : (tx.out_msgs.length > 0 ? 'Sent' : 'Unknown')}
+            </span> <br>
+            💰 <strong>Value:</strong> ${(tx.in_msg?.value ? tx.in_msg.value : tx.out_msgs.reduce((sum, msg) => sum + (msg.value || 0), 0)) / 1e9} TON <br>
+            🕒 <strong>Created at:</strong> ${new Date(tx.utime * 1000).toLocaleString()} <br>   
+        `;
+        
+        
+        
+        
+        
+        
+        
+        
+               
             transactionsList.appendChild(listItem);
         });
         document.getElementById('transaction-history').style.display = "block";
