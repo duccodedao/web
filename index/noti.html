@@ -170,35 +170,40 @@
     </div>
 
     <div class="footer">
-
         <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
-            <div class="img-wrapper">
-                <img src="/logo-coin/nha.png" alt="Home">
-                <span class="new-badge">Hot</span>
+        <div class="img-wrapper">
+            <img src="/logo-coin/nha.png" alt="Home">
+            <span class="new-badge">Hot</span>
+        </div>
+        <span>Home</span>
+    </a>
+
+    
+    <a href="#" class="footer-itemm" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/chuong.gif" alt="MuaCoin">
+        </div>
+        <span></span>
+    </a>
+
+    <a href="/index/history.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/history.png" alt="MuaCoin">
+        </div>
+        <span>History</span>
+    </a>
+
+
+    <a href="/index/wallet.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <div id="wallet-avatar-container">
+                <div class="skeleton-avatar"></div>
+                <span class="new-badge">Login</span>
             </div>
-            <span>Home</span>
-        </a>
-    
-        <a href="#" class="footer-itemm" onclick="setActive(this)">
-            <div class="img-wrapper">
-                <img src="/logo-coin/chuong.gif" alt="Noti">
-              
-            </div>
-            <span></span>
-        </a>
-    
-    
-    
-        <a href="/index/wallet.html" class="footer-item" onclick="setActive(this)">
-            <div class="img-wrapper">
-                <div id="wallet-avatar-container">
-                    <div class="skeleton-avatar"></div>
-                    <span class="new-badge">Login</span>
-                </div>
-            </div>
-            <span>Profile</span>
-        </a>   
-    </div>
+        </div>
+        <span>Profile</span>
+    </a>   
+</div>
 
     <script>
         // Lấy tên user từ API Telegram
