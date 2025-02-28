@@ -3,35 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TonConnect UI Example</title>
+    <title>TonConnect with Account Info</title>
     <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tonclient/core@latest/dist/tonclient.min.js"></script> <!-- TonClient library -->
 </head>
 <body>
-    <h1>TonConnect UI Example</h1>
-    <div id="ton-connect"></div> <!-- Địa điểm hiển thị nút kết nối -->
+    <h1>TonConnect with Account Info</h1>
+    <div id="ton-connect"></div> <!-- Nút kết nối ví -->
+    <div id="wallet-info">
+        <p>Account Info: <span id="account-info">Not connected</span></p>
+        <button id="copy-address" style="display:none;">Copy Address</button>
+        <button id="disconnect-wallet" style="display:none;">Disconnect</button>
+    </div>
 
     <script>
         // Khởi tạo TonConnect UI
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL manifest
-            buttonRootId: 'ton-connect'  // ID của phần tử nơi hiển thị nút kết nối
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect'
         });
 
-        // Cài đặt tùy chọn UI, ví dụ như redirect URL sau khi kết nối thành công
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot'  // URL chuyển hướng sau khi kết nối
-        };
+        // Khởi tạo TonClient
+        const tonClient = new TonClient({
+            network: { server_address: "https://testnet.toncenter.com/api/v2/jsonRPC" }
+        });
 
-        // Kết nối ví và xử lý thông tin ví
+        // Kết nối ví và lấy thông tin tài khoản
         async function connectToWallet() {
             try {
                 const connectedWallet = await tonConnectUI.connectWallet();
-                // In ra thông tin ví sau khi kết nối
                 console.log('Connected Wallet:', connectedWallet);
-                // Bạn có thể xử lý thêm thông tin ví ở đây
+
+                const walletAddress = connectedWallet.address;
+
+                // Lấy thông tin tài khoản từ địa chỉ ví
+                await getAccountInfo(walletAddress);
+
+                // Hiển thị thông tin ví
+                document.getElementById('account-info').innerText = `Address: ${walletAddress}`;
+
+                // Hiển thị nút ngắt kết nối và sao chép địa chỉ
+                document.getElementById('copy-address').style.display = 'inline-block';
+                document.getElementById('disconnect-wallet').style.display = 'inline-block';
+
+                // Cập nhật sự kiện sao chép địa chỉ
+                document.getElementById('copy-address').onclick = () => {
+                    copyToClipboard(walletAddress);
+                };
+
+                // Cập nhật sự kiện ngắt kết nối
+                document.getElementById('disconnect-wallet').onclick = () => {
+                    disconnectWallet();
+                };
+
             } catch (error) {
                 console.error("Error connecting to wallet:", error);
             }
+        }
+
+        // Truy vấn thông tin tài khoản từ địa chỉ ví
+        async function getAccountInfo(address) {
+            try {
+                const account = await tonClient.net.query_collection({
+                    collection: "accounts",
+                    filter: { id: { eq: address } },
+                    result: "balance id"
+                });
+
+                if (account.result.length > 0) {
+                    // Hiển thị thông tin tài khoản
+                    const accountInfo = account.result[0];
+                    document.getElementById('account-info').innerHTML = `Account Info:<br>Balance: ${accountInfo.balance} TON<br>Address: ${accountInfo.id}`;
+                } else {
+                    console.log('Account not found');
+                    document.getElementById('account-info').innerText = 'Account not found';
+                }
+            } catch (error) {
+                console.error('Error fetching account info:', error);
+                document.getElementById('account-info').innerText = 'Error fetching account info';
+            }
+        }
+
+        // Sao chép địa chỉ ví vào clipboard
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Address copied to clipboard!');
+        }
+
+        // Ngắt kết nối ví
+        function disconnectWallet() {
+            tonConnectUI.disconnect();
+            document.getElementById('account-info').innerText = 'Not connected';
+            document.getElementById('copy-address').style.display = 'none';
+            document.getElementById('disconnect-wallet').style.display = 'none';
         }
 
         // Gọi hàm connectToWallet khi cần thiết
