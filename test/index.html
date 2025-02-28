@@ -1,109 +1,319 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect Wallets via API</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background-color: #f0f0f0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập Telegram</title>
+    <link rel="stylesheet" href="/css/wallet.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-    .wallets {
-      margin-bottom: 20px;
-    }
 
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
 
-    button:hover {
-      background-color: #45a049;
-    }
-
-    #walletInfo {
-      font-size: 18px;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
-  <div class="wallets">
-    <button id="connectMetaMask">Connect MetaMask</button>
-    <button id="connectTrustWallet">Connect Trust Wallet</button>
-    <button id="connectPhantom">Connect Phantom</button>
-  </div>
-  <div id="walletInfo"></div>
+    <a href="/index/main.html" class="back-icon">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    
+    
+    
+    <div id="wallet-info">
+        <div id="wallet-header">
+            <b>Address:</b> <span id="wallet-address">abcd****1234</span>
+        </div>
+        <div id="wallet-details">
+            <img src="/logo-coin/ton.jpg" class="wallet-image">
+            <b>👛</b>
+            <span id="wallet-balance">Not connected</span>
+            <p> <strong> </strong> <span id="wallet-usdt-value"></span></p>
+        </div>
+    </div>
 
-  <script>
-    // Connect to MetaMask
-    document.getElementById('connectMetaMask').addEventListener('click', async () => {
-      if (window.ethereum) {
-        try {
-          // Request account access using the Ethereum provider
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const account = accounts[0];
-          displayWalletInfo('MetaMask', account);
-        } catch (error) {
-          console.error("MetaMask connection failed:", error);
-          alert("MetaMask connection failed.");
-        }
-      } else {
-        alert("MetaMask is not installed.");
-      }
-    });
 
-    // Connect to Trust Wallet (same as MetaMask because it uses Ethereum)
-    document.getElementById('connectTrustWallet').addEventListener('click', async () => {
-      if (window.ethereum) {
-        try {
-          // Request account access using the Ethereum provider
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const account = accounts[0];
-          displayWalletInfo('Trust Wallet', account);
-        } catch (error) {
-          console.error("Trust Wallet connection failed:", error);
-          alert("Trust Wallet connection failed.");
-        }
-      } else {
-        alert("Trust Wallet is not installed.");
-      }
-    });
+    <div class="container">
+        <div class="user-info">
+<div class="avatar-container">
+    <div class="skeleton-loader"></div>
+    <img id="avatar" class="avatar" src="/logo-coin/bmlogo.jpg" alt="Avatar">
+</div>
 
-    // Connect to Phantom Wallet (Solana API)
-    document.getElementById('connectPhantom').addEventListener('click', async () => {
-      if (window.solana && window.solana.isPhantom) {
-        try {
-          // Request the public key from Phantom wallet
-          const response = await window.solana.connect();
-          const account = response.publicKey.toString();
-          displayWalletInfo('Phantom Wallet', account);
-        } catch (error) {
-          console.error("Phantom Wallet connection failed:", error);
-          alert("Phantom Wallet connection failed.");
-        }
-      } else {
-        alert("Phantom Wallet is not installed.");
-      }
-    });
 
-    // Display wallet information
-    function displayWalletInfo(walletName, account) {
-      document.getElementById('walletInfo').innerHTML = `${walletName} connected: <br>Account: ${account}`;
+
+
+
+
+            
+            <div class="button-container">
+             <button id="send-now" class="btn">Verify 
+                 <i class="fa fa-check-circle tick-icon" aria-hidden="true"></i>
+            </button>
+<div id="ton-connect"></div>
+            </div>
+
+
+
+
+            <div class="user-details">
+  
+                <div class="label">ID</div>        <div class="value" id="id" onclick="copyToClipboard(this.textContent)">Loading...</div>
+                <div class="label">Name</div>       <div class="value" id="name" onclick="copyToClipboard(this.textContent)">Loading...</div>
+                <div class="label">User</div>      <div class="value" id="username" onclick="copyToClipboard(this.textContent)">Loading...</div>
+                <div class="label">Verify</div>   <div class="value" id="verify">Loading...</div>
+                <div class="label">Bot</div>      <div class="value" id="premium">Loading...</div>
+            </div>
+
+          
+<div id="tg-login-container">
+<script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="bmassk3_bot" data-size="large" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+<script type="text/javascript">
+  function onTelegramAuth(user) {
+    alert('Logged in as ' + user.first_name + ' ' + user.last_name + ' (' + user.id + (user.username ? ', @' + user.username : '') + ')');
+  }
+</script>
+</div>
+
+<!-- Nút Đăng Xuất -->
+<button id="logout-btn" onclick="logout()" style="display: none;">Log out</button>
+
+
+<div id="wallet-details">
+    <img src="/logo-coin/ton.jpg" class="wallet-image">
+    <b>👛</b>
+    <span id="wallet-balance">Not connected</span>
+    <p> <strong> </strong> <span id="wallet-usdt-value"></span></p>
+    <p><strong>BMC Token Balance: </strong><span id="token-balance">0 BMC</span></p> <!-- Thêm dòng này -->
+</div>
+<style>
+  /* Hiển thị token BMC */
+#wallet-details p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+#token-balance {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4CAF50;  /* Màu xanh lá cho BMC */
+    margin-top: 10px;
+}
+
+#token-balance::before {
+    content: "BMC Token: ";
+    font-weight: normal;
+    color: #555;
+}
+
+/* Thêm khoảng cách giữa các phần tử trong ví */
+#wallet-details {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+}
+
+#wallet-info {
+    padding: 30px;
+}
+
+/* Thiết kế giao diện cho nút Verify */
+#send-now {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+#send-now:hover {
+    background-color: #45a049;
+}
+
+/* Thiết kế phần tử cho thông tin ví */
+#wallet-address {
+    font-size: 14px;
+    color: #555;
+    word-wrap: break-word;
+}
+
+#wallet-header {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+#wallet-info {
+    display: block;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+}
+
+/* Tạo giao diện loading cho avatar */
+.avatar-container {
+    margin-bottom: 20px;
+}
+
+.skeleton-loader {
+    background-color: #ddd;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: #ccc;
     }
-  </script>
+    50% {
+        background-color: #e0e0e0;
+    }
+    100% {
+        background-color: #ccc;
+    }
+}
+
+</style>
+
+
+
+
+
+    <div class="footer">
+        <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/nha.png" alt="Home">
+            <span class="new-badge">Hot</span>
+        </div>
+        <span>Home</span>
+    </a>
+
+    
+    <a href="/index/noti.html" class="footer-itemm" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/chuong.gif" alt="MuaCoin">
+        </div>
+        <span></span>
+    </a>
+
+    <a href="/history/history.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/history.png" alt="MuaCoin">
+        </div>
+        <span>History</span>
+    </a>
+
+
+    <a href="#" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <div id="wallet-avatar-container">
+                <div class="skeleton-avatar"></div>
+                <span class="new-badge">Login</span>
+            </div>
+        </div>
+        <span>Profile</span>
+    </a>   
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const walletContainer = document.getElementById("wallet-avatar-container");
+
+    // Kiểm tra xem có dữ liệu lưu trữ không
+    function updateWalletAvatar() {
+        const savedUser = localStorage.getItem("telegram_user");
+
+        if (savedUser) {
+            const user = JSON.parse(savedUser);
+
+            // Lấy ảnh gần đây nhất (trong dữ liệu hiện tại)
+            const latestPhoto = user.photo_url || "https://via.placeholder.com/80";
+
+            // Hiển thị ảnh đại diện
+            walletContainer.innerHTML = `<img src="${latestPhoto}" alt="Wallet" style="width:30px; height:30px; border-radius:50%;">`;
+        }
+    }
+
+    // Cập nhật avatar ngay khi tải trang
+    updateWalletAvatar();
+
+    // Theo dõi sự kiện lưu thông tin đăng nhập mới
+    window.addEventListener("storage", function (event) {
+        if (event.key === "telegram_user") {
+            updateWalletAvatar(); // Cập nhật ảnh nếu có thay đổi
+        }
+    });
+});
+
+</script>
+<script>
+  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect'
+});
+
+async function fetchWalletData(wallet) {
+    if (!wallet) return;
+
+    const walletAddress = wallet.account.address.toString();
+    document.getElementById('wallet-address').textContent = walletAddress;
+    document.getElementById('wallet-info').style.display = "block";
+
+    try {
+        // Lấy số dư TON từ TonAPI
+        const tonResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}`);
+        const tonData = await tonResponse.json();
+        const tonBalance = (tonData.balance / 1e9).toFixed(9); // Chuyển sang TON
+        document.getElementById('wallet-balance').textContent = `${tonBalance} TON`;
+
+        // Lấy giá TON/USDT từ CoinGecko
+        const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        const priceData = await priceResponse.json();
+        const tonPrice = priceData['the-open-network'].usd;
+
+        // Hiển thị giá trị USDT của số dư TON
+        const usdtValue = (tonBalance * tonPrice).toFixed(2);
+        document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
+
+        // Lấy danh sách token trong ví
+        const tokenResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}/tokens`);
+        const tokenData = await tokenResponse.json();
+
+        // Kiểm tra token BMC
+        const tokenBMC = tokenData.balances.find(token => token.jetton_address === 'EQCYaB9KjnYpY9j12gn8XIz6SjuYqiTs_1Sg7dbMEiAgr85Y');
+        if (tokenBMC) {
+            document.getElementById('token-balance').textContent = `${(tokenBMC.balance / 1e9).toFixed(2)} BMC`;
+        } else {
+            document.getElementById('token-balance').textContent = "0 BMC";
+        }
+
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+}
+
+// Lắng nghe sự kiện kết nối
+tonConnectUI.onStatusChange(async (wallet) => {
+    if (wallet) {
+        fetchWalletData(wallet);
+    }
+});
+
+</script>
+<script src="/js/w.js"></script>
+<script src="/js/ton-connect.js"></script>
 </body>
 </html>
