@@ -3,60 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TonConnect with Account Info</title>
+    <title>TonConnect UI Example</title>
     <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tonclient/core@latest"></script> <!-- TonClient library -->
 </head>
 <body>
-    <h1>TonConnect with Account Info</h1>
-    <div id="tonconnect-ui"></div>
-    <div id="walletInfo"></div>
-    <div id="accountInfo"></div>
+    <h1>TonConnect UI Example</h1>
+    <div id="ton-connect"></div> <!-- Địa điểm hiển thị nút kết nối -->
 
     <script>
         // Khởi tạo TonConnect UI
-        const tonConnectUI = new TonConnectUI.TonConnectUI({
-            containerId: "tonconnect-ui", // Đặt ID của container nơi bạn muốn hiển thị UI
-            onConnected: async function(wallet) {
-                console.log('Connected to wallet:', wallet);
-                document.getElementById('walletInfo').innerHTML = `Connected to wallet: ${wallet.address}`;
-                
-                // Sau khi kết nối thành công, lấy thông tin tài khoản từ TON blockchain
-                await getAccountInfo(wallet.address);
-            },
-            onDisconnected: function() {
-                console.log('Disconnected from wallet');
-                document.getElementById('walletInfo').innerHTML = 'Disconnected';
-            }
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL manifest
+            buttonRootId: 'ton-connect'  // ID của phần tử nơi hiển thị nút kết nối
         });
 
-        // Khởi tạo TonClient
-        const tonClient = new TonClient({ network: { server_address: "https://testnet.toncenter.com/api/v2/jsonRPC" } });
+        // Cài đặt tùy chọn UI, ví dụ như redirect URL sau khi kết nối thành công
+        tonConnectUI.uiOptions = {
+            twaReturnUrl: 'https://t.me/bmassk3_bot'  // URL chuyển hướng sau khi kết nối
+        };
 
-        // Hàm lấy thông tin tài khoản từ địa chỉ ví
-        async function getAccountInfo(address) {
+        // Kết nối ví và xử lý thông tin ví
+        async function connectToWallet() {
             try {
-                // Truy vấn thông tin tài khoản từ TON blockchain
-                const account = await tonClient.net.query_collection({
-                    collection: "accounts",
-                    filter: { id: { eq: address } },
-                    result: "balance id"
-                });
-
-                // Hiển thị thông tin tài khoản
-                if (account.result.length > 0) {
-                    const accountInfoDiv = document.getElementById('accountInfo');
-                    accountInfoDiv.innerHTML = `Account Info:<br>Balance: ${account.result[0].balance}<br>Address: ${account.result[0].id}`;
-                } else {
-                    console.log('Account not found');
-                }
+                const connectedWallet = await tonConnectUI.connectWallet();
+                // In ra thông tin ví sau khi kết nối
+                console.log('Connected Wallet:', connectedWallet);
+                // Bạn có thể xử lý thêm thông tin ví ở đây
             } catch (error) {
-                console.error('Error fetching account info:', error);
+                console.error("Error connecting to wallet:", error);
             }
         }
 
-        // Kích hoạt kết nối
-        tonConnectUI.init();
+        // Gọi hàm connectToWallet khi cần thiết
+        connectToWallet().catch(error => {
+            console.error("Error:", error);
+        });
     </script>
 </body>
 </html>
