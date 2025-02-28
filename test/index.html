@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mint NFT with Ton</title>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tonweb@latest/dist/tonweb.min.js"></script>
+</head>
+<body>
+    <h1>Mint NFT with Ton</h1>
+    <button id="ton-connect">Connect Wallet</button>
+    <button id="mint-nft" style="display:none;">Mint NFT</button>
+
+    <script>
+        // Initialize TonConnect UI
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect'
+        });
+
+        let tonWeb;
+        let connectedWallet = null;
+
+        // Connect to the wallet
+        async function connectToWallet() {
+            try {
+                connectedWallet = await tonConnectUI.connectWallet();
+                console.log("Connected wallet:", connectedWallet);
+
+                // Initialize TonWeb with the connected wallet
+                tonWeb = new TonWeb(connectedWallet);
+                
+                // Display the Mint NFT button once connected
+                document.getElementById('mint-nft').style.display = 'inline-block';
+            } catch (error) {
+                console.error("Error connecting to wallet:", error);
+            }
+        }
+
+        // Mint NFT using sent transaction
+        async function mintNFT() {
+            if (!connectedWallet) {
+                alert("Please connect your wallet first.");
+                return;
+            }
+
+            try {
+                const nftMetadata = {
+                    name: "Awesome NFT",
+                    description: "This is a cool NFT",
+                    image_url: "https://example.com/nft-image.jpg"
+                };
+
+                // Create the contract address for the deployed NFT contract
+                const nftContractAddress = '0xa4205599032c4c67e359c5358a3e1023154c3251'; // Replace with actual contract address
+
+                // Create the contract object
+                const contract = tonWeb.contract(nftContractAddress);
+
+                // Create the transaction payload (example)
+                const payload = tonWeb.utils.toNano("0.05"); // Adjust the value as needed (for minting cost)
+
+                // Create a transaction to invoke the mint function on the contract
+                const transaction = await contract.methods.mint({
+                    metadata: nftMetadata
+                }).send({ from: connectedWallet.address, value: payload });
+
+                // Send the transaction to the blockchain
+                console.log("Mint transaction result:", transaction);
+                
+                // Handle successful minting
+                alert("NFT Minted Successfully!");
+
+            } catch (error) {
+                console.error("Error minting NFT:", error);
+            }
+        }
+
+        // Set up event listeners
+        document.getElementById('ton-connect').addEventListener('click', connectToWallet);
+        document.getElementById('mint-nft').addEventListener('click', mintNFT);
+
+        // Additional TonConnect UI options
+        tonConnectUI.uiOptions = {
+            twaReturnUrl: 'https://t.me/bmassk3_bot' // Redirect to a Telegram bot after success
+        };
+    </script>
+</body>
+</html>
