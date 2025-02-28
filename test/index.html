@@ -3,36 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TonConnect Example</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/sdk@latest/dist/tonconnect.min.js"></script> <!-- CDN for TonConnect SDK -->
+    <title>TonConnect UI Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
 <body>
-    <h1>TonConnect Example</h1>
-    <button id="connectButton">Connect Wallet</button>
-    <div id="walletInfo"></div>
+    <h1>TonConnect UI Example</h1>
+    <!-- Nút kết nối tự động hiển thị từ TonConnect UI -->
+    <div id="tonconnect-ui"></div>
 
     <script>
-        // Initialize TonConnect SDK
-        const tonConnect = new TonConnect.TonConnect();
-
-        // Function to handle wallet connection
-        async function connectWallet() {
-            try {
-                // Request to connect the wallet
-                await tonConnect.requestConnection();
-                const wallet = tonConnect.getWallet();
-                
-                // Display wallet address or info
-                const walletInfoDiv = document.getElementById('walletInfo');
-                walletInfoDiv.innerHTML = `Connected wallet: ${wallet.address}`;
-            } catch (error) {
-                console.error('Connection failed:', error);
+        // Khởi tạo TonConnect UI
+        const tonConnectUI = new TonConnectUI.TonConnectUI({
+            containerId: "tonconnect-ui", // Đặt ID của container nơi bạn muốn hiển thị UI
+            onConnected: function(wallet) {
+                console.log('Connected to wallet:', wallet);
+                alert('Connected to wallet: ' + wallet.address);
+            },
+            onDisconnected: function() {
+                console.log('Disconnected from wallet');
+                alert('Disconnected from wallet');
             }
-        }
+        });
 
-        // Set up the connect button event listener
-        const connectButton = document.getElementById('connectButton');
-        connectButton.addEventListener('click', connectWallet);
+        // Kích hoạt kết nối
+        tonConnectUI.init();
     </script>
 </body>
 </html>
