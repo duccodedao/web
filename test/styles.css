@@ -1,111 +1,150 @@
-/* Reset cơ bản */
+/* Reset CSS */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-/* Body */
+/* Tổng thể */
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background-color: #f4f4f4;
+    background-color: #000;
+    color: white;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Container chính */
+.container {
+    width: 100%;
+    max-width: 400px;
+    background-color: #111;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
 }
 
 /* Header */
-header {
-    background-color: #333;
+h2 {
+    font-size: 20px;
+    font-weight: bold;
     color: white;
-    padding: 20px 0;
     text-align: center;
 }
 
-header .logo img {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-    vertical-align: middle;
+/* Phần số dư */
+.balance-container {
+    background-color: #1a1a1a;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    text-align: center;
 }
 
-header h1 {
-    display: inline-block;
-    font-size: 2rem;
-    vertical-align: middle;
+.balance-container h3 {
+    font-size: 14px;
+    color: #aaa;
 }
 
-/* Taskbar */
-.taskbar ul {
-    list-style: none;
+.balance-container .balance {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.balance-container .balance-vnd {
+    font-size: 14px;
+    color: #aaa;
+}
+
+/* Địa chỉ TON */
+.address-container {
+    background-color: #222;
+    padding: 10px;
+    border-radius: 10px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.address-container p {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy-icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* Lịch sử giao dịch */
+.transaction-history {
     margin-top: 20px;
 }
 
-.taskbar ul li {
-    margin: 0 15px;
-}
-
-.taskbar ul li a {
-    text-decoration: none;
-    color: white;
-    font-size: 1.2rem;
-}
-
-/* Main Content */
-.intro {
+.transaction-item {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    padding: 50px 20px;
-    background-color: white;
+    background-color: #222;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px 0;
 }
 
-.intro .profile-image img {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    border: 5px solid #333;
+.transaction-icon {
+    width: 24px;
+    height: 24px;
 }
 
-.intro-text {
-    max-width: 600px;
+.transaction-amount {
+    font-weight: bold;
+    color: #00ff00;
 }
 
-.intro-text h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+/* Nút bấm */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
 }
 
-.intro-text p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-}
-
-/* Về tôi */
-.about {
-    padding: 40px 20px;
-    background-color: #fff;
+.button {
+    flex: 1;
+    background-color: #333;
+    padding: 10px;
     text-align: center;
-}
-
-.about h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-}
-
-.about p {
-    font-size: 1.2rem;
-    line-height: 1.8;
-    color: #333;
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 5px;
 }
 
 /* Footer */
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 20px;
+.footer {
+    display: flex;
+    justify-content: space-around;
+    background-color: #111;
+    padding: 10px;
+    width: 100%;
     position: fixed;
     bottom: 0;
-    width: 100%;
+}
+
+.footer-item {
+    text-align: center;
+    flex: 1;
+}
+
+.footer-item img {
+    width: 30px;
+    height: 30px;
 }
