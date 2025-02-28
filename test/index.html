@@ -1,46 +1,103 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giới thiệu cá nhân</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>TON Wallet</title>
+    <link rel="stylesheet" href="/history/styles.css"> <!-- Link to your CSS file -->
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <img src="logo.png" alt="Logo">
-            <h1>Giới thiệu cá nhân</h1>
-        </div>
-        <nav class="taskbar">
-            <ul>
-                <li><a href="#home">Trang chủ</a></li>
-                <li><a href="#about">Giới thiệu</a></li>
-                <li><a href="#contact">Liên hệ</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="container">
+        <h2>TON Transaction History</h2>
+        <div id="ton-connect"></div> <!-- Button for connecting to the wallet -->
+        
+        <div id="wallet-info" style="display: none;">
 
-    <!-- Main Content -->
-    <section id="home" class="intro">
-        <div class="profile-image">
-            <img src="profile.jpg" alt="Ảnh cá nhân">
+            <p style="display: none;"><strong>Address:</strong> <span id="wallet-address"></span></p> <!-- Wallet address hidden -->
+            <p><strong>Balance:</strong> <span id="wallet-balance"></span> <img src="/logo-coin/IMG_20241103_113656_984.jpg" alt="TON Logo" class="logo"></p>
+            <p><strong>USDT Value:</strong> <span id="wallet-usdt-value"></span> <img src="/logo-coin/usdt.png" alt="USDT Logo" class="logo"></p>
+          
         </div>
-        <div class="intro-text">
-            <h2>Chào mừng bạn đến với trang web của tôi!</h2>
-            <p>Tôi là [Tên của bạn], một người đam mê lập trình và thiết kế web. Tôi yêu thích tạo ra những trang web đẹp và dễ sử dụng, và luôn học hỏi những công nghệ mới nhất trong lĩnh vực này.</p>
+
+        <div id="transaction-history" style="display: none;">
+            <h3>Transaction History</h3>
+            <ul id="transactions-list"></ul>
         </div>
-    </section>
+    </div>
 
-    <section id="about" class="about">
-        <h2>Về tôi</h2>
-        <p>Tôi đã học lập trình từ năm [năm bắt đầu học lập trình] và hiện tại đang làm việc với các công nghệ như HTML, CSS, JavaScript, và React. Tôi luôn mong muốn phát triển bản thân để tạo ra những sản phẩm chất lượng.</p>
-    </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 [Tên của bạn]. Tất cả quyền được bảo lưu.</p>
-    </footer>
+
+
+
+    <div class="footer">
+        <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/nha.png" alt="Home">
+            <span class="new-badge">Hot</span>
+        </div>
+        <span>Home</span>
+    </a>
+
+    
+    <a href="/index/noti.html" class="footer-itemm" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/chuong.gif" alt="MuaCoin">
+        </div>
+        <span></span>
+    </a>
+
+    <a href="#" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/history.png" alt="MuaCoin">
+        </div>
+        <span>History</span>
+    </a>
+
+
+    <a href="/index/wallet.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <div id="wallet-avatar-container">
+                <div class="skeleton-avatar"></div>
+                <span class="new-badge">Login</span>
+            </div>
+        </div>
+        <span>Profile</span>
+    </a>   
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const walletContainer = document.getElementById("wallet-avatar-container");
+
+    // Kiểm tra xem có dữ liệu lưu trữ không
+    function updateWalletAvatar() {
+        const savedUser = localStorage.getItem("telegram_user");
+
+        if (savedUser) {
+            const user = JSON.parse(savedUser);
+
+            // Lấy ảnh gần đây nhất (trong dữ liệu hiện tại)
+            const latestPhoto = user.photo_url || "https://via.placeholder.com/80";
+
+            // Hiển thị ảnh đại diện
+            walletContainer.innerHTML = `<img src="${latestPhoto}" alt="Wallet" style="width:30px; height:30px; border-radius:50%;">`;
+        }
+    }
+
+    // Cập nhật avatar ngay khi tải trang
+    updateWalletAvatar();
+
+    // Theo dõi sự kiện lưu thông tin đăng nhập mới
+    window.addEventListener("storage", function (event) {
+        if (event.key === "telegram_user") {
+            updateWalletAvatar(); // Cập nhật ảnh nếu có thay đổi
+        }
+    });
+});
+</script>
+
+    <script src="/history/script.js"></script> <!-- Link to your JavaScript file -->
 </body>
 </html>
