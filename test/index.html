@@ -3,92 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TonConnect & TonWeb Example</title>
-    <!-- TonConnect UI library -->
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <!-- TonWeb SDK for interacting with the Ton blockchain -->
-    <script src="https://cdn.jsdelivr.net/npm/tonweb@latest/dist/tonweb.min.js"></script>
+    <title>TonConnect Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/sdk@latest/dist/tonconnect.min.js"></script> <!-- CDN for TonConnect SDK -->
 </head>
 <body>
-    <h1>TonConnect & TonWeb SDK Integration</h1>
-    <button id="ton-connect">Connect Wallet</button>
-    <button id="mint-nft" style="display:none;">Mint NFT</button>
+    <h1>TonConnect Example</h1>
+    <button id="connectButton">Connect Wallet</button>
+    <div id="walletInfo"></div>
 
     <script>
-        // Initialize TonConnect UI for wallet connection
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json', // Use your own manifest URL
-            buttonRootId: 'ton-connect' // The ID of the button where the TonConnect button will appear
-        });
+        // Initialize TonConnect SDK
+        const tonConnect = new TonConnect.TonConnect();
 
-        let tonWeb;
-        let connectedWallet = null;
-
-        // Function to connect to the Ton wallet using TonConnect SDK
-        async function connectToWallet() {
+        // Function to handle wallet connection
+        async function connectWallet() {
             try {
-                // Connect to the wallet
-                connectedWallet = await tonConnectUI.connectWallet();
-                console.log("Connected wallet:", connectedWallet);
-
-                // Initialize TonWeb with the connected wallet
-                tonWeb = new TonWeb(connectedWallet);
+                // Request to connect the wallet
+                await tonConnect.requestConnection();
+                const wallet = tonConnect.getWallet();
                 
-                // Display the Mint NFT button once connected
-                document.getElementById('mint-nft').style.display = 'inline-block';
+                // Display wallet address or info
+                const walletInfoDiv = document.getElementById('walletInfo');
+                walletInfoDiv.innerHTML = `Connected wallet: ${wallet.address}`;
             } catch (error) {
-                console.error("Error connecting to wallet:", error);
+                console.error('Connection failed:', error);
             }
         }
 
-        // Function to mint an NFT (placeholder example)
-        async function mintNFT() {
-            if (!connectedWallet) {
-                alert("Please connect your wallet first.");
-                return;
-            }
-
-            try {
-                // Example NFT metadata
-                const nftMetadata = {
-                    name: "Awesome NFT",
-                    description: "This is a cool NFT",
-                    image_url: "https://example.com/nft-image.jpg"
-                };
-
-                // Example: Contract address (you should replace this with the actual contract address)
-                const nftContractAddress = 'your_nft_contract_address_here';
-
-                // Initialize the contract object using TonWeb
-                const contract = tonWeb.contract(nftContractAddress);
-
-                // Create the transaction payload (this example assumes a minting function that takes metadata)
-                const payload = tonWeb.utils.toNano("0.05"); // Adjust the value (e.g., Ton tokens for minting cost)
-
-                // Call the contract's mint method (example function)
-                const transaction = await contract.methods.mint({
-                    metadata: nftMetadata
-                }).send({ from: connectedWallet.address, value: payload });
-
-                // Send the transaction to the blockchain
-                console.log("Mint transaction result:", transaction);
-                
-                // Handle successful minting
-                alert("NFT Minted Successfully!");
-
-            } catch (error) {
-                console.error("Error minting NFT:", error);
-            }
-        }
-
-        // Set up event listeners
-        document.getElementById('ton-connect').addEventListener('click', connectToWallet);
-        document.getElementById('mint-nft').addEventListener('click', mintNFT);
-
-        // Additional TonConnect UI options
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot' // Redirect to a Telegram bot after success
-        };
+        // Set up the connect button event listener
+        const connectButton = document.getElementById('connectButton');
+        connectButton.addEventListener('click', connectWallet);
     </script>
 </body>
 </html>
