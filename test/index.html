@@ -1,88 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TonConnect UI Example</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <title>Giới thiệu cá nhân</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>TonConnect UI Example</h1>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+            <h1>Giới thiệu cá nhân</h1>
+        </div>
+        <nav class="taskbar">
+            <ul>
+                <li><a href="#home">Trang chủ</a></li>
+                <li><a href="#about">Giới thiệu</a></li>
+                <li><a href="#contact">Liên hệ</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <!-- Phần tử cho nút kết nối ví -->
-    <div id="ton-connect"></div>
+    <!-- Main Content -->
+    <section id="home" class="intro">
+        <div class="profile-image">
+            <img src="profile.jpg" alt="Ảnh cá nhân">
+        </div>
+        <div class="intro-text">
+            <h2>Chào mừng bạn đến với trang web của tôi!</h2>
+            <p>Tôi là [Tên của bạn], một người đam mê lập trình và thiết kế web. Tôi yêu thích tạo ra những trang web đẹp và dễ sử dụng, và luôn học hỏi những công nghệ mới nhất trong lĩnh vực này.</p>
+        </div>
+    </section>
 
-    <!-- Hiển thị thông tin ví sau khi kết nối -->
-    <div id="wallet-info">
-        <p>Address: <span id="wallet-address">Not connected</span></p>
-        <button id="copy-address">Copy Address</button>
-        <button id="disconnect-wallet" style="display:none;">Disconnect</button>
-    </div>
+    <section id="about" class="about">
+        <h2>Về tôi</h2>
+        <p>Tôi đã học lập trình từ năm [năm bắt đầu học lập trình] và hiện tại đang làm việc với các công nghệ như HTML, CSS, JavaScript, và React. Tôi luôn mong muốn phát triển bản thân để tạo ra những sản phẩm chất lượng.</p>
+    </section>
 
-    <script>
-        // Khởi tạo TonConnect UI
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL manifest
-            buttonRootId: 'ton-connect'  // ID của phần tử nơi hiển thị nút kết nối
-        });
-
-        // Cài đặt tùy chọn UI, ví dụ như redirect URL sau khi kết nối thành công
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot'  // URL chuyển hướng sau khi kết nối
-        };
-
-        // Kết nối ví và xử lý thông tin ví
-        async function connectToWallet() {
-            try {
-                const connectedWallet = await tonConnectUI.connectWallet();
-                console.log('Connected Wallet:', connectedWallet);
-
-                // Hiển thị địa chỉ ví
-                const walletAddress = connectedWallet.address;
-                document.getElementById('wallet-address').innerText = walletAddress;
-
-                // Hiển thị nút ngắt kết nối và sao chép địa chỉ
-                document.getElementById('copy-address').style.display = 'inline-block';
-                document.getElementById('disconnect-wallet').style.display = 'inline-block';
-
-                // Cập nhật sự kiện sao chép địa chỉ
-                document.getElementById('copy-address').onclick = () => {
-                    copyToClipboard(walletAddress);
-                };
-
-                // Cập nhật sự kiện ngắt kết nối
-                document.getElementById('disconnect-wallet').onclick = () => {
-                    disconnectWallet();
-                };
-
-            } catch (error) {
-                console.error("Error connecting to wallet:", error);
-            }
-        }
-
-        // Sao chép địa chỉ ví vào clipboard
-        function copyToClipboard(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            alert('Address copied to clipboard!');
-        }
-
-        // Ngắt kết nối ví
-        function disconnectWallet() {
-            tonConnectUI.disconnect();
-            document.getElementById('wallet-address').innerText = 'Not connected';
-            document.getElementById('copy-address').style.display = 'none';
-            document.getElementById('disconnect-wallet').style.display = 'none';
-        }
-
-        // Gọi hàm connectToWallet khi cần thiết
-        connectToWallet().catch(error => {
-            console.error("Error:", error);
-        });
-    </script>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 [Tên của bạn]. Tất cả quyền được bảo lưu.</p>
+    </footer>
 </body>
 </html>
