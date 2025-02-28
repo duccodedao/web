@@ -3,92 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mint NFT with Ton</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <title>TonConnect with Account Info</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tonclient/core@latest"></script> <!-- TonClient library -->
 </head>
 <body>
-    <h1>Mint NFT with Ton</h1>
-    <button id="ton-connect">Connect Wallet</button>
-    <button id="mint-nft" style="display:none;">Mint NFT</button>
+    <h1>TonConnect with Account Info</h1>
+    <div id="tonconnect-ui"></div>
+    <div id="walletInfo"></div>
+    <div id="accountInfo"></div>
 
     <script>
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
+        // Khởi tạo TonConnect UI
+        const tonConnectUI = new TonConnectUI.TonConnectUI({
+            containerId: "tonconnect-ui", // Đặt ID của container nơi bạn muốn hiển thị UI
+            onConnected: async function(wallet) {
+                console.log('Connected to wallet:', wallet);
+                document.getElementById('walletInfo').innerHTML = `Connected to wallet: ${wallet.address}`;
+                
+                // Sau khi kết nối thành công, lấy thông tin tài khoản từ TON blockchain
+                await getAccountInfo(wallet.address);
+            },
+            onDisconnected: function() {
+                console.log('Disconnected from wallet');
+                document.getElementById('walletInfo').innerHTML = 'Disconnected';
+            }
         });
 
-        let connectedWallet = null;
+        // Khởi tạo TonClient
+        const tonClient = new TonClient({ network: { server_address: "https://testnet.toncenter.com/api/v2/jsonRPC" } });
 
-        // Connect to the wallet
-        async function connectToWallet() {
+        // Hàm lấy thông tin tài khoản từ địa chỉ ví
+        async function getAccountInfo(address) {
             try {
-                connectedWallet = await tonConnectUI.connectWallet();
-                console.log("Connected wallet:", connectedWallet);
+                // Truy vấn thông tin tài khoản từ TON blockchain
+                const account = await tonClient.net.query_collection({
+                    collection: "accounts",
+                    filter: { id: { eq: address } },
+                    result: "balance id"
+                });
 
-                // Display the Mint NFT button once connected
-                document.getElementById('mint-nft').style.display = 'inline-block';
-            } catch (error) {
-                console.error("Error connecting to wallet:", error);
-            }
-        }
-
-        // Mint NFT - placeholder function
-        async function mintNFT() {
-            if (!connectedWallet) {
-                alert("Please connect your wallet first.");
-                return;
-            }
-
-            try {
-                const nftMetadata = {
-                    name: "Awesome NFT",
-                    description: "This is a cool NFT",
-                    image_url: "https://example.com/nft-image.jpg"
-                };
-
-                const mintTransaction = {
-                    // Example transaction data; this will need to interact with a Ton smart contract
-                    to: connectedWallet.address,
-                    value: "0",  // Set appropriate value (e.g., Ton tokens for minting)
-                    payload: createMintPayload(nftMetadata)
-                };
-
-                // Call the smart contract to mint the NFT (this is just a placeholder)
-                const result = await sendTransactionToTonBlockchain(mintTransaction);
-
-                console.log("NFT Minted Successfully:", result);
-            } catch (error) {
-                console.error("Error minting NFT:", error);
-            }
-        }
-
-        // Example function to create payload for minting an NFT
-        function createMintPayload(metadata) {
-            return JSON.stringify({
-                method: "mint",
-                params: {
-                    metadata: metadata
+                // Hiển thị thông tin tài khoản
+                if (account.result.length > 0) {
+                    const accountInfoDiv = document.getElementById('accountInfo');
+                    accountInfoDiv.innerHTML = `Account Info:<br>Balance: ${account.result[0].balance}<br>Address: ${account.result[0].id}`;
+                } else {
+                    console.log('Account not found');
                 }
-            });
+            } catch (error) {
+                console.error('Error fetching account info:', error);
+            }
         }
 
-        // Placeholder function to send transaction to the blockchain
-        async function sendTransactionToTonBlockchain(transaction) {
-            // Here you would call the appropriate Ton blockchain SDK to interact with the smart contract
-            // For example, using TonWeb or another SDK for Ton
-
-            // For the sake of this example, let's assume the transaction is successful
-            return Promise.resolve({ success: true });
-        }
-
-        // Set up event listeners
-        document.getElementById('ton-connect').addEventListener('click', connectToWallet);
-        document.getElementById('mint-nft').addEventListener('click', mintNFT);
-
-        // Additional TonConnect UI options
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot' // Redirect to a Telegram bot after success
-        };
+        // Kích hoạt kết nối
+        tonConnectUI.init();
     </script>
 </body>
 </html>
