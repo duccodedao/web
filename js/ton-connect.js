@@ -17,5 +17,5 @@
 
 
     tonConnectUI.uiOptions = {
-        twaReturnUrl: 'https://t.me/bmassk3_bot'
+        twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='
     };
