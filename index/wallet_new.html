@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TON Wallet</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="wallet">
+        <div class="wallet-card">
+            <div class="wallet-header">
+                <span>TON Wallet</span>
+                <div id="ton-connect"></div>
+                <!-- Thay thế địa chỉ ví bằng hình ảnh -->
+                <a id="wallet-link" class="wallet-address" href="#" target="_blank">
+                    <img src="/logo-coin/wallet.png" alt="Wallet" id="wallet-image" />
+                </a>
+            </div>
+            <div id="wallet-balance" class="wallet-balance">$0.00</div>
+            <div id="wallet-usdt-value" class="wallet-usdt-value">≈ 0 USDT</div>
+            <div class="wallet-actions">
+                <button class="receive" onclick="showComingSoon()">Receive</button>
+                <button class="send" onclick="sendTransaction()">Send →</button>
+            </div>
+        </div>
+        <div class="tokens">
+            <div class="token">
+                <img src="/logo-coin/ton.jpg" alt="TON">
+                <div class="token-info">
+                    <span>TON</span>
+                    <span id="ton-balance">0 TON</span>
+                </div>
+                <div class="token-value" id="ton-value">$0.00</div>
+            </div>
+            <div class="token">
+                <img src="/logo-coin/bmlogo.jpg" alt="BMC">
+                <div class="token-info">
+                    <span>BMC</span>
+                    <i class="fas fa-exclamation-circle" onclick="redirectToTonViewer()"></i>
+                    <span id="token-balance"></span> <!-- Trạng thái Loading -->
+                </div>
+            </div>
+            
+            
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <div class="footer">
+        <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/nha.png" alt="Home">
+            <span class="new-badge">Hot</span>
+        </div>
+        <span>Home</span>
+    </a>
+
+    
+    <a href="/index/noti.html" class="footer-itemm" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/chuong.gif" alt="MuaCoin">
+        </div>
+        <span></span>
+    </a>
+
+    <a href="/history/history.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/history.png" alt="MuaCoin">
+        </div>
+        <span>History</span>
+    </a>
+    <a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/wallet0.jpg" alt="MuaCoin">
+        </div>
+        <span>Wallet</span>
+    </a> 
+
+    <a href="/history/history.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <div id="wallet-avatar-container">
+                <div class="skeleton-avatar"></div>
+                <span class="new-badge">Login</span>
+            </div>
+        </div>
+        <span>Profile</span>
+    </a>  
+ 
+</div>
+
+    <script>
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect'
+});
+
+async function fetchWalletData(wallet) {
+    if (!wallet) return;
+
+    const walletAddress = wallet.account.address.toString();
+    let displayName = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4); // Mặc định rút gọn
+
+    try {
+        // Chuyển đổi địa chỉ thành kiểu IntMsg
+        const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
+
+        // Hiển thị tên account hoặc địa chỉ IntMsg + link tonviewer
+        const walletLink = document.getElementById('wallet-link');
+        walletLink.href = `https://tonviewer.com/${intMsgAddress}`; // Chuyển hướng đến trang địa chỉ IntMsg
+
+        // Cập nhật hình ảnh ví
+        const walletImage = document.getElementById('wallet-image');
+        walletImage.src = '/logo-coin/wallet.png'; // Đảm bảo hình ảnh ví là /logo-coin/wallet.png
+
+        // Lấy số dư TON
+        const accountResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}`);
+        const accountData = await accountResponse.json();
+
+        const tonBalance = (accountData.balance / 1e9).toFixed(9);
+        document.getElementById('wallet-balance').textContent = `${tonBalance} TON`;
+
+        // Lấy giá TON từ CoinGecko
+        const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        const priceData = await priceResponse.json();
+        const tonPrice = priceData['the-open-network'].usd;
+
+        // Quy đổi sang USDT
+        const usdtValue = (tonBalance * tonPrice).toFixed(2);
+        document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
+
+        document.getElementById('ton-balance').textContent = `${tonBalance} TON`;
+        document.getElementById('ton-value').textContent = `$${usdtValue}`;
+
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+}
+
+// Hàm chuyển đổi địa chỉ ví thành dạng IntMsg
+function convertToIntMsg(walletAddress) {
+    // Logic chuyển đổi địa chỉ sang dạng IntMsg nếu cần thiết
+    // Ví dụ: mã hóa hoặc chuyển đổi địa chỉ ví theo cách nào đó
+    return walletAddress; // Thay thế bằng logic thực tế nếu cần
+}
+
+// Khi trạng thái ví thay đổi, cập nhật dữ liệu
+tonConnectUI.onStatusChange(async (wallet) => {
+    if (wallet) {
+        fetchWalletData(wallet);
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+</body>
+</html>
