@@ -52,6 +52,12 @@
 
     </div>
 
+    <!-- Toast notification -->
+<div id="toast" class="toast">
+    <span id="toast-message"></span>
+</div>
+
+
 
 
 
@@ -167,8 +173,8 @@ function showComingSoon() {
         title: 'Coming Soon!',
 
         showConfirmButton: false,
-        timer: 2000,  // Thời gian hiển thị là 2 giây
-        position: 'top-end',  // Đặt thông báo ở góc phải trên cùng
+        timer: 20000,  // Thời gian hiển thị là 2 giây
+        
         toast: true,  // Chế độ toast (thông báo nhỏ, không có nút xác nhận)
         showClass: {
             popup: 'swal2-noanimation'  // Không sử dụng hoạt ảnh nếu cần
@@ -202,8 +208,6 @@ function sendTransaction() {
 
 
 
-
-
 let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;  // Mặc định BMC là 0 nếu chưa có dữ liệu trong localStorage
 const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
 
@@ -214,8 +218,27 @@ function getBMCBalance() {
     localStorage.setItem('bmcBalance', bmcBalance);  // Lưu số dư vào localStorage
 
     // Cập nhật giá trị BMC (giả sử 1 BMC = 1 USDT)
-    const bmcValue = bmcBalance * 1;  // Giả sử 1 BMC = 1 USDT
+    const bmcValue = bmcBalance * TON_VALUE_IN_USDT;  // Giả sử 1 BMC = 1 USDT
     document.getElementById("bmc-value").innerText = `$${bmcValue.toFixed(2)}`;
+}
+
+// Cập nhật giao diện thông báo bằng toast
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    
+    // Kiểm tra xem toast có đang hiển thị không
+    if (toast.classList.contains('show')) {
+        return;  // Nếu đang hiển thị, không làm gì cả
+    }
+
+    const toastMessage = document.getElementById('toast-message');
+    toastMessage.innerText = message; // Cập nhật thông báo
+    toast.classList.add('show');  // Hiển thị thông báo
+    
+    // Ẩn thông báo sau 3 giây
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
 
 // Hàm Mint BMC (tăng số dư BMC sau khi giao dịch thành công)
@@ -241,10 +264,10 @@ async function mintBMC() {
         // Sau khi giao dịch thành công, giả sử mint được 100 BMC
         bmcBalance += 100;  // Thêm 100 BMC vào số dư
         getBMCBalance();  // Cập nhật số dư BMC trên giao diện
-        alert(`Gửi thành công! Đang nhận BMC.`);
+        showToast(`Gửi thành công! Đang nhận BMC.`);  // Hiển thị thông báo
     } catch (error) {
         console.error("Lỗi khi gửi:", error);
-        alert("Gửi thất bại! Kiểm tra lại ví.");
+        showToast("Gửi thất bại! Kiểm tra lại ví.");  // Hiển thị thông báo lỗi
     }
 }
 
