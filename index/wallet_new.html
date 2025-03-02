@@ -41,7 +41,7 @@
             <div class="token">
                 <img src="/logo-coin/bmlogo.jpg" alt="BMC">
                 <div class="token-info">
-                    <span>BMC</span>
+                    <span>BMHD</span>
                     <span id="token-balance">Loading...</span> <!-- Trạng thái Loading ban đầu -->
                 </div>
                 <div class="token-value" id="bmc-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
@@ -214,7 +214,7 @@ const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
 // Cập nhật số dư BMC và giá trị vào giao diện
 function getBMCBalance() {
     console.log('Số dư BMC:', bmcBalance);  // Kiểm tra số dư BMC
-    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMC`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
+    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMHD`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
     localStorage.setItem('bmcBalance', bmcBalance);  // Lưu số dư vào localStorage
 
     // Cập nhật giá trị BMC (giả sử 1 BMC = 1 USDT)
@@ -253,7 +253,7 @@ async function mintBMC() {
             validUntil: Math.floor(Date.now() / 1000) + 600,  // Thời gian hết hạn giao dịch
             messages: [{
                 address: "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD",  // Địa chỉ ví hợp đồng
-                amount: "1",  // 1 TON (nanoTON)
+                amount: "100000000",  // 1 TON (nanoTON)
                 payload: payload  // Payload
             }]
         };
