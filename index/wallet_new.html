@@ -44,7 +44,7 @@
                     <span>BMHD</span>
                     <span id="token-balance">Loading...</span> <!-- Trạng thái Loading ban đầu -->
                 </div>
-                <div class="token-value" id="bmc-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
+                <div class="token-value" id="bmhd-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
             </div>
             
             
@@ -208,18 +208,18 @@ function sendTransaction() {
 
 
 
-let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;  // Mặc định BMC là 0 nếu chưa có dữ liệu trong localStorage
+let bmhdBalance = parseInt(localStorage.getItem('bmhdBalance')) || 0;  // Mặc định BMHD là 0 nếu chưa có dữ liệu trong localStorage
 const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
 
-// Cập nhật số dư BMC và giá trị vào giao diện
-function getBMCBalance() {
-    console.log('Số dư BMC:', bmcBalance);  // Kiểm tra số dư BMC
-    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMHD`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
-    localStorage.setItem('bmcBalance', bmcBalance);  // Lưu số dư vào localStorage
+// Cập nhật số dư BMHD và giá trị vào giao diện
+function getBMHDBalance() {
+    console.log('Balance BMHD:', bmhdBalance);  // Kiểm tra số dư BMHD
+    document.getElementById("token-balance").innerText = `${bmhdBalance.toLocaleString()} BMHD`;  // Hiển thị số dư BMHD
+    localStorage.setItem('bmhdBalance', bmhdBalance);  // Lưu số dư vào localStorage
 
-    // Cập nhật giá trị BMC (giả sử 1 BMC = 1 USDT)
-    const bmcValue = bmcBalance * TON_VALUE_IN_USDT;  // Giả sử 1 BMC = 1 USDT
-    document.getElementById("bmc-value").innerText = `$${bmcValue.toFixed(2)}`;
+    // Cập nhật giá trị BMHD (giả sử 1 BMHD = 1 USDT)
+    const bmhdValue = bmhdBalance * TON_VALUE_IN_USDT;  // Giả sử 1 BMHD = 1 USDT
+    document.getElementById("bmhd-value").innerText = `$${bmhdValue.toFixed(2)}`;
 }
 
 // Cập nhật giao diện thông báo bằng toast
@@ -241,8 +241,8 @@ function showToast(message) {
     }, 3000);
 }
 
-// Hàm Mint BMC (tăng số dư BMC sau khi giao dịch thành công)
-async function mintBMC() {
+// Hàm Mint BMHD (tăng số dư BMHD sau khi giao dịch thành công)
+async function mintBMHD() {
     try {
         // Cập nhật trạng thái loading trong khi giao dịch đang diễn ra
         document.getElementById("token-balance").innerText = "Processing...";
@@ -261,19 +261,19 @@ async function mintBMC() {
         console.log("Gửi giao dịch:", txParams);
         await tonConnectUI.sendTransaction(txParams);  // Gửi giao dịch
 
-        // Sau khi giao dịch thành công, giả sử mint được 100 BMC
-        bmcBalance += 100;  // Thêm 100 BMC vào số dư
-        getBMCBalance();  // Cập nhật số dư BMC trên giao diện
-        showToast(`Gửi thành công! Đang nhận BMC.`);  // Hiển thị thông báo
+        // Sau khi giao dịch thành công, giả sử mint được 100 BMHD
+        bmhdBalance += 100;  // Thêm 100 BMHD vào số dư
+        getBMHDBalance();  // Cập nhật số dư BMHD trên giao diện
+        showToast(`Success`);  // Hiển thị thông báo Congratulations 
     } catch (error) {
         console.error("Lỗi khi gửi:", error);
-        showToast("Gửi thất bại! Kiểm tra lại ví.");  // Hiển thị thông báo lỗi
+        showToast("Failure");  // Hiển thị thông báo lỗi
     }
 }
 
-// Lấy số dư BMC khi trang được tải lần đầu tiên
+// Lấy số dư BMHD khi trang được tải lần đầu tiên
 document.addEventListener("DOMContentLoaded", function() {
-    getBMCBalance();  // Gọi hàm để lấy số dư BMC khi trang được tải
+    getBMHDBalance();  // Gọi hàm để lấy số dư BMHD khi trang được tải
 });
 
   </script>
