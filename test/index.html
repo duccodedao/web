@@ -276,6 +276,60 @@ document.addEventListener("DOMContentLoaded", function() {
     getBMCBalance();  // Gọi hàm để lấy số dư BMC khi trang được tải
 });
 
+
+
+
+
+
+async function mintBMC() {
+    const userAddress = localStorage.getItem('walletAddress');
+    if (!userAddress) {
+        alert('Vui lòng kết nối ví trước');
+        return;
+    }
+
+    const amount = 100;  // Số BMC cần mint
+
+    // Gửi giao dịch mint BMC
+    const transaction = {
+        to: '0xYourSmartContractAddress',  // Địa chỉ smart contract
+        data: `0xMintData${userAddress}${amount}`,  // Dữ liệu giao dịch
+        value: '0',  // Giá trị thanh toán (nếu có)
+        gas_limit: '1000000'  // Giới hạn gas
+    };
+
+    try {
+        await tonConnectUI.sendTransaction(transaction);  // Gửi giao dịch mint
+
+        // Sau khi giao dịch mint thành công, cập nhật số dư BMC vào blockchain
+        await updateBalanceOnBlockchain(userAddress, amount);  // Lưu số dư vào blockchain
+
+        getBMCBalance(userAddress);  // Cập nhật số dư BMC trên giao diện
+        showToast('Gửi thành công! Đang nhận BMC.');
+    } catch (error) {
+        console.error('Lỗi khi gửi giao dịch:', error);
+        showToast('Gửi thất bại! Kiểm tra lại ví.');
+    }
+}
+
+
+async function getBMCBalance(userAddress) {
+    try {
+        // Gọi smart contract để lấy số dư của người dùng từ blockchain
+        const balance = await tonConnectUI.getContractBalance(userAddress);  // Hàm này tùy vào smart contract của bạn
+
+        document.getElementById("token-balance").innerText = `${balance.toLocaleString()} BMC`;  // Hiển thị số dư
+    } catch (error) {
+        console.error('Lỗi khi lấy số dư:', error);
+        document.getElementById("token-balance").innerText = 'Không thể lấy số dư';
+    }
+}
+
+
+
+
+
+
   </script>
 </body>
 </html>
