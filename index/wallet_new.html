@@ -26,6 +26,7 @@
             <div class="wallet-actions">
                 <button class="receive" onclick="showComingSoon()">Receive</button>
                 <button class="send" onclick="sendTransaction()">Send →</button>
+                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint BMC</button> <!-- Thêm nút Mint BMC -->
             </div>
         </div>
         <div class="tokens">
@@ -41,17 +42,15 @@
                 <img src="/logo-coin/bmlogo.jpg" alt="BMC">
                 <div class="token-info">
                     <span>BMC</span>
-                    <i class="fas fa-exclamation-circle" onclick="redirectToTonViewer()"></i>
-                    <span id="token-balance"></span> <!-- Trạng thái Loading -->
+                    <span id="token-balance">Loading...</span> <!-- Trạng thái Loading ban đầu -->
                 </div>
+                <div class="token-value" id="bmc-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
             </div>
             
             
         </div>
 
     </div>
-
-
 
 
 
@@ -198,6 +197,61 @@ function sendTransaction() {
 
 
 
+
+
+
+
+
+
+
+let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;  // Mặc định BMC là 0 nếu chưa có dữ liệu trong localStorage
+const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
+
+// Cập nhật số dư BMC và giá trị vào giao diện
+function getBMCBalance() {
+    console.log('Số dư BMC:', bmcBalance);  // Kiểm tra số dư BMC
+    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMC`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
+    localStorage.setItem('bmcBalance', bmcBalance);  // Lưu số dư vào localStorage
+
+    // Cập nhật giá trị BMC (giả sử 1 BMC = 1 USDT)
+    const bmcValue = bmcBalance * 1;  // Giả sử 1 BMC = 1 USDT
+    document.getElementById("bmc-value").innerText = `$${bmcValue.toFixed(2)}`;
+}
+
+// Hàm Mint BMC (tăng số dư BMC sau khi giao dịch thành công)
+async function mintBMC() {
+    try {
+        // Cập nhật trạng thái loading trong khi giao dịch đang diễn ra
+        document.getElementById("token-balance").innerText = "Processing...";
+
+        const payload = "te6ccgEBAQEAAgAAAA=="; // Payload hợp đồng (có thể thay đổi theo yêu cầu)
+
+        const txParams = {
+            validUntil: Math.floor(Date.now() / 1000) + 600,  // Thời gian hết hạn giao dịch
+            messages: [{
+                address: "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD",  // Địa chỉ ví hợp đồng
+                amount: "1",  // 1 TON (nanoTON)
+                payload: payload  // Payload
+            }]
+        };
+
+        console.log("Gửi giao dịch:", txParams);
+        await tonConnectUI.sendTransaction(txParams);  // Gửi giao dịch
+
+        // Sau khi giao dịch thành công, giả sử mint được 100 BMC
+        bmcBalance += 100;  // Thêm 100 BMC vào số dư
+        getBMCBalance();  // Cập nhật số dư BMC trên giao diện
+        alert(`Gửi thành công! Đang nhận BMC.`);
+    } catch (error) {
+        console.error("Lỗi khi gửi:", error);
+        alert("Gửi thất bại! Kiểm tra lại ví.");
+    }
+}
+
+// Lấy số dư BMC khi trang được tải lần đầu tiên
+document.addEventListener("DOMContentLoaded", function() {
+    getBMCBalance();  // Gọi hàm để lấy số dư BMC khi trang được tải
+});
 
   </script>
 </body>
