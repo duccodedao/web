@@ -26,7 +26,7 @@
             <div class="wallet-actions">
                 <button class="receive" onclick="showComingSoon()">Receive</button>
                 <button class="send" onclick="sendTransaction()">Send →</button>
-                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint BMHD</button> <!-- Thêm nút Mint BMC -->
+                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint</button> <!-- Thêm nút Mint BMC -->
             </div>
         </div>
         <div class="tokens">
@@ -188,7 +188,7 @@ function showComingSoon() {
 // Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
 function sendTransaction() {
     const assetCurrency = "TON";  // Mã tài sản (TON)
-    const assetAddress = "your_wallet_address_here";  // Địa chỉ ví của bạn, thay thế bằng địa chỉ ví thực tế
+    const assetAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ ví của bạn, thay thế bằng địa chỉ ví thực tế
 
     const url = `https://walletbot.me/scw/receiver-search?assetCurrency=${assetCurrency}&assetAddress=${assetAddress}`;
     window.location.href = url;  // Chuyển hướng người dùng đến URL
