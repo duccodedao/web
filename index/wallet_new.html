@@ -80,7 +80,7 @@
         </div>
         <span>History</span>
     </a>
-    <a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
+    <a href="#" class="footer-item" onclick="setActive(this)">
         <div class="img-wrapper">
             <img src="/logo-coin/wallet0.jpg" alt="MuaCoin">
         </div>
@@ -161,6 +161,33 @@ tonConnectUI.onStatusChange(async (wallet) => {
     }
 });
 
+// Hàm hiển thị thông báo "Coming Soon" bằng SweetAlert ở góc phải trên cùng
+function showComingSoon() {
+    Swal.fire({
+        icon: 'info',
+        title: 'Coming Soon!',
+
+        showConfirmButton: false,
+        timer: 2000,  // Thời gian hiển thị là 2 giây
+        position: 'top-end',  // Đặt thông báo ở góc phải trên cùng
+        toast: true,  // Chế độ toast (thông báo nhỏ, không có nút xác nhận)
+        showClass: {
+            popup: 'swal2-noanimation'  // Không sử dụng hoạt ảnh nếu cần
+        },
+        hideClass: {
+            popup: 'swal2-noanimation'  // Không sử dụng hoạt ảnh khi ẩn
+        }
+    });
+}
+
+// Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
+function sendTransaction() {
+    const assetCurrency = "TON";  // Mã tài sản (TON)
+    const assetAddress = "your_wallet_address_here";  // Địa chỉ ví của bạn, thay thế bằng địa chỉ ví thực tế
+
+    const url = `https://walletbot.me/scw/receiver-search?assetCurrency=${assetCurrency}&assetAddress=${assetAddress}`;
+    window.location.href = url;  // Chuyển hướng người dùng đến URL
+}
 
 
 
