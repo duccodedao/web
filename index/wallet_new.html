@@ -215,7 +215,7 @@ const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
 // Cập nhật số dư BMC và giá trị vào giao diện
 function getBMCBalance() {
     console.log('Số dư BMC:', bmcBalance);  // Kiểm tra số dư BMC
-    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMHD`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
+    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMC`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
     localStorage.setItem('bmcBalance', bmcBalance);  // Lưu số dư vào localStorage
 
     // Cập nhật giá trị BMC (giả sử 1 BMC = 1 USDT)
@@ -254,7 +254,7 @@ async function mintBMC() {
             validUntil: Math.floor(Date.now() / 1000) + 600,  // Thời gian hết hạn giao dịch
             messages: [{
                 address: "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD",  // Địa chỉ ví hợp đồng
-                amount: "100000000",  // 1 TON (nanoTON)
+                amount: "1",  // 1 TON (nanoTON)
                 payload: payload  // Payload
             }]
         };
@@ -265,16 +265,16 @@ async function mintBMC() {
         // Sau khi giao dịch thành công, giả sử mint được 100 BMC
         bmcBalance += 100;  // Thêm 100 BMC vào số dư
         getBMCBalance();  // Cập nhật số dư BMC trên giao diện
-        showToast(`Send successful! Receiving BMHD`);  // Hiển thị thông báo
+        showToast(`Gửi thành công! Đang nhận BMC.`);  // Hiển thị thông báo
     } catch (error) {
         console.error("Lỗi khi gửi:", error);
-        showToast("Failure");  // Hiển thị thông báo lỗi
+        showToast("Gửi thất bại! Kiểm tra lại ví.");  // Hiển thị thông báo lỗi
     }
 }
 
 // Lấy số dư BMC khi trang được tải lần đầu tiên
 document.addEventListener("DOMContentLoaded", function() {
-getBMCBalance();  // Gọi hàm để lấy số dư BMC khi trang được tải
+    getBMCBalance();  // Gọi hàm để lấy số dư BMC khi trang được tải
 });
 
   </script>
