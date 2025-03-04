@@ -214,8 +214,8 @@ const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
 
 // Cập nhật số dư BMC và giá trị vào giao diện
 function getBMCBalance() {
-    console.log('Số dư BMC:', bmcBalance);  // Kiểm tra số dư BMC
-    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMC`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
+    console.log('Số dư BMHD:', bmcBalance);  // Kiểm tra số dư BMC
+    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMHD`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
     localStorage.setItem('bmcBalance', bmcBalance);  // Lưu số dư vào localStorage
 
     // Cập nhật giá trị BMC (giả sử 1 BMC = 1 USDT)
