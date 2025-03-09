@@ -1,87 +1,85 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tương tác hợp đồng để nhận token BMHD</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <title>Mint Jetton</title>
+    <script src="https://cdn.tonhubapi.com/ton-connect-web-client/ton-connect-web-client.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:disabled {
+            background-color: gray;
+        }
+    </style>
 </head>
 <body>
-    <h2>Tương tác hợp đồng để nhận token BMHD</h2>
-    <input type="number" id="tonAmount" placeholder="Nhập số TON" min="0.01" step="0.01">
-    <button onclick="interactWithContract()">Nhận token BMHD</button>
-    <p id="status"></p>
+    <h1>Mint Your Jetton</h1>
+    <button id="connect-btn" class="button">Connect Wallet</button>
+    <br>
+    <button id="mint-btn" class="button" disabled>Mint Jetton</button>
+    <div id="status"></div>
 
     <script>
-        // Khởi tạo TONConnectUI
-        const tonConnectUI = new TONConnectUI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL của manifest
-            buttonRootId: 'ton-connect'  // Vị trí hiển thị nút kết nối
+        let tonConnectClient;
+        let userAddress;
+        let jettonContractAddress = "EQB-D_b7xHWPq3N1a6AikTiEYeLmXap262v1XmgGeekGW5Jh";  // Địa chỉ hợp đồng jetton của bạn
+        let senderAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD"; // Địa chỉ ví gửi
+
+        // Khởi tạo TON Connect client
+        tonConnectClient = new TonConnectClient({
+            manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",  // URL manifest của bạn
         });
 
-        // Cấu hình URL trả về sau khi kết nối ví
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='  // URL trả về
-        };
-
-        // Kết nối ví
-        async function connectToWallet() {
+        // Kết nối ví TON
+        document.getElementById("connect-btn").addEventListener("click", async () => {
             try {
-                // Kết nối ví
-                const connectedWallet = await tonConnectUI.connectWallet();
-                if (connectedWallet) {
-                    console.log('Đã kết nối với ví:', connectedWallet);
-                    document.getElementById('status').innerText = "Ví đã được kết nối thành công!";
-                }
+                const result = await tonConnectClient.connect();
+                userAddress = result.account.address;
+                document.getElementById("status").innerText = "Connected to wallet: " + userAddress;
+                document.getElementById("mint-btn").disabled = false;
             } catch (error) {
-                console.error("Lỗi kết nối ví:", error);
-                document.getElementById('status').innerText = "Lỗi kết nối ví: " + error.message;
+                document.getElementById("status").innerText = "Connection failed: " + error.message;
             }
-        }
+        });
 
-        // Tương tác với hợp đồng để nhận token
-        async function interactWithContract() {
-            const amountTON = parseFloat(document.getElementById('tonAmount').value);
-            if (isNaN(amountTON) || amountTON <= 0) {
-                document.getElementById('status').innerText = "Vui lòng nhập số TON hợp lệ.";
+        // Mint Jetton
+        document.getElementById("mint-btn").addEventListener("click", async () => {
+            if (!userAddress) {
+                document.getElementById("status").innerText = "Please connect your wallet first.";
                 return;
             }
 
             try {
-                // Kiểm tra nếu ví đã được kết nối
-                if (!tonConnectUI.isConnected()) {
-                    document.getElementById('status').innerText = "Vui lòng kết nối ví trước!";
-                    return;
-                }
+                const amount = "10";  // Số lượng jetton bạn muốn mint
+                const message = `Minting ${amount} jetton...`;
+                document.getElementById("status").innerText = message;
 
-                // Địa chỉ hợp đồng của bạn (thay đổi theo hợp đồng của bạn)
-                const contractAddress = "EQABa48hjKzg09hN_HjxOic7r8T1PleIy1dRd8NvZ3922MP0";  // Địa chỉ hợp đồng
+                // Tạo giao dịch gửi TON và nhận jetton
+                const result = await tonConnectClient.sendTransaction({
+                    to: jettonContractAddress,
+                    amount: "0.1",  // Số tiền TON cần gửi để nhận jetton
+                    payload: `mint ${amount}`,  // Payload tùy thuộc vào hợp đồng của bạn, có thể khác
+                    sender: senderAddress,  // Địa chỉ ví gửi
+                });
 
-                // Tạo giao dịch gọi hàm mint trong hợp đồng để nhận token
-                const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 60,  // Thời gian hết hạn giao dịch
-                    messages: [
-                        {
-                            address: contractAddress,  // Địa chỉ hợp đồng
-                            amount: (amountTON * 1e9).toString(),  // Chuyển đổi TON sang nanotons (1 TON = 1e9 nanotons)
-                            data: "mint"  // Dữ liệu tương tác với hợp đồng, gọi hàm mint
-                        }
-                    ]
-                };
-
-                // Gửi giao dịch
-                const tx = await tonConnectUI.sendTransaction(transaction);
-                console.log(tx);
-
-                // Cập nhật trạng thái giao dịch
-                document.getElementById('status').innerText = "Giao dịch gửi thành công! Bạn sẽ nhận được token BMHD.";
+                document.getElementById("status").innerText = `Transaction successful: ${result.transaction_id}`;
             } catch (error) {
-                document.getElementById('status').innerText = "Lỗi giao dịch: " + error.message;
+                document.getElementById("status").innerText = "Minting failed: " + error.message;
             }
-        }
-
-        // Kết nối ví khi trang tải
-        connectToWallet();
+        });
     </script>
 </body>
 </html>
