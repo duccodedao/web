@@ -55,36 +55,36 @@
             buttonRootId: 'ton-connect',  // ID của phần tử mà TonConnect UI sẽ tạo nút kết nối
         });
 
-        // Hàm để claim Jetton
-        async function claimJetton() {
-            const jettonAddress = "EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD";  // Địa chỉ Jetton
-            const ownerAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ người sở hữu
+async function claimJetton() {
+    const jettonAddress = "EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD";  // Địa chỉ Jetton contract
+    const ownerAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ người sở hữu
 
-            // Tính toán số lượng TON cần gửi (0.01 TON -> 1000 Jetton)
-            const amountToSend = "10000000";  // 0.01 TON (đổi sang nanotons)
+    // Tính toán số lượng TON cần gửi (0.01 TON -> 1000 Jetton)
+    const amountToSend = "10000000";  // 0.01 TON (đổi sang nanotons)
 
-            // Cấu hình giao dịch
-            const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60 giây
-                messages: [
-                    {
-                        address: ownerAddress,  // Địa chỉ người nhận
-                        amount: amountToSend,    // Số lượng TON gửi đi
-                        jettonAddress: jettonAddress  // Địa chỉ Jetton
-                    }
-                ]
-            };
-
-            try {
-                // Gửi giao dịch qua TonConnectUI
-                const result = await tonConnectUI.sendTransaction(transaction);
-                console.log('Claim successful:', result);
-                alert('Claim successful! You have received your Jettons.');
-            } catch (error) {
-                console.error('Error claiming jetton:', error);
-                alert('Error: ' + error.message);
+    // Cấu hình giao dịch gửi TON
+    const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60 giây
+        messages: [
+            {
+                address: ownerAddress,  // Địa chỉ người nhận (người sở hữu hợp đồng Jetton)
+                amount: amountToSend,    // Số lượng TON gửi đi
+                jettonAddress: jettonAddress  // Địa chỉ hợp đồng Jetton
             }
-        }
+        ]
+    };
+
+    try {
+        // Gửi giao dịch qua TonConnectUI
+        const result = await tonConnectUI.sendTransaction(transaction);
+        console.log('Claim successful:', result);
+        alert('Claim successful! You have received your Jettons.');
+    } catch (error) {
+        console.error('Error claiming jetton:', error);
+        alert('Error: ' + error.message);
+    }
+}
+
 
         // Gắn sự kiện cho nút "Claim Jetton"
         document.getElementById('claimButton').addEventListener('click', claimJetton);
