@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Tokens in TON Wallet</title>
+    <title>Connect to TON Wallet and List Tokens</title>
     <script src="https://cdn.jsdelivr.net/npm/ton-connect-ui@latest/dist/ton-connect-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tonweb@latest/dist/tonweb.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            background-color: #f9f9f9;
         }
         #ton-connect {
             margin-top: 20px;
@@ -27,10 +28,19 @@
             margin-top: 20px;
         }
         .token {
-            padding: 10px;
-            margin: 5px;
-            background-color: #f4f4f4;
-            border-radius: 5px;
+            padding: 15px;
+            margin: 10px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .token h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .token p {
+            margin: 5px 0;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -56,15 +66,14 @@
                 const connectedWallet = await tonConnectUI.connectWallet();
                 console.log("Wallet connected:", connectedWallet);
 
-                // Fetch token data using TonWeb
-                const tonweb = new TonWeb();
+                // Get wallet address and use TonWeb to fetch token data
                 const walletAddress = connectedWallet.address;
-                const wallet = new TonWeb.wallet.all.v3R2(tonweb.provider, { address: walletAddress });
+                const tonweb = new TonWeb();
 
-                // Fetch the wallet's token data
-                const tokenList = await getTokens(wallet);
+                // Fetch all tokens and their balances (including unverified tokens)
+                const tokenList = await getTokens(tonweb, walletAddress);
 
-                // Display token list
+                // Display the tokens
                 displayTokens(tokenList);
 
             } catch (error) {
@@ -73,23 +82,39 @@
         }
 
         // Function to get tokens from wallet
-        async function getTokens(wallet) {
+        async function getTokens(tonweb, walletAddress) {
             const tokenList = [];
+            try {
+                // Example: Fetching Jetton (TON-based tokens) from wallet
 
-            // Example of fetching tokens (this part depends on your specific implementation and data)
-            // Here we simulate token fetching with mock data
-            const tokens = [
-                { symbol: "TON", balance: 1000 },
-                { symbol: "JETTON1", balance: 50 },
-                { symbol: "JETTON2", balance: 150 },
-            ];
+                // Create Jetton wallet instance for the given address
+                const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: walletAddress });
+                const data = await jettonWallet.getData(); // Fetch token data
 
-            // You would replace the above mock data with real fetching from the wallet (e.g., through TonWeb API)
-            for (const token of tokens) {
-                tokenList.push(token);
+                // If there are tokens, add them to the list
+                if (data) {
+                    const jettonData = {
+                        symbol: "TON",  // Replace with actual symbol or name
+                        balance: data.balance.toString(),
+                        valueInUSD: await getTokenValueInUSD("TON")  // Use a function to fetch value
+                    };
+                    tokenList.push(jettonData);
+                }
+            } catch (error) {
+                console.error("Error fetching tokens:", error);
             }
 
             return tokenList;
+        }
+
+        // Function to fetch the value of a token in USD (mock implementation)
+        async function getTokenValueInUSD(symbol) {
+            // You can use an API like CoinGecko or CoinMarketCap to get the real value.
+            // This is a mock function returning a static value.
+            if (symbol === "TON") {
+                return 1.23;  // Mock value, replace with actual data fetching.
+            }
+            return 0;
         }
 
         // Function to display tokens
@@ -106,8 +131,9 @@
                 const tokenElement = document.createElement("div");
                 tokenElement.classList.add("token");
                 tokenElement.innerHTML = `
-                    <strong>${token.symbol}</strong>
+                    <h3>${token.symbol}</h3>
                     <p>Balance: ${token.balance}</p>
+                    <p>Value in USD: $${token.valueInUSD.toFixed(2)}</p>
                 `;
                 tokenListElement.appendChild(tokenElement);
             });
@@ -115,7 +141,7 @@
 
         // Set the UI options for TonConnect
         tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp=' // Custom return URL
+            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp=' // Custom return URL (can be changed)
         };
 
         // Bind the connect function to the button click event
