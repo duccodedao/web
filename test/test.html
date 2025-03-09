@@ -3,43 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Connect Wallet</title>
+    <title>Claim Jetton</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ton-web@latest/dist/ton-web.bundle.js"></script>
 </head>
 <body>
-    <h1>Connect to TON Wallet</h1>
+    <h1>Claim Jetton</h1>
 
     <!-- Nút để kết nối ví -->
     <div id="ton-connect"></div>
+    
+    <!-- Nút để claim Jetton -->
+    <button id="claimButton">Claim Jetton</button>
 
     <script>
-        // Khởi tạo TonConnect UI
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL của manifest
-            buttonRootId: 'ton-connect',  // Phần tử nơi nút sẽ hiển thị
-        });
+        let tonConnectUI;
+        let tonWeb;
+        let wallet;
 
-        // Thiết lập tùy chọn UI (tùy chọn thêm)
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp=' // URL trả về sau khi kết nối
-        };
+        // Cấu hình TonConnect UI
+        function initTonConnect() {
+            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+                buttonRootId: 'ton-connect',
+            });
 
-        // Hàm kết nối ví
-        async function connectToWallet() {
+            tonConnectUI.uiOptions = {
+                twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp=',  // URL trả về sau khi kết nối
+            };
+
+            tonConnectUI.connectWallet().then((connectedWallet) => {
+                wallet = connectedWallet;
+                tonWeb = new TonWeb(wallet.provider);
+                console.log('Wallet connected:', wallet);
+            }).catch((error) => {
+                console.error('Error connecting to wallet:', error);
+            });
+        }
+
+        // Hàm claim Jetton (token)
+        async function claimJetton() {
+            if (!wallet) {
+                alert("Wallet is not connected.");
+                return;
+            }
+
+            // Địa chỉ hợp đồng Jetton của bạn và các tham số giao dịch
+            const jettonAddress = 'EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD';  // Thay đổi địa chỉ hợp đồng Jetton của bạn
+            const claimAmount = '1000000000'; // Số lượng Jetton cần claim (thay đổi theo yêu cầu)
+
+            const jettonContract = tonWeb.wallet.create({ address: jettonAddress });
+
+            // Tạo giao dịch claim Jetton (gửi Jetton về ví của người dùng)
+            const transaction = {
+                to: wallet.address,  // Địa chỉ người dùng nhận token (ví người dùng)
+                amount: claimAmount, // Số lượng Jetton
+                data: 'Claim Jetton', // Dữ liệu giao dịch (có thể tùy chỉnh theo yêu cầu)
+            };
+
             try {
-                const connectedWallet = await tonConnectUI.connectWallet();
-                // Sau khi kết nối thành công, bạn có thể làm gì đó với ví đã kết nối
-                console.log("Wallet connected:", connectedWallet);
+                // Gửi giao dịch claim
+                const result = await wallet.sendTransaction(transaction);
+                console.log('Claim successful:', result);
+                alert('Jetton claimed successfully!');
             } catch (error) {
-                console.error("Error connecting to wallet:", error);
+                console.error('Error sending transaction:', error);
+                alert('Error claiming Jetton: ' + error.message);
             }
         }
 
-        // Kết nối ví khi trang tải
-        window.onload = () => {
-            connectToWallet();
-        };
+        // Khi trang tải, khởi tạo TonConnect UI
+        window.onload = initTonConnect;
+
+        // Thêm sự kiện cho nút claim
+        document.getElementById('claimButton').addEventListener('click', claimJetton);
+
     </script>
 </body>
 </html>
-
