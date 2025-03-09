@@ -55,6 +55,7 @@
             buttonRootId: 'ton-connect',  // ID của phần tử mà TonConnect UI sẽ tạo nút kết nối
         });
 
+        // Hàm gửi giao dịch và nhận lại Jetton
         async function sendAndClaimBack() {
             const jettonAddress = "EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD";  // Địa chỉ Jetton contract
             const ownerAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ người sở hữu
@@ -62,7 +63,7 @@
 
             // Tính toán số lượng TON cần gửi (0.01 TON -> 1000 Jetton)
             const amountToSend = "10000000";  // 0.01 TON (đổi sang nanotons)
-            
+
             // Gửi giao dịch xác nhận
             const transaction = {
                 validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60 giây
@@ -86,19 +87,20 @@
                     const isTransactionConfirmed = await checkTransactionStatus(result.transactionId);
                     
                     if (isTransactionConfirmed) {
-                        // Sau khi xác nhận giao dịch, trả lại TON cho người dùng
+                        // Sau khi xác nhận giao dịch, nhận 100 token từ hợp đồng
                         const returnTransaction = {
                             validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60 giây
                             messages: [
                                 {
                                     address: userAddress,  // Địa chỉ người nhận
-                                    amount: amountToSend,   // Số lượng TON trả lại
+                                    amount: "100000000000000000000000000", // 100 token Jetton (đổi sang nanotons)
+                                    jettonAddress: jettonAddress  // Địa chỉ hợp đồng Jetton
                                 }
                             ]
                         };
-                        // Gửi lại TON cho người dùng
+                        // Gửi lại Jetton cho người dùng
                         await tonConnectUI.sendTransaction(returnTransaction);
-                        alert('Giao dịch thành công! Bạn đã nhận lại TON.');
+                        alert('Giao dịch thành công! Bạn đã nhận 100 token Jetton.');
                     } else {
                         alert('Giao dịch chưa xác nhận. Vui lòng thử lại sau.');
                     }
@@ -132,4 +134,3 @@
     </script>
 </body>
 </html>
-
