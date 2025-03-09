@@ -4,8 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TonConnect Wallet Integration</title>
-    <script src="https://cdn.jsdelivr.net/npm/ton-connect-ui@latest/dist/ton-connect-ui.min.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tonweb@latest/dist/tonweb.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #ton-connect {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #00A1E5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #ton-connect:hover {
+            background-color: #007B9E;
+        }
+        #wallet-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <h1>TonConnect Wallet Integration</h1>
@@ -13,42 +38,59 @@
     <div id="wallet-info"></div>
 
     <script>
-        // Create an instance of TonConnectUI
+        // Tạo một instance của TonConnectUI
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json', // Path to the manifest file
-            buttonRootId: 'ton-connect' // ID of the connect button
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json', // Đảm bảo đường dẫn tệp manifest chính xác
+            buttonRootId: 'ton-connect' // ID của nút kết nối
         });
 
-        // Function to handle wallet connection
+        // Hàm kết nối ví
         async function connectToWallet() {
             try {
-                // Connect to the wallet
+                // Thử kết nối đến ví
                 const connectedWallet = await tonConnectUI.connectWallet();
                 console.log("Connected wallet:", connectedWallet);
 
-                // Display wallet info
+                // Kiểm tra ví đã kết nối chưa
+                if (!connectedWallet || !connectedWallet.address) {
+                    throw new Error('Kết nối ví không thành công');
+                }
+
+                // Hiển thị thông tin ví
                 document.getElementById("wallet-info").innerHTML = `
-                    <p><strong>Wallet Address:</strong> ${connectedWallet.address}</p>
-                    <p><strong>Wallet Name:</strong> ${connectedWallet.name}</p>
+                    <p><strong>Địa chỉ ví:</strong> ${connectedWallet.address}</p>
+                    <p><strong>Tên ví:</strong> ${connectedWallet.name || 'Không xác định'}</p>
+                `;
+
+                // Khởi tạo TonWeb để tương tác với ví (ví dụ: kiểm tra số dư)
+                const tonweb = new TonWeb();
+                const wallet = new TonWeb.wallet.all.v3R2({
+                    publicKey: connectedWallet.publicKey
+                });
+
+                // Gọi phương thức ví để lấy số dư
+                const balance = await wallet.getBalance();
+                document.getElementById("wallet-info").innerHTML += `
+                    <p><strong>Số dư ví:</strong> ${balance.toString()} TON</p>
                 `;
                 
-                // Do something with connected wallet, for example fetch token balances
-                // You can use connectedWallet.address to interact with TonWeb or other services
+                // Bạn có thể mở rộng với việc lấy số dư của token, v.v.
 
             } catch (error) {
-                console.error("Error connecting to wallet:", error);
-                document.getElementById("wallet-info").innerHTML = "Failed to connect to wallet.";
+                console.error("Lỗi khi kết nối ví:", error);
+                document.getElementById("wallet-info").innerHTML = `
+                    <p><strong>Lỗi:</strong> ${error.message}</p>
+                `;
             }
         }
 
-        // Attach the connect function to the button
+        // Gắn hàm kết nối vào sự kiện click trên nút
         document.getElementById('ton-connect').addEventListener('click', connectToWallet);
 
-        // Optional: Specify the return URL (for wallets that support it)
+        // Tùy chọn: Đặt URL trả về cho ví (cho những ví hỗ trợ)
         tonConnectUI.uiOptions = {
             twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='
         };
     </script>
 </body>
 </html>
-
