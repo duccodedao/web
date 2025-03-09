@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMHD Swap</title>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #ton-connect-button {
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Swap TON ⇄ BMHD</h2>
+
+    <!-- Nút kết nối ví -->
+    <div id="ton-connect-button"></div>
+
+    <!-- Gửi TON để nhận BMHD -->
+    <input type="number" id="amount" placeholder="Nhập số TON">
+    <button id="swap-button">Swap BMHD</button>
+
+    <script>
+        // Khởi tạo Ton Connect UI
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: "https://bmasshd.click/tonconnect-manifest.json" // Thay bằng URL web của bạn
+        });
+
+        tonConnectUI.uiOptions = {
+            buttonRootId: "ton-connect-button"
+        };
+
+        // Kiểm tra trạng thái kết nối
+        tonConnectUI.onStatusChange((wallet) => {
+            if (wallet) {
+                console.log("Đã kết nối với ví:", wallet.account.address);
+            } else {
+                console.log("Người dùng đã ngắt kết nối");
+            }
+        });
+
+        // Swap TON lấy BMHD
+        document.getElementById("swap-button").addEventListener("click", async () => {
+            const amount = parseFloat(document.getElementById("amount").value);
+            const jettonContract = "EQB-D_b7xHWPq3N1a6AikTiEYeLmXap262v1XmgGeekGW5Jh"; // Hợp đồng BMHD
+            const senderWallet = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD"; // Địa chỉ người gửi/nhận BMHD
+
+            if (!tonConnectUI.connected) {
+                alert("Vui lòng kết nối ví trước!");
+                return;
+            }
+
+            // Lấy địa chỉ ví người dùng
+            const userAddress = tonConnectUI.connected.account.address;
+
+            try {
+                await tonConnectUI.sendTransaction({
+                    messages: [{
+                        address: jettonContract,
+                        amount: (amount * 1e9).toString(), // Chuyển TON thành nanotons
+                        payload: `0x736166656c790000000000000000000000000000000000000000000000000000${userAddress.replace("UQ", "")}`
+                    }]
+                });
+
+                alert("Swap thành công! Bạn sẽ nhận BMHD vào ví của mình.");
+            } catch (error) {
+                console.error("Lỗi swap BMHD:", error);
+            }
+        });
+
+    </script>
+
+</body>
+</html>
