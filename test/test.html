@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mint Jetton</title>
-    <script src="https://cdn.tonhubapi.com/ton-connect-web-client/ton-connect-web-client.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,59 +27,71 @@
 </head>
 <body>
     <h1>Mint Your Jetton</h1>
-    <button id="connect-btn" class="button">Connect Wallet</button>
+    <div id="ton-connect"></div>
+    <button class="button" id="connect-btn">Connect Wallet</button>
     <br>
-    <button id="mint-btn" class="button" disabled>Mint Jetton</button>
+    <button class="button" id="mint-btn" disabled>Mint Jetton</button>
     <div id="status"></div>
 
     <script>
-        let tonConnectClient;
-        let userAddress;
-        let jettonContractAddress = "EQB-D_b7xHWPq3N1a6AikTiEYeLmXap262v1XmgGeekGW5Jh";  // Địa chỉ hợp đồng jetton của bạn
-        let senderAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD"; // Địa chỉ ví gửi
-
-        // Khởi tạo TON Connect client
-        tonConnectClient = new TonConnectClient({
-            manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",  // URL manifest của bạn
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect'
         });
 
-        // Kết nối ví TON
-        document.getElementById("connect-btn").addEventListener("click", async () => {
+        let userAddress;
+        const jettonContractAddress = "EQB-D_b7xHWPq3N1a6AikTiEYeLmXap262v1XmgGeekGW5Jh"; // Địa chỉ hợp đồng jetton của bạn
+        const senderAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD"; // Địa chỉ ví gửi
+
+        // Khởi tạo kết nối ví
+        async function connectToWallet() {
             try {
-                const result = await tonConnectClient.connect();
-                userAddress = result.account.address;
-                document.getElementById("status").innerText = "Connected to wallet: " + userAddress;
+                const connectedWallet = await tonConnectUI.connectWallet();
+                userAddress = connectedWallet.account.address;
+                document.getElementById("status").innerText = `Connected to wallet: ${userAddress}`;
                 document.getElementById("mint-btn").disabled = false;
             } catch (error) {
-                document.getElementById("status").innerText = "Connection failed: " + error.message;
+                console.error("Error connecting to wallet:", error);
+                document.getElementById("status").innerText = "Error connecting to wallet.";
             }
-        });
+        }
 
         // Mint Jetton
-        document.getElementById("mint-btn").addEventListener("click", async () => {
+        async function mintJetton() {
             if (!userAddress) {
                 document.getElementById("status").innerText = "Please connect your wallet first.";
                 return;
             }
 
             try {
-                const amount = "10";  // Số lượng jetton bạn muốn mint
-                const message = `Minting ${amount} jetton...`;
-                document.getElementById("status").innerText = message;
+                const amount = 10;  // Số lượng jetton bạn muốn mint
+                const payload = `mint ${amount}`;  // Tùy chỉnh payload theo hợp đồng
 
-                // Tạo giao dịch gửi TON và nhận jetton
-                const result = await tonConnectClient.sendTransaction({
+                // Gửi giao dịch tới hợp đồng jetton
+                const result = await tonConnectUI.sendTransaction({
                     to: jettonContractAddress,
-                    amount: "0.1",  // Số tiền TON cần gửi để nhận jetton
-                    payload: `mint ${amount}`,  // Payload tùy thuộc vào hợp đồng của bạn, có thể khác
+                    amount: "0.1",  // Số tiền TON cần gửi để mint jetton (thay đổi tùy vào yêu cầu hợp đồng)
+                    payload: payload,
                     sender: senderAddress,  // Địa chỉ ví gửi
                 });
 
                 document.getElementById("status").innerText = `Transaction successful: ${result.transaction_id}`;
             } catch (error) {
-                document.getElementById("status").innerText = "Minting failed: " + error.message;
+                console.error("Minting failed:", error);
+                document.getElementById("status").innerText = "Minting failed.";
             }
-        });
+        }
+
+        // Gắn sự kiện kết nối ví
+        document.getElementById("connect-btn").addEventListener("click", connectToWallet);
+
+        // Gắn sự kiện mint jetton
+        document.getElementById("mint-btn").addEventListener("click", mintJetton);
+
+        // Cấu hình quay lại Telegram bot với thông tin ví
+        tonConnectUI.uiOptions = {
+            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp=' + userAddress,
+        };
     </script>
 </body>
 </html>
