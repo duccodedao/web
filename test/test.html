@@ -3,66 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect to TON Wallet and List Tokens</title>
+    <title>TonConnect Wallet Integration</title>
     <script src="https://cdn.jsdelivr.net/npm/ton-connect-ui@latest/dist/ton-connect-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tonweb@latest/dist/tonweb.min.js"></script>
 </head>
 <body>
-    <h1>Connect to Your TON Wallet</h1>
-
+    <h1>TonConnect Wallet Integration</h1>
     <button id="ton-connect">Connect to Wallet</button>
-
-    <div id="token-list"></div>
+    <div id="wallet-info"></div>
 
     <script>
+        // Create an instance of TonConnectUI
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json', // Path to the manifest file
+            buttonRootId: 'ton-connect' // ID of the connect button
         });
 
-        // Function to connect to wallet
+        // Function to handle wallet connection
         async function connectToWallet() {
             try {
+                // Connect to the wallet
                 const connectedWallet = await tonConnectUI.connectWallet();
                 console.log("Connected wallet:", connectedWallet);
 
-                // Wallet connection was successful, you can proceed
-                if (connectedWallet) {
-                    // Proceed to list tokens
-                    await getTokens(connectedWallet.address);
-                }
+                // Display wallet info
+                document.getElementById("wallet-info").innerHTML = `
+                    <p><strong>Wallet Address:</strong> ${connectedWallet.address}</p>
+                    <p><strong>Wallet Name:</strong> ${connectedWallet.name}</p>
+                `;
+                
+                // Do something with connected wallet, for example fetch token balances
+                // You can use connectedWallet.address to interact with TonWeb or other services
 
             } catch (error) {
                 console.error("Error connecting to wallet:", error);
+                document.getElementById("wallet-info").innerHTML = "Failed to connect to wallet.";
             }
         }
 
-        // Fetch tokens after wallet connection
-        async function getTokens(walletAddress) {
-            const tonweb = new TonWeb();
-            const tokenListElement = document.getElementById("token-list");
-            tokenListElement.innerHTML = "Loading tokens...";
-
-            try {
-                const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: walletAddress });
-                const data = await jettonWallet.getData();
-
-                // Handle the tokens retrieved
-                tokenListElement.innerHTML = `<p>Token Balance: ${data.balance.toString()}</p>`;
-                console.log("Token Data:", data);
-
-            } catch (error) {
-                console.error("Error fetching tokens:", error);
-                tokenListElement.innerHTML = "Failed to retrieve tokens.";
-            }
-        }
-
-        // Attach connect function to the button
+        // Attach the connect function to the button
         document.getElementById('ton-connect').addEventListener('click', connectToWallet);
+
+        // Optional: Specify the return URL (for wallets that support it)
+        tonConnectUI.uiOptions = {
+            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='
+        };
     </script>
 </body>
 </html>
-
-
-
 
