@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mua BMHD bằng TON</title>
-    <script src="https://unpkg.com/@tonconnect/sdk@latest"></script>
+    <!-- Thêm thư viện TONConnect UI -->
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
 <body>
     <h2>Mua BMHD bằng TON</h2>
@@ -13,30 +14,83 @@
     <button onclick="sendTON()">Mua BMHD</button>
     <p id="status"></p>
 
+    <!-- Thêm phần tử để hiển thị UI kết nối ví TON -->
+    <div id="tonconnect-ui"></div> <!-- Nơi hiển thị nút kết nối ví -->
+
     <script>
-        const tonConnect = new TONConnect();
+        // Khởi tạo TONConnect UI
+        const tonConnectUI = new TONConnectUI({
+            network: 'mainnet', // Mạng chính
+            container: document.getElementById('tonconnect-ui'), // Phần tử HTML để hiển thị UI
+        });
+
+        // Khởi tạo TONConnect
+        const tonConnect = new TONConnect({
+            network: 'mainnet', // Chọn mạng TON (mainnet hoặc testnet)
+        });
+
+        // Địa chỉ hợp đồng nhận TON (có thể là ví hoặc hợp đồng tương ứng)
         const recipient = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";
-        
+
+        // Khởi tạo kết nối ví
+        async function connectWallet() {
+            try {
+                // Kết nối với ví của người dùng
+                const account = await tonConnect.connect();
+
+                // Sau khi kết nối thành công, bạn có thể sử dụng thông tin tài khoản
+                console.log("Đã kết nối ví:", account);
+
+                document.getElementById('status').innerText = "Ví đã được kết nối!";
+            } catch (error) {
+                // Nếu có lỗi trong quá trình kết nối
+                console.log("Lỗi kết nối ví:", error);
+                document.getElementById('status').innerText = "Lỗi kết nối ví: " + error.message;
+            }
+        }
+
+        // Gửi giao dịch TON sau khi kết nối ví
         async function sendTON() {
             const amountTON = parseFloat(document.getElementById('tonAmount').value);
             if (isNaN(amountTON) || amountTON <= 0) {
                 document.getElementById('status').innerText = "Vui lòng nhập số TON hợp lệ.";
                 return;
             }
+
             try {
-                const tx = await tonConnect.sendTransaction({
+                // Kiểm tra nếu ví đã được kết nối
+                if (!tonConnect.isConnected()) {
+                    document.getElementById('status').innerText = "Vui lòng kết nối ví trước!";
+                    return;
+                }
+
+                // Tạo giao dịch gửi TON
+                const transaction = {
                     messages: [
                         {
                             address: recipient,
-                            amount: (amountTON * 1e9).toString(), // Chuyển đổi TON sang nanotons
+                            amount: (amountTON * 1e9).toString(), // Chuyển đổi TON sang nanotons (1 TON = 1e9 nanotons)
                         }
                     ]
-                });
+                };
+
+                // Gửi giao dịch và chờ kết quả
+                const tx = await tonConnect.sendTransaction(transaction);
+                console.log(tx);
+
+                // Cập nhật trạng thái giao dịch
                 document.getElementById('status').innerText = "Giao dịch gửi thành công! Vui lòng chờ nhận BMHD.";
+
+                // Thực hiện tương tác hợp đồng để nhận lại token BMHD
+                // Ví dụ: gọi hợp đồng thông minh để chuyển token BMHD
+                // Lưu ý: bạn cần thêm code để gọi hợp đồng và nhận BMHD sau khi gửi TON.
+
             } catch (error) {
+                // Nếu có lỗi
                 document.getElementById('status').innerText = "Lỗi giao dịch: " + error.message;
             }
         }
     </script>
 </body>
 </html>
+
