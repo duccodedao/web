@@ -33,14 +33,23 @@
 
   <script>
     async function getJettonInfo() {
-      // Initialize TonWeb
-      const tonweb = new TonWeb();
-      const walletAddress = "EQBYc3DSi36qur7-DLDYd-AmRRb4-zk6VkzX0etv5Pa-Bq4Y";
+      const tonweb = new TonWeb();  // Initialize TonWeb
+      const walletAddress = "EQBYc3DSi36qur7-DLDYd-AmRRb4-zk6VkzX0etv5Pa-Bq4Y"; // Wallet address
 
       try {
+        // Check if the provider is set correctly (i.e. testnet or mainnet)
+        const provider = tonweb.provider;
+        if (!provider) {
+          throw new Error('No provider found. Please check the network connection.');
+        }
+
         // Fetch Jetton Wallet Data
         const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: walletAddress });
         const data = await jettonWallet.getData();
+        
+        if (!data || !data.balance || !data.ownerAddress) {
+          throw new Error('Invalid data received. Please check the wallet address.');
+        }
 
         // Display the Jetton Balance and Owner Address
         document.getElementById('balance').innerText = data.balance.toString();
@@ -58,10 +67,9 @@
         document.getElementById('master-address').innerText = data.jettonMinterAddress.toString(true, true, true);
       } catch (error) {
         console.error("Error fetching Jetton data:", error);
-        alert("There was an error fetching Jetton information.");
+        alert("There was an error fetching Jetton information: " + error.message);
       }
     }
   </script>
 </body>
 </html>
-
