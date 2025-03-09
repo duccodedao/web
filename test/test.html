@@ -6,52 +6,13 @@
     <title>Connect to TON Wallet and List Tokens</title>
     <script src="https://cdn.jsdelivr.net/npm/ton-connect-ui@latest/dist/ton-connect-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tonweb@latest/dist/tonweb.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        #ton-connect {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #ton-connect:hover {
-            background-color: #2980b9;
-        }
-        .token-list {
-            margin-top: 20px;
-        }
-        .token {
-            padding: 15px;
-            margin: 10px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .token h3 {
-            margin: 0;
-            font-size: 18px;
-        }
-        .token p {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-    </style>
 </head>
 <body>
+    <h1>Connect to Your TON Wallet</h1>
 
-    <h1>Connect to Your TON Wallet and List Tokens</h1>
-
-    <!-- Button to trigger TON wallet connection -->
     <button id="ton-connect">Connect to Wallet</button>
 
-    <div class="token-list" id="token-list"></div>
+    <div id="token-list"></div>
 
     <script>
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -59,93 +20,49 @@
             buttonRootId: 'ton-connect'
         });
 
-        // Function to connect to wallet and list tokens
+        // Function to connect to wallet
         async function connectToWallet() {
             try {
-                // Connect to wallet
                 const connectedWallet = await tonConnectUI.connectWallet();
-                console.log("Wallet connected:", connectedWallet);
+                console.log("Connected wallet:", connectedWallet);
 
-                // Get wallet address and use TonWeb to fetch token data
-                const walletAddress = connectedWallet.address;
-                const tonweb = new TonWeb();
-
-                // Fetch all tokens and their balances (including unverified tokens)
-                const tokenList = await getTokens(tonweb, walletAddress);
-
-                // Display the tokens
-                displayTokens(tokenList);
+                // Wallet connection was successful, you can proceed
+                if (connectedWallet) {
+                    // Proceed to list tokens
+                    await getTokens(connectedWallet.address);
+                }
 
             } catch (error) {
                 console.error("Error connecting to wallet:", error);
             }
         }
 
-        // Function to get tokens from wallet
-        async function getTokens(tonweb, walletAddress) {
-            const tokenList = [];
+        // Fetch tokens after wallet connection
+        async function getTokens(walletAddress) {
+            const tonweb = new TonWeb();
+            const tokenListElement = document.getElementById("token-list");
+            tokenListElement.innerHTML = "Loading tokens...";
+
             try {
-                // Example: Fetching Jetton (TON-based tokens) from wallet
-
-                // Create Jetton wallet instance for the given address
                 const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: walletAddress });
-                const data = await jettonWallet.getData(); // Fetch token data
+                const data = await jettonWallet.getData();
 
-                // If there are tokens, add them to the list
-                if (data) {
-                    const jettonData = {
-                        symbol: "TON",  // Replace with actual symbol or name
-                        balance: data.balance.toString(),
-                        valueInUSD: await getTokenValueInUSD("TON")  // Use a function to fetch value
-                    };
-                    tokenList.push(jettonData);
-                }
+                // Handle the tokens retrieved
+                tokenListElement.innerHTML = `<p>Token Balance: ${data.balance.toString()}</p>`;
+                console.log("Token Data:", data);
+
             } catch (error) {
                 console.error("Error fetching tokens:", error);
+                tokenListElement.innerHTML = "Failed to retrieve tokens.";
             }
-
-            return tokenList;
         }
 
-        // Function to fetch the value of a token in USD (mock implementation)
-        async function getTokenValueInUSD(symbol) {
-            // You can use an API like CoinGecko or CoinMarketCap to get the real value.
-            // This is a mock function returning a static value.
-            if (symbol === "TON") {
-                return 1.23;  // Mock value, replace with actual data fetching.
-            }
-            return 0;
-        }
-
-        // Function to display tokens
-        function displayTokens(tokens) {
-            const tokenListElement = document.getElementById("token-list");
-            tokenListElement.innerHTML = ""; // Clear any existing content
-
-            if (tokens.length === 0) {
-                tokenListElement.innerHTML = "<p>No tokens found.</p>";
-                return;
-            }
-
-            tokens.forEach(token => {
-                const tokenElement = document.createElement("div");
-                tokenElement.classList.add("token");
-                tokenElement.innerHTML = `
-                    <h3>${token.symbol}</h3>
-                    <p>Balance: ${token.balance}</p>
-                    <p>Value in USD: $${token.valueInUSD.toFixed(2)}</p>
-                `;
-                tokenListElement.appendChild(tokenElement);
-            });
-        }
-
-        // Set the UI options for TonConnect
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp=' // Custom return URL (can be changed)
-        };
-
-        // Bind the connect function to the button click event
+        // Attach connect function to the button
         document.getElementById('ton-connect').addEventListener('click', connectToWallet);
     </script>
 </body>
 </html>
+
+
+
+
