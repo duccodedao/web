@@ -4,82 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Claim Jetton</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ton-web@latest/dist/ton-web.bundle.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        #ton-connect {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
     <h1>Claim Jetton</h1>
-
-    <!-- Nút để kết nối ví -->
     <div id="ton-connect"></div>
-    
-    <!-- Nút để claim Jetton -->
     <button id="claimButton">Claim Jetton</button>
 
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script>
-        let tonConnectUI;
-        let tonWeb;
-        let wallet;
+        // Khởi tạo TonConnectUI
+        const tonConnectUI = new TonConnectUI({
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL của manifest
+            buttonRootId: 'ton-connect',  // ID của nút kết nối ví
+        });
 
-        // Cấu hình TonConnect UI
-        function initTonConnect() {
-            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // Thay đổi với manifest URL của bạn
-                buttonRootId: 'ton-connect',
-            });
-
-            tonConnectUI.uiOptions = {
-                twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp=',  // URL trả về sau khi kết nối
-            };
-
-            tonConnectUI.connectWallet().then((connectedWallet) => {
-                wallet = connectedWallet;
-                tonWeb = new TonWeb(wallet.provider);
-                console.log('Wallet connected:', wallet);
-            }).catch((error) => {
-                console.error('Error connecting to wallet:', error);
-            });
-        }
-
-        // Hàm claim Jetton (token)
+        // Hàm để claim Jetton
         async function claimJetton() {
-            if (!wallet) {
-                alert("Wallet is not connected.");
-                return;
-            }
+            const jettonAddress = "EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD";  // Địa chỉ Jetton
+            const ownerAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ người sở hữu
 
-            // Địa chỉ hợp đồng Jetton và địa chỉ người sở hữu
-            const jettonAddress = 'EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD';  // Địa chỉ hợp đồng Jetton
-            const ownerAddress = 'UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD';  // Địa chỉ người sở hữu
+            // Tính toán số lượng TON cần gửi (0.01 TON -> 1000 Jetton)
+            const amountToSend = "10000000";  // 0.01 TON (đổi sang nanotons)
 
-            // Tỷ lệ quy đổi: 0.01 TON = 1000 Jetton
-            const tonAmount = 0.01; // Số lượng TON gửi
-            const jettonAmount = tonAmount * 1000; // Tính số lượng Jetton
-
-            // Tạo giao dịch gửi TON đến hợp đồng Jetton để nhận Jetton
+            // Cấu hình giao dịch
             const transaction = {
-                to: jettonAddress,  // Địa chỉ hợp đồng Jetton
-                amount: TonWeb.utils.toNano(tonAmount),  // Chuyển đổi số lượng TON thành nanoTON
-                data: `Claiming ${jettonAmount} Jetton for ${tonAmount} TON`,  // Dữ liệu giao dịch
+                validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60 giây
+                messages: [
+                    {
+                        address: ownerAddress,  // Địa chỉ người nhận
+                        amount: amountToSend,    // Số lượng TON gửi đi
+                        jettonAddress: jettonAddress  // Địa chỉ Jetton
+                    }
+                ]
             };
 
             try {
-                // Gửi giao dịch
-                const result = await wallet.sendTransaction(transaction);
+                // Gửi giao dịch qua TonConnectUI
+                const result = await tonConnectUI.sendTransaction(transaction);
                 console.log('Claim successful:', result);
-                alert(`Claimed ${jettonAmount} Jetton successfully!`);
+                alert('Claim successful! You have received your Jettons.');
             } catch (error) {
-                console.error('Error sending transaction:', error);
-                alert('Error claiming Jetton: ' + error.message);
+                console.error('Error claiming jetton:', error);
+                alert('Error: ' + error.message);
             }
         }
 
-        // Khi trang tải, khởi tạo TonConnect UI
-        window.onload = initTonConnect;
-
-        // Thêm sự kiện cho nút claim
+        // Gắn sự kiện cho nút "Claim Jetton"
         document.getElementById('claimButton').addEventListener('click', claimJetton);
-
     </script>
 </body>
 </html>
