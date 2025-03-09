@@ -3,84 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMHD Swap</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        #ton-connect-button { margin-bottom: 20px; }
-        input, button { margin: 10px; padding: 10px; font-size: 16px; }
-    </style>
+    <title>Mua BMHD bằng TON</title>
+    <script src="https://unpkg.com/@tonconnect/sdk@latest"></script>
 </head>
 <body>
-
-    <h2>Swap TON ⇄ BMHD</h2>
-
-    <!-- Nút kết nối ví -->
-    <div id="ton-connect-button"></div>
-
-    <!-- Gửi TON để nhận BMHD -->
-    <input type="number" id="amount" placeholder="Nhập số TON">
-    <button id="swap-button">Swap BMHD</button>
-
+    <h2>Mua BMHD bằng TON</h2>
+    <p>1 TON = 1000 BMHD</p>
+    <input type="number" id="tonAmount" placeholder="Nhập số TON" min="0.01" step="0.01">
+    <button onclick="sendTON()">Mua BMHD</button>
     <p id="status"></p>
 
     <script>
-        // Khởi tạo Ton Connect UI
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: "https://bmasshd.click/tonconnect-manifest.json" // Cập nhật đúng link của bạn
-        });
-
-        tonConnectUI.uiOptions = {
-            buttonRootId: "ton-connect-button"
-        };
-
-        // Kiểm tra kết nối ví
-        tonConnectUI.onStatusChange((wallet) => {
-            if (wallet) {
-                console.log("Đã kết nối với ví:", wallet.account.address);
-            } else {
-                console.log("Người dùng đã ngắt kết nối");
-            }
-        });
-
-        // Swap TON lấy BMHD
-        document.getElementById("swap-button").addEventListener("click", async () => {
-            const amount = parseFloat(document.getElementById("amount").value);
-            const receiveTonAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD"; // Ví nhận TON (của bạn)
-            const jettonMasterAddress = "EQB-D_b7xHWPq3N1a6AikTiEYeLmXap262v1XmgGeekGW5Jh"; // Địa chỉ Jetton BMHD
-
-            if (!tonConnectUI.connected) {
-                alert("Vui lòng kết nối ví trước!");
+        const tonConnect = new TONConnect();
+        const recipient = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";
+        
+        async function sendTON() {
+            const amountTON = parseFloat(document.getElementById('tonAmount').value);
+            if (isNaN(amountTON) || amountTON <= 0) {
+                document.getElementById('status').innerText = "Vui lòng nhập số TON hợp lệ.";
                 return;
             }
-
-            // Lấy địa chỉ ví người dùng
-            const userAddress = tonConnectUI.connected.account.address;
-            const amountNanoTon = (amount * 1e9).toString(); // Chuyển TON sang nanotons
-
             try {
-                // Gửi TON đến địa chỉ ví của bạn
-                await tonConnectUI.sendTransaction({
-                    messages: [{
-                        address: receiveTonAddress,
-                        amount: amountNanoTon,
-                        payload: "0x" // Không cần payload, chỉ cần gửi TON
-                    }]
+                const tx = await tonConnect.sendTransaction({
+                    messages: [
+                        {
+                            address: recipient,
+                            amount: (amountTON * 1e9).toString(), // Chuyển đổi TON sang nanotons
+                        }
+                    ]
                 });
-
-                // Tính toán số BMHD sẽ nhận
-                const amountBMHD = amount * 1000;
-
-                // Cập nhật trạng thái
-                document.getElementById("status").innerText = `Đã gửi ${amount} TON. Bạn sẽ nhận ${amountBMHD} BMHD vào ví!`;
-
+                document.getElementById('status').innerText = "Giao dịch gửi thành công! Vui lòng chờ nhận BMHD.";
             } catch (error) {
-                console.error("Lỗi swap BMHD:", error);
-                document.getElementById("status").innerText = "Giao dịch thất bại!";
+                document.getElementById('status').innerText = "Lỗi giao dịch: " + error.message;
             }
-        });
-
+        }
     </script>
-
 </body>
 </html>
