@@ -28,7 +28,9 @@
 <body>
     <h1>Mint Your Jetton</h1>
     <div id="ton-connect"></div>
-   
+    <br>
+    <!-- Thêm nút kết nối ví -->
+    <button class="button" id="connect-btn">Connect Wallet</button>
     <br>
     <button class="button" id="mint-btn" disabled>Mint Jetton</button>
     <div id="status"></div>
@@ -49,7 +51,7 @@
                 const connectedWallet = await tonConnectUI.connectWallet();
                 userAddress = connectedWallet.account.address;
                 document.getElementById("status").innerText = `Connected to wallet: ${userAddress}`;
-                document.getElementById("mint-btn").disabled = false;
+                document.getElementById("mint-btn").disabled = false;  // Kích hoạt nút Mint Jetton sau khi kết nối ví
             } catch (error) {
                 console.error("Error connecting to wallet:", error);
                 document.getElementById("status").innerText = "Error connecting to wallet.";
