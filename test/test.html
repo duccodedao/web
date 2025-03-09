@@ -1,94 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Ton Connect Example</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMHD Swap</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.58/dist/tonweb.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #ton-connect-button {
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <button id="connectButton">Connect Wallet</button>
-    <div id="userInfo" style="display: none;">
-        <p>Wallet Address: <span id="walletAddress"></span></p>
-        <p>TON Balance: <span id="tonBalance"></span></p>
-        <p>BMHD Balance: <span id="bmhdBalance"></span></p>
-        <input type="number" id="tonAmount" placeholder="TON Amount">
-        <button id="sendTonButton">Send TON</button>
-        <button id="getBmhdButton">Get BMHD</button>
-    </div>
+
+    <h2>Swap TON ⇄ BMHD</h2>
+
+    <!-- Nút kết nối ví -->
+    <div id="ton-connect-button"></div>
+
+    <!-- Gửi TON để nhận BMHD -->
+    <input type="number" id="amount" placeholder="Nhập số TON">
+    <button id="swap-button">Swap BMHD</button>
 
     <script>
-        const tonConnectUi = new window.TonConnectUI.create();
-        const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC')); // Thay thế bằng API phù hợp
-        const myAddress = 'UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD'; // Địa chỉ của bạn
-        const bmhdAddress = 'EQB-D_b7xHWPq3N1a6AikTiEYeLmXap262v1XmgGeekGW5Jh'; // Địa chỉ jetton BMHD
+        // Khởi tạo Ton Connect UI
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: "https://bmasshd.click/tonconnect-manifest.json" // Thay bằng URL web của bạn
+        });
 
-        const connectButton = document.getElementById('connectButton');
-        const userInfo = document.getElementById('userInfo');
-        const walletAddressElement = document.getElementById('walletAddress');
-        const tonBalanceElement = document.getElementById('tonBalance');
-        const bmhdBalanceElement = document.getElementById('bmhdBalance');
-        const sendTonButton = document.getElementById('sendTonButton');
-        const getBmhdButton = document.getElementById('getBmhdButton');
-        const tonAmountInput = document.getElementById('tonAmount');
+        tonConnectUI.uiOptions = {
+            buttonRootId: "ton-connect-button"
+        };
 
-        let userWalletAddress;
-
-        connectButton.addEventListener('click', async () => {
-            try {
-                const wallets = await tonConnectUi.connect();
-                if (wallets && wallets.length > 0) {
-                    userWalletAddress = wallets[0].address;
-                    walletAddressElement.textContent = userWalletAddress;
-                    userInfo.style.display = 'block';
-                    connectButton.style.display = 'none';
-                    await updateBalances();
-                }
-            } catch (error) {
-                console.error('Connection error:', error);
+        // Kiểm tra trạng thái kết nối
+        tonConnectUI.onStatusChange((wallet) => {
+            if (wallet) {
+                console.log("Đã kết nối với ví:", wallet.account.address);
+            } else {
+                console.log("Người dùng đã ngắt kết nối");
             }
         });
 
-        sendTonButton.addEventListener('click', async () => {
-            if (!userWalletAddress) return;
-            const amount = TonWeb.utils.toNano(tonAmountInput.value);
-            const transfer = tonweb.methods.transfer({
-                secretKey: null,
-                toAddress: myAddress,
-                amount: amount,
-                seqno: 0,
-                payload: null,
-                sendMode: 3,
-            });
+        // Swap TON lấy BMHD
+        document.getElementById("swap-button").addEventListener("click", async () => {
+            const amount = parseFloat(document.getElementById("amount").value);
+            const receiveTonAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD"; // Ví nhận TON (của bạn)
+
+            if (!tonConnectUI.connected) {
+                alert("Vui lòng kết nối ví trước!");
+                return;
+            }
+
+            // Lấy địa chỉ ví người dùng
+            const userAddress = tonConnectUI.connected.account.address;
+
             try {
-                await tonConnectUi.sendTransaction({
-                    validUntil: Date.now() + 10 * 60 * 1000,
-                    messages: [
-                        {
-                            address: myAddress,
-                            amount: amount.toString(),
-                            payload: await transfer.toBoc(false),
-                        },
-                    ],
+                // Gửi TON đến địa chỉ của bạn
+                await tonConnectUI.sendTransaction({
+                    messages: [{
+                        address: receiveTonAddress,
+                        amount: (amount * 1e9).toString(), // Chuyển TON thành nanotons
+                        payload: "0x" // Không cần dữ liệu payload
+                    }]
                 });
-                await updateBalances();
+
+                alert(`Đã gửi ${amount} TON đến ${receiveTonAddress}. Bạn sẽ nhận BMHD vào ví của mình.`);
             } catch (error) {
-                console.error('Send TON error:', error);
+                console.error("Lỗi swap BMHD:", error);
             }
         });
 
-        getBmhdButton.addEventListener('click', async () => {
-             if (!userWalletAddress) return;
-            // logic để get BMHD
-            // cần dùng tới ABI của BMHD token để tương tác đúng với contract.
-            // TonWeb có hỗ trợ tương tác với contract, bạn cần tìm hiểu thêm.
-        });
-
-        async function updateBalances() {
-            if (!userWalletAddress) return;
-            const tonBalance = await tonweb.getBalance(userWalletAddress);
-            tonBalanceElement.textContent = TonWeb.utils.fromNano(tonBalance);
-            // logic để lấy balance BMHD
-        }
     </script>
+
 </body>
 </html>
