@@ -19,7 +19,7 @@
     <script>
         // Khởi tạo TONConnectUI
         const tonConnectUI = new TONConnectUI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json', // URL tệp manifest
             buttonRootId: 'ton-connect' // Đặt nút kết nối ví vào phần tử này
         });
 
@@ -33,12 +33,11 @@
             try {
                 // Kết nối với ví
                 const connectedWallet = await tonConnectUI.connectWallet();
-
-                // Thực hiện các thao tác với ví sau khi kết nối
-                console.log('Đã kết nối với ví:', connectedWallet);
-
-                // Bạn có thể sử dụng connectedWallet để gửi giao dịch hoặc thực hiện các thao tác khác
-                document.getElementById('status').innerText = "Ví đã được kết nối thành công!";
+                
+                if (connectedWallet) {
+                    console.log('Đã kết nối với ví:', connectedWallet);
+                    document.getElementById('status').innerText = "Ví đã được kết nối thành công!";
+                }
             } catch (error) {
                 console.error("Lỗi kết nối ví:", error);
                 document.getElementById('status').innerText = "Lỗi kết nối ví: " + error.message;
@@ -83,6 +82,10 @@
                 document.getElementById('status').innerText = "Lỗi giao dịch: " + error.message;
             }
         }
+
+        // Kết nối ví khi trang tải
+        connectToWallet();
     </script>
 </body>
 </html>
+
