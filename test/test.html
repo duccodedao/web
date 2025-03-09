@@ -43,15 +43,16 @@
 </head>
 <body>
     <h1>Claim Jetton</h1>
+    <!-- TonConnect UI Button -->
     <div id="ton-connect"></div>
     <button id="claimButton">Claim Jetton</button>
 
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script>
         // Khởi tạo TonConnectUI
-        const tonConnectUI = new TonConnectUI({
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL của manifest
-            buttonRootId: 'ton-connect',  // ID của nút kết nối ví
+            buttonRootId: 'ton-connect',  // ID của phần tử mà TonConnect UI sẽ tạo nút kết nối
         });
 
         // Hàm để claim Jetton
@@ -87,6 +88,9 @@
 
         // Gắn sự kiện cho nút "Claim Jetton"
         document.getElementById('claimButton').addEventListener('click', claimJetton);
+
+        // Tạo nút kết nối ví
+        tonConnectUI.render();
     </script>
 </body>
 </html>
