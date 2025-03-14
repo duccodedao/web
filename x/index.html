@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiệp Cưới - Sơn Lý Hồng Đức & Huỳnh Ngọc Hân</title>
+    <style>
+        /* Định dạng chung */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Arial", sans-serif;
+        }
+        body {
+            background: url('https://source.unsplash.com/1600x900/?wedding,flowers') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 25px 35px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #ffeb3b;
+        }
+        h2 {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        #countdown {
+            font-size: 40px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ffe100;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .heart {
+            font-size: 35px;
+            animation: heartbeat 1s infinite alternate;
+            display: block;
+            margin: 10px auto;
+            color: red;
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+        .music {
+            margin-top: 15px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .button {
+            background-color: #ff4081;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background-color: #e91e63;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>💒 Thiệp Cưới 💒</h1>
+        <h2>Trân trọng kính mời</h2>
+        <h2><b>Sơn Lý Hồng Đức ❤️ Huỳnh Ngọc Hân</b></h2>
+        <h2>Chúng tôi hân hạnh báo tin vui!</h2>
+        <span class="heart">❤️</span>
+        <div id="countdown"></div>
+        <p>Hôn lễ sẽ diễn ra vào ngày: <b>20/12/2025</b></p>
+        <button class="button" onclick="playMusic()">🎵 Bật nhạc 🎵</button>
+        <p class="music">Nhấn nút để nghe nhạc cưới 🎶</p>
+        <audio id="weddingMusic" loop>
+            <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <script>
+        // Ngày cưới
+        const weddingDate = new Date("2025-12-20").getTime();
+
+        // Cập nhật đếm ngược
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeRemaining = weddingDate - now;
+
+            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").textContent = `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`;
+
+            if (timeRemaining < 0) {
+                document.getElementById("countdown").textContent = "Chúc mừng ngày cưới!";
+            }
+        }
+
+        // Cập nhật mỗi giây
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Chạy nhạc nền
+        function playMusic() {
+            document.getElementById("weddingMusic").play();
+        }
+    </script>
+
+</body>
+</html>
