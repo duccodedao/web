@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngày Yêu Nhau - Sơn Lý Hồng Đức & Huỳnh Ngọc Hân</title>
+    <style>
+        /* Định dạng chung */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Arial", sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #countdown {
+            font-size: 40px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ffe100;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .heart {
+            font-size: 30px;
+            animation: heartbeat 1s infinite alternate;
+            display: block;
+            margin: 10px auto;
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>💖 Sơn Lý Hồng Đức ❤️ Huỳnh Ngọc Hân 💖</h1>
+        <h2>Chúng ta đã yêu nhau được:</h2>
+        <span class="heart">❤️</span>
+        <div id="countdown"></div>
+        <p class="date">Kể từ ngày: 01/07/2023</p>
+    </div>
+
+    <script>
+        // Ngày bắt đầu yêu nhau
+        const startDate = new Date("2023-07-01");
+
+        // Hàm cập nhật số ngày yêu nhau
+        function updateDaysTogether() {
+            const today = new Date();
+            const timeDifference = today - startDate;
+            const daysTogether = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+            document.getElementById("countdown").textContent = daysTogether + " ngày";
+        }
+
+        // Cập nhật ngay khi trang load
+        updateDaysTogether();
+    </script>
+
+</body>
+</html>
