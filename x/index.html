@@ -8,37 +8,41 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f5f5f5; padding-bottom: 90px; text-align: center; }
+        body { background: #f5f5f5; padding-bottom: 90px; text-align: center; transition: background 0.3s, color 0.3s; }
+        .dark-mode { background: #222; color: #fff; }
 
         /* Container chính */
-        .container { max-width: 400px; margin: 20px auto; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        .container { max-width: 400px; margin: 20px auto; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); transition: background 0.3s; }
+        .dark-mode .container { background: #333; }
 
         /* Hồ sơ người dùng */
-        .profile { text-align: center; margin-bottom: 20px; }
-        .profile img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #007bff; }
-        .profile h2 { margin-top: 10px; font-size: 20px; color: #333; }
-        .profile p { font-size: 14px; color: #666; margin-top: 5px; }
+        .profile { display: flex; align-items: center; justify-content: space-between; padding: 10px; }
+        .profile-left { display: flex; align-items: center; }
+        .profile img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #007bff; }
+        .profile-info { margin-left: 15px; text-align: left; }
+        .profile-info h2 { font-size: 18px; color: #333; margin-bottom: 3px; }
+        .profile-info p { font-size: 14px; color: #666; }
+        .dark-mode .profile-info h2 { color: #fff; }
+        .dark-mode .profile-info p { color: #ccc; }
+
+        /* Nút chuyển đổi sáng/tối */
+        .toggle-mode { cursor: pointer; font-size: 24px; padding: 10px; transition: color 0.3s; }
+        .dark-mode .toggle-mode { color: yellow; }
 
         /* Menu ứng dụng */
         .app-menu { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px; }
         .app { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); cursor: pointer; transition: 0.3s; }
         .app:hover { transform: scale(1.05); }
-        .app img { width: 40px; height: 40px; border-radius: 10px; }
-        .app span { font-size: 12px; color: #333; margin-top: 5px; }
+        .dark-mode .app { background: #444; }
 
         /* Footer Menu */
-        .footer { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); border-top: 2px solid #ddd; }
-        .footer a { text-decoration: none; color: gray; font-size: 14px; display: flex; flex-direction: column; align-items: center; flex: 1; padding: 10px; }
+        .footer { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); border-top: 2px solid #ddd; transition: background 0.3s; }
+        .dark-mode .footer { background: #333; border-top: 2px solid #555; }
+        .footer a { text-decoration: none; color: gray; font-size: 14px; display: flex; flex-direction: column; align-items: center; flex: 1; padding: 10px; transition: color 0.3s; }
         .footer a i { font-size: 22px; margin-bottom: 5px; }
         .footer a.active { color: #007bff; }
-
-        @media (max-width: 600px) {
-            .app-menu { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        @media (max-width: 400px) {
-            .app-menu { grid-template-columns: repeat(3, 1fr); }
-        }
+        .dark-mode .footer a { color: #bbb; }
+        .dark-mode .footer a.active { color: yellow; }
     </style>
 </head>
 <body>
@@ -46,9 +50,16 @@
     <div class="container">
         <!-- Hồ sơ cá nhân -->
         <div class="profile">
-            <img src="default-avatar.png" id="avatar">
-            <h2 id="name">Tên Người Dùng</h2>
-            <p id="username">@username</p>
+            <div class="profile-left">
+                <img src="default-avatar.png" id="avatar">
+                <div class="profile-info">
+                    <h2 id="name">Tên Người Dùng</h2>
+                    <p id="username">@username</p>
+                </div>
+            </div>
+            <div class="toggle-mode" onclick="toggleDarkMode()">
+                <i class="fas fa-moon"></i>
+            </div>
         </div>
 
         <!-- Menu ứng dụng -->
@@ -78,40 +89,13 @@
         let tg = window.Telegram.WebApp;
 
         function loadUserData() {
-            tg.ready(); // Đảm bảo Mini App đã khởi động hoàn toàn
-            
-            // Kiểm tra dữ liệu đã lưu
-            tg.CloudStorage.getItem("userData", function(data) {
-                if (data) {
-                    let userData = JSON.parse(data);
-                    displayUserData(userData);
-                } else {
-                    fetchTelegramUser();
-                }
-            });
-        }
-
-        function fetchTelegramUser() {
+            tg.ready();
             let user = tg.initDataUnsafe.user;
             if (user) {
-                let userData = {
-                    name: user.first_name + (user.last_name ? " " + user.last_name : ""),
-                    username: user.username ? "@" + user.username : "Không có username",
-                    photo_url: user.photo_url ? user.photo_url : "default-avatar.png"
-                };
-
-                // Hiển thị dữ liệu
-                displayUserData(userData);
-
-                // Lưu vào Telegram Cloud Storage
-                tg.CloudStorage.setItem("userData", JSON.stringify(userData));
+                document.getElementById("name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+                document.getElementById("username").innerText = user.username ? "@" + user.username : "Không có username";
+                document.getElementById("avatar").src = user.photo_url ? user.photo_url : "default-avatar.png";
             }
-        }
-
-        function displayUserData(userData) {
-            document.getElementById("name").innerText = userData.name;
-            document.getElementById("username").innerText = userData.username;
-            document.getElementById("avatar").src = userData.photo_url;
         }
 
         function setActive(element) {
@@ -121,6 +105,10 @@
 
         function openApp(url) {
             window.open(url, "_blank");
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
         }
 
         window.onload = loadUserData;
