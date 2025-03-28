@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini App Telegram</title>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- Import Telegram API -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Import Font Awesome -->
     <style>
         * {
             margin: 0;
@@ -48,45 +49,27 @@
             font-size: 14px;
             color: gray;
         }
-        .hot-projects {
+
+        /* Dự án hot */
+        .hot-project {
             margin-top: 20px;
-        }
-        .hot-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .project {
-            display: flex;
-            align-items: center;
+            padding: 15px;
             background: #fff;
             border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-            transition: 0.3s;
+            text-align: center;
         }
-        .project:hover {
-            transform: scale(1.05);
-        }
-        .project img {
-            width: 50px;
-            height: 50px;
+        .hot-project img {
+            width: 60px;
+            height: 60px;
             border-radius: 10px;
-            margin-right: 10px;
+            object-fit: cover;
+            cursor: pointer;
         }
-        .project-info {
-            flex-grow: 1;
-        }
-        .project-name {
-            font-size: 14px;
+        .hot-project p {
+            margin-top: 5px;
+            font-size: 16px;
             font-weight: bold;
-        }
-        .project a {
-            text-decoration: none;
-            color: #007bff;
-            font-size: 12px;
         }
 
         /* Footer Menu */
@@ -126,31 +109,17 @@
     <div class="container">
         <!-- Hồ sơ cá nhân -->
         <div class="profile">
-            <img src="avatar.jpg" alt="Avatar" class="avatar">
-            <div class="name">Nguyễn Văn A</div>
-            <div class="username">@nguyenvana</div>
+            <img src="default-avatar.png" alt="Avatar" class="avatar" id="avatar">
+            <div class="name" id="name">Tên Người Dùng</div>
+            <div class="username" id="username">@username</div>
         </div>
 
         <!-- Dự án hot -->
-        <div class="hot-projects">
-            <div class="hot-title">Dự án hot</div>
-
-            <div class="project">
-                <img src="project1.png" alt="Dự án 1">
-                <div class="project-info">
-                    <div class="project-name">Dự án 1</div>
-                    <a href="https://example.com" target="_blank">Xem chi tiết</a>
-                </div>
-            </div>
-
-            <div class="project">
-                <img src="project2.png" alt="Dự án 2">
-                <div class="project-info">
-                    <div class="project-name">Dự án 2</div>
-                    <a href="https://example2.com" target="_blank">Xem chi tiết</a>
-                </div>
-            </div>
-
+        <div class="hot-project">
+            <a href="https://example.com" target="_blank">
+                <img src="https://via.placeholder.com/60" alt="Dự án Hot" id="project-logo">
+            </a>
+            <p id="project-name">Dự án Hot</p>
         </div>
     </div>
 
@@ -171,12 +140,28 @@
     </div>
 
     <script>
+        // Lấy thông tin người dùng từ Telegram API
+        function loadUserData() {
+            let tg = window.Telegram.WebApp;
+            let user = tg.initDataUnsafe.user;
+            
+            if (user) {
+                document.getElementById("name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+                document.getElementById("username").innerText = user.username ? "@" + user.username : "Không có username";
+                document.getElementById("avatar").src = user.photo_url ? user.photo_url : "default-avatar.png";
+            }
+        }
+
+        // Xử lý khi nhấn vào menu footer
         function setActive(element) {
             document.querySelectorAll('.footer a').forEach(link => {
                 link.classList.remove('active');
             });
             element.classList.add('active');
         }
+
+        // Chạy khi trang load
+        window.onload = loadUserData;
     </script>
 
 </body>
