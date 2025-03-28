@@ -8,103 +8,78 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f4f4f4; display: flex; flex-direction: column; align-items: center; padding: 20px; padding-bottom: 100px; }
-
+        body { background: #f9f9f9; padding-bottom: 80px; text-align: center; }
+        .container { max-width: 400px; margin: auto; padding: 20px; }
+        
         /* Hồ sơ người dùng */
-        .profile { text-align: center; margin-bottom: 20px; }
-        .avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff; }
-        .name { font-size: 18px; font-weight: bold; margin-top: 10px; }
-        .username { font-size: 14px; color: gray; }
+        .profile img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #007bff; }
+        .profile h2 { margin-top: 10px; font-size: 18px; }
+        .profile p { color: gray; font-size: 14px; }
 
-        /* Danh sách App */
-        .app-list { width: 100%; max-width: 400px; background: white; border-radius: 10px; padding: 15px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); }
-        .app { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.3s; }
-        .app:last-child { border-bottom: none; }
-        .app:hover { background: #f0f0f0; }
-        .app img { width: 40px; height: 40px; border-radius: 8px; margin-right: 10px; }
-        .app-name { font-size: 16px; font-weight: bold; }
+        /* Ứng dụng nổi bật */
+        .apps, .partners { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+        .app, .partner { width: 60px; height: 60px; border-radius: 10px; cursor: pointer; }
+        .app img, .partner img { width: 100%; height: 100%; border-radius: 10px; }
+        .app span { display: block; font-size: 12px; margin-top: 5px; }
 
-        /* Footer */
-        .footer { position: fixed; bottom: 0; width: 100%; max-width: 400px; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #ddd; box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1); }
-        .footer a { text-decoration: none; color: gray; font-size: 12px; display: flex; flex-direction: column; align-items: center; padding: 10px; flex: 1; transition: 0.3s; }
+        /* Footer Menu */
+        .footer { position: fixed; bottom: 0; width: 100%; max-width: 400px; background: white; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #ddd; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); }
+        .footer a { text-decoration: none; color: gray; font-size: 12px; display: flex; flex-direction: column; align-items: center; flex: 1; padding: 10px; }
         .footer a i { font-size: 20px; margin-bottom: 5px; }
-        .footer a.active { color: #007bff; font-weight: bold; }
+        .footer a.active { color: #007bff; }
 
-        /* Logo đối tác */
-        .partner-logo { display: block; width: 40px; height: 40px; margin-top: 5px; }
+        /* Nút chia sẻ & mở Telegram */
+        .buttons { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-share { background: #007bff; color: white; }
+        .btn-open { background: #28a745; color: white; }
     </style>
 </head>
 <body>
 
-    <!-- Hồ sơ cá nhân -->
-    <div class="profile">
-        <img src="default-avatar.png" alt="Avatar" class="avatar" id="avatar">
-        <div class="name" id="name">Tên Người Dùng</div>
-        <div class="username" id="username">@username</div>
-    </div>
+    <div class="container">
+        <!-- Hồ sơ cá nhân -->
+        <div class="profile">
+            <img src="default-avatar.png" id="avatar">
+            <h2 id="name">Tên Người Dùng</h2>
+            <p id="username">@username</p>
+        </div>
 
-    <!-- Danh sách App -->
-    <div class="app-list">
-        <div class="app" onclick="openApp('https://example.com/app1')">
-            <img src="https://via.placeholder.com/40" alt="App 1">
-            <span class="app-name">App 1</span>
+        <!-- Nút Chia sẻ và Mở Telegram -->
+        <div class="buttons">
+            <button class="btn btn-share" onclick="shareApp()">📢 Chia sẻ</button>
+            <button class="btn btn-open" onclick="openTelegram()">📲 Mở Telegram</button>
         </div>
-        <div class="app" onclick="openApp('https://example.com/app2')">
-            <img src="https://via.placeholder.com/40" alt="App 2">
-            <span class="app-name">App 2</span>
+
+        <!-- Ứng dụng nổi bật -->
+        <h3>Ứng dụng Nổi Bật</h3>
+        <div class="apps">
+            <div class="app" onclick="openApp('https://example.com/app1')"><img src="https://via.placeholder.com/60"><span>App 1</span></div>
+            <div class="app" onclick="openApp('https://example.com/app2')"><img src="https://via.placeholder.com/60"><span>App 2</span></div>
+            <div class="app" onclick="openApp('https://example.com/app3')"><img src="https://via.placeholder.com/60"><span>App 3</span></div>
+            <div class="app" onclick="openApp('https://example.com/app4')"><img src="https://via.placeholder.com/60"><span>App 4</span></div>
+            <div class="app" onclick="openApp('https://example.com/app5')"><img src="https://via.placeholder.com/60"><span>App 5</span></div>
         </div>
-        <div class="app" onclick="openApp('https://example.com/app3')">
-            <img src="https://via.placeholder.com/40" alt="App 3">
-            <span class="app-name">App 3</span>
-        </div>
-        <div class="app" onclick="openApp('https://example.com/app4')">
-            <img src="https://via.placeholder.com/40" alt="App 4">
-            <span class="app-name">App 4</span>
-        </div>
-        <div class="app" onclick="openApp('https://example.com/app5')">
-            <img src="https://via.placeholder.com/40" alt="App 5">
-            <span class="app-name">App 5</span>
-        </div>
-        <div class="app" onclick="openApp('https://example.com/app6')">
-            <img src="https://via.placeholder.com/40" alt="App 6">
-            <span class="app-name">App 6</span>
-        </div>
-        <div class="app" onclick="openApp('https://example.com/app7')">
-            <img src="https://via.placeholder.com/40" alt="App 7">
-            <span class="app-name">App 7</span>
-        </div>
-        <div class="app" onclick="openApp('https://example.com/app8')">
-            <img src="https://via.placeholder.com/40" alt="App 8">
-            <span class="app-name">App 8</span>
-        </div>
-        <div class="app" onclick="openApp('https://example.com/app9')">
-            <img src="https://via.placeholder.com/40" alt="App 9">
-            <span class="app-name">App 9</span>
-        </div>
-        <div class="app" onclick="openApp('https://example.com/app10')">
-            <img src="https://via.placeholder.com/40" alt="App 10">
-            <span class="app-name">App 10</span>
+
+        <!-- Đối tác -->
+        <h3>Đối tác</h3>
+        <div class="partners">
+            <div class="partner"><img src="https://via.placeholder.com/50"></div>
+            <div class="partner"><img src="https://via.placeholder.com/50"></div>
+            <div class="partner"><img src="https://via.placeholder.com/50"></div>
+            <div class="partner"><img src="https://via.placeholder.com/50"></div>
+            <div class="partner"><img src="https://via.placeholder.com/50"></div>
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer Menu -->
     <div class="footer">
-        <a href="#" id="home" class="active" onclick="setActive(this)">
-            <i class="fas fa-home"></i> Home
-        </a>
-        <a href="#" id="wallet" onclick="setActive(this)">
-            <i class="fas fa-wallet"></i> Wallet
-        </a>
-        <a href="#" id="profile" onclick="setActive(this)">
-            <i class="fas fa-user"></i> Profile
-        </a>
-        <a href="#" id="partner">
-            <img src="https://via.placeholder.com/40" alt="Partner" class="partner-logo">
-        </a>
+        <a href="#" id="home" class="active" onclick="setActive(this)"><i class="fas fa-home"></i> Home</a>
+        <a href="#" id="wallet" onclick="setActive(this)"><i class="fas fa-wallet"></i> Wallet</a>
+        <a href="#" id="profile" onclick="setActive(this)"><i class="fas fa-user"></i> Profile</a>
     </div>
 
     <script>
-        // Lấy thông tin từ Telegram API
         function loadUserData() {
             let tg = window.Telegram.WebApp;
             let user = tg.initDataUnsafe.user;
@@ -115,20 +90,28 @@
             }
         }
 
-        // Mở ứng dụng
+        function setActive(element) {
+            document.querySelectorAll('.footer a').forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+        }
+
         function openApp(url) {
             window.open(url, "_blank");
         }
 
-        // Xử lý menu footer
-        function setActive(element) {
-            document.querySelectorAll('.footer a').forEach(link => {
-                link.classList.remove('active');
+        function shareApp() {
+            let tg = window.Telegram.WebApp;
+            tg.showPopup({
+                title: "Chia sẻ ứng dụng",
+                message: "Gửi đường link ứng dụng này đến bạn bè trên Telegram!",
+                buttons: [{ text: "Chia sẻ", type: "default" }]
             });
-            element.classList.add('active');
         }
 
-        // Chạy khi trang load
+        function openTelegram() {
+            window.Telegram.WebApp.close();
+        }
+
         window.onload = loadUserData;
     </script>
 
