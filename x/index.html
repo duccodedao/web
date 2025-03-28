@@ -8,25 +8,35 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f9f9f9; padding-bottom: 80px; text-align: center; }
-        .container { max-width: 400px; margin: auto; padding: 20px; }
-        
+        body { background: #f5f5f5; padding-bottom: 90px; text-align: center; }
+
+        /* Container chính */
+        .container { max-width: 400px; margin: 20px auto; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+
         /* Hồ sơ người dùng */
+        .profile { text-align: center; margin-bottom: 20px; }
         .profile img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #007bff; }
-        .profile h2 { margin-top: 10px; font-size: 18px; }
-        .profile p { color: gray; font-size: 14px; }
+        .profile h2 { margin-top: 10px; font-size: 20px; color: #333; }
+        .profile p { font-size: 14px; color: #666; margin-top: 5px; }
 
         /* Ứng dụng nổi bật */
-        .apps, .partners { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
-        .app, .partner { width: 60px; height: 60px; border-radius: 10px; cursor: pointer; }
-        .app img, .partner img { width: 100%; height: 100%; border-radius: 10px; }
-        .app span { display: block; font-size: 12px; margin-top: 5px; }
+        .apps, .partners { display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 30px; }
+        .app, .partner { width: 30%; margin-bottom: 15px; }
+        .app img, .partner img { width: 100%; height: auto; border-radius: 10px; cursor: pointer; transition: transform 0.3s; }
+        .app:hover img, .partner:hover img { transform: scale(1.05); }
+
+        .app span { display: block; font-size: 12px; text-align: center; margin-top: 5px; color: #333; }
 
         /* Footer Menu */
-        .footer { position: fixed; bottom: 0; width: 100%; max-width: 400px; background: white; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #ddd; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); }
-        .footer a { text-decoration: none; color: gray; font-size: 12px; display: flex; flex-direction: column; align-items: center; flex: 1; padding: 10px; }
-        .footer a i { font-size: 20px; margin-bottom: 5px; }
+        .footer { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); border-top: 2px solid #ddd; }
+        .footer a { text-decoration: none; color: gray; font-size: 14px; display: flex; flex-direction: column; align-items: center; flex: 1; padding: 10px; }
+        .footer a i { font-size: 22px; margin-bottom: 5px; }
         .footer a.active { color: #007bff; }
+
+        @media (max-width: 600px) {
+            .apps, .partners { flex-direction: column; }
+            .app, .partner { width: 80%; margin: 10px auto; }
+        }
     </style>
 </head>
 <body>
@@ -42,21 +52,21 @@
         <!-- Ứng dụng nổi bật -->
         <h3>Ứng dụng Nổi Bật</h3>
         <div class="apps">
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="https://via.placeholder.com/60"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app2')"><img src="https://via.placeholder.com/60"><span>App 2</span></div>
-            <div class="app" onclick="openApp('https://example.com/app3')"><img src="https://via.placeholder.com/60"><span>App 3</span></div>
-            <div class="app" onclick="openApp('https://example.com/app4')"><img src="https://via.placeholder.com/60"><span>App 4</span></div>
-            <div class="app" onclick="openApp('https://example.com/app5')"><img src="https://via.placeholder.com/60"><span>App 5</span></div>
+            <div class="app" onclick="openApp('https://example.com/app1')"><img src="https://via.placeholder.com/120"><span>App 1</span></div>
+            <div class="app" onclick="openApp('https://example.com/app2')"><img src="https://via.placeholder.com/120"><span>App 2</span></div>
+            <div class="app" onclick="openApp('https://example.com/app3')"><img src="https://via.placeholder.com/120"><span>App 3</span></div>
+            <div class="app" onclick="openApp('https://example.com/app4')"><img src="https://via.placeholder.com/120"><span>App 4</span></div>
+            <div class="app" onclick="openApp('https://example.com/app5')"><img src="https://via.placeholder.com/120"><span>App 5</span></div>
         </div>
 
         <!-- Đối tác -->
         <h3>Đối tác</h3>
         <div class="partners">
-            <div class="partner"><img src="https://via.placeholder.com/50"></div>
-            <div class="partner"><img src="https://via.placeholder.com/50"></div>
-            <div class="partner"><img src="https://via.placeholder.com/50"></div>
-            <div class="partner"><img src="https://via.placeholder.com/50"></div>
-            <div class="partner"><img src="https://via.placeholder.com/50"></div>
+            <div class="partner"><img src="https://via.placeholder.com/60"></div>
+            <div class="partner"><img src="https://via.placeholder.com/60"></div>
+            <div class="partner"><img src="https://via.placeholder.com/60"></div>
+            <div class="partner"><img src="https://via.placeholder.com/60"></div>
+            <div class="partner"><img src="https://via.placeholder.com/60"></div>
         </div>
     </div>
 
