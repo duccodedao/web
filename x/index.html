@@ -19,13 +19,12 @@
         .profile h2 { margin-top: 10px; font-size: 20px; color: #333; }
         .profile p { font-size: 14px; color: #666; margin-top: 5px; }
 
-        /* Ứng dụng nổi bật */
-        .apps, .partners { display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 30px; }
-        .app, .partner { width: 30%; margin-bottom: 15px; }
-        .app img, .partner img { width: 100%; height: auto; border-radius: 10px; cursor: pointer; transition: transform 0.3s; }
-        .app:hover img, .partner:hover img { transform: scale(1.05); }
-
-        .app span { display: block; font-size: 12px; text-align: center; margin-top: 5px; color: #333; }
+        /* Menu ứng dụng */
+        .app-menu { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px; }
+        .app { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); cursor: pointer; transition: 0.3s; }
+        .app:hover { transform: scale(1.05); }
+        .app img { width: 40px; height: 40px; border-radius: 10px; }
+        .app span { font-size: 12px; color: #333; margin-top: 5px; }
 
         /* Footer Menu */
         .footer { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); border-top: 2px solid #ddd; }
@@ -34,8 +33,11 @@
         .footer a.active { color: #007bff; }
 
         @media (max-width: 600px) {
-            .apps, .partners { flex-direction: column; }
-            .app, .partner { width: 80%; margin: 10px auto; }
+            .app-menu { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 400px) {
+            .app-menu { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -49,24 +51,19 @@
             <p id="username">@username</p>
         </div>
 
-        <!-- Ứng dụng nổi bật -->
-        <h3>Ứng dụng Nổi Bật</h3>
-        <div class="apps">
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="https://via.placeholder.com/120"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app2')"><img src="https://via.placeholder.com/120"><span>App 2</span></div>
-            <div class="app" onclick="openApp('https://example.com/app3')"><img src="https://via.placeholder.com/120"><span>App 3</span></div>
-            <div class="app" onclick="openApp('https://example.com/app4')"><img src="https://via.placeholder.com/120"><span>App 4</span></div>
-            <div class="app" onclick="openApp('https://example.com/app5')"><img src="https://via.placeholder.com/120"><span>App 5</span></div>
-        </div>
-
-        <!-- Đối tác -->
-        <h3>Đối tác</h3>
-        <div class="partners">
-            <div class="partner"><img src="https://via.placeholder.com/60"></div>
-            <div class="partner"><img src="https://via.placeholder.com/60"></div>
-            <div class="partner"><img src="https://via.placeholder.com/60"></div>
-            <div class="partner"><img src="https://via.placeholder.com/60"></div>
-            <div class="partner"><img src="https://via.placeholder.com/60"></div>
+        <!-- Menu ứng dụng -->
+        <h3>Ứng dụng</h3>
+        <div class="app-menu">
+            <div class="app" onclick="openApp('https://example.com/app1')"><img src="https://via.placeholder.com/100"><span>App 1</span></div>
+            <div class="app" onclick="openApp('https://example.com/app2')"><img src="https://via.placeholder.com/100"><span>App 2</span></div>
+            <div class="app" onclick="openApp('https://example.com/app3')"><img src="https://via.placeholder.com/100"><span>App 3</span></div>
+            <div class="app" onclick="openApp('https://example.com/app4')"><img src="https://via.placeholder.com/100"><span>App 4</span></div>
+            <div class="app" onclick="openApp('https://example.com/app5')"><img src="https://via.placeholder.com/100"><span>App 5</span></div>
+            <div class="app" onclick="openApp('https://example.com/app6')"><img src="https://via.placeholder.com/100"><span>App 6</span></div>
+            <div class="app" onclick="openApp('https://example.com/app7')"><img src="https://via.placeholder.com/100"><span>App 7</span></div>
+            <div class="app" onclick="openApp('https://example.com/app8')"><img src="https://via.placeholder.com/100"><span>App 8</span></div>
+            <div class="app" onclick="openApp('https://example.com/app9')"><img src="https://via.placeholder.com/100"><span>App 9</span></div>
+            <div class="app" onclick="openApp('https://example.com/app10')"><img src="https://via.placeholder.com/100"><span>App 10</span></div>
         </div>
     </div>
 
