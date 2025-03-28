@@ -30,10 +30,13 @@
         .dark-mode .toggle-mode { color: yellow; }
 
         /* Menu ứng dụng */
-        .app-menu { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px; }
+        .app-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px; }
         .app { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); cursor: pointer; transition: 0.3s; }
         .app:hover { transform: scale(1.05); }
         .dark-mode .app { background: #444; }
+
+        /* Chỉnh kích thước ảnh trong ứng dụng */
+        .app img { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; }
 
         /* Footer Menu */
         .footer { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); border-top: 2px solid #ddd; transition: background 0.3s; }
@@ -65,20 +68,22 @@
         <!-- Menu ứng dụng -->
         <h3>Ứng dụng</h3>
         <div class="app-menu">
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
-            <div class="app" onclick="openApp('https://example.com/app1')"><img src="/logo-coin/1.jpg"><span>App 1</span></div>
+            <div class="app" onclick="openApp('https://example.com/app1')">
+                <img src="https://via.placeholder.com/100">
+                <span>App 1</span>
+            </div>
+            <div class="app" onclick="openApp('https://example.com/app2')">
+                <img src="https://via.placeholder.com/100">
+                <span>App 2</span>
+            </div>
+            <div class="app" onclick="openApp('https://example.com/app3')">
+                <img src="https://via.placeholder.com/100">
+                <span>App 3</span>
+            </div>
+            <div class="app" onclick="openApp('https://example.com/app4')">
+                <img src="https://via.placeholder.com/100">
+                <span>App 4</span>
+            </div>
         </div>
     </div>
 
