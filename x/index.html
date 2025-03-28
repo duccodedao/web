@@ -4,147 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini App Telegram</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- Import Telegram API -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Import Font Awesome -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background-color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            padding-bottom: 80px; /* Chừa chỗ cho footer */
-        }
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .profile {
-            text-align: center;
-            padding: 20px 0;
-        }
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #007bff;
-        }
-        .name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .username {
-            font-size: 14px;
-            color: gray;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #f4f4f4; display: flex; flex-direction: column; align-items: center; padding: 20px; padding-bottom: 100px; }
 
-        /* Dự án hot */
-        .hot-project {
-            margin-top: 20px;
-            padding: 15px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        .hot-project img {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            object-fit: cover;
-            cursor: pointer;
-        }
-        .hot-project p {
-            margin-top: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
+        /* Hồ sơ người dùng */
+        .profile { text-align: center; margin-bottom: 20px; }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff; }
+        .name { font-size: 18px; font-weight: bold; margin-top: 10px; }
+        .username { font-size: 14px; color: gray; }
 
-        /* Footer Menu */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #ddd;
-            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .footer a {
-            text-decoration: none;
-            color: gray;
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            flex: 1;
-        }
-        .footer a i {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-        .footer a.active {
-            color: #007bff;
-        }
+        /* Danh sách App */
+        .app-list { width: 100%; max-width: 400px; background: white; border-radius: 10px; padding: 15px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); }
+        .app { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.3s; }
+        .app:last-child { border-bottom: none; }
+        .app:hover { background: #f0f0f0; }
+        .app img { width: 40px; height: 40px; border-radius: 8px; margin-right: 10px; }
+        .app-name { font-size: 16px; font-weight: bold; }
+
+        /* Footer */
+        .footer { position: fixed; bottom: 0; width: 100%; max-width: 400px; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #ddd; box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1); }
+        .footer a { text-decoration: none; color: gray; font-size: 12px; display: flex; flex-direction: column; align-items: center; padding: 10px; flex: 1; transition: 0.3s; }
+        .footer a i { font-size: 20px; margin-bottom: 5px; }
+        .footer a.active { color: #007bff; font-weight: bold; }
+
+        /* Logo đối tác */
+        .partner-logo { display: block; width: 40px; height: 40px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Hồ sơ cá nhân -->
-        <div class="profile">
-            <img src="default-avatar.png" alt="Avatar" class="avatar" id="avatar">
-            <div class="name" id="name">Tên Người Dùng</div>
-            <div class="username" id="username">@username</div>
-        </div>
+    <!-- Hồ sơ cá nhân -->
+    <div class="profile">
+        <img src="default-avatar.png" alt="Avatar" class="avatar" id="avatar">
+        <div class="name" id="name">Tên Người Dùng</div>
+        <div class="username" id="username">@username</div>
+    </div>
 
-        <!-- Dự án hot -->
-        <div class="hot-project">
-            <a href="https://example.com" target="_blank">
-                <img src="https://via.placeholder.com/60" alt="Dự án Hot" id="project-logo">
-            </a>
-            <p id="project-name">Dự án Hot</p>
+    <!-- Danh sách App -->
+    <div class="app-list">
+        <div class="app" onclick="openApp('https://example.com/app1')">
+            <img src="https://via.placeholder.com/40" alt="App 1">
+            <span class="app-name">App 1</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app2')">
+            <img src="https://via.placeholder.com/40" alt="App 2">
+            <span class="app-name">App 2</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app3')">
+            <img src="https://via.placeholder.com/40" alt="App 3">
+            <span class="app-name">App 3</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app4')">
+            <img src="https://via.placeholder.com/40" alt="App 4">
+            <span class="app-name">App 4</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app5')">
+            <img src="https://via.placeholder.com/40" alt="App 5">
+            <span class="app-name">App 5</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app6')">
+            <img src="https://via.placeholder.com/40" alt="App 6">
+            <span class="app-name">App 6</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app7')">
+            <img src="https://via.placeholder.com/40" alt="App 7">
+            <span class="app-name">App 7</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app8')">
+            <img src="https://via.placeholder.com/40" alt="App 8">
+            <span class="app-name">App 8</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app9')">
+            <img src="https://via.placeholder.com/40" alt="App 9">
+            <span class="app-name">App 9</span>
+        </div>
+        <div class="app" onclick="openApp('https://example.com/app10')">
+            <img src="https://via.placeholder.com/40" alt="App 10">
+            <span class="app-name">App 10</span>
         </div>
     </div>
 
-    <!-- Footer Menu -->
+    <!-- Footer -->
     <div class="footer">
         <a href="#" id="home" class="active" onclick="setActive(this)">
-            <i class="fas fa-home"></i>
-            Home
+            <i class="fas fa-home"></i> Home
         </a>
         <a href="#" id="wallet" onclick="setActive(this)">
-            <i class="fas fa-wallet"></i>
-            Wallet
+            <i class="fas fa-wallet"></i> Wallet
         </a>
         <a href="#" id="profile" onclick="setActive(this)">
-            <i class="fas fa-user"></i>
-            Profile
+            <i class="fas fa-user"></i> Profile
+        </a>
+        <a href="#" id="partner">
+            <img src="https://via.placeholder.com/40" alt="Partner" class="partner-logo">
         </a>
     </div>
 
     <script>
-        // Lấy thông tin người dùng từ Telegram API
+        // Lấy thông tin từ Telegram API
         function loadUserData() {
             let tg = window.Telegram.WebApp;
             let user = tg.initDataUnsafe.user;
-            
             if (user) {
                 document.getElementById("name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
                 document.getElementById("username").innerText = user.username ? "@" + user.username : "Không có username";
@@ -152,7 +115,12 @@
             }
         }
 
-        // Xử lý khi nhấn vào menu footer
+        // Mở ứng dụng
+        function openApp(url) {
+            window.open(url, "_blank");
+        }
+
+        // Xử lý menu footer
         function setActive(element) {
             document.querySelectorAll('.footer a').forEach(link => {
                 link.classList.remove('active');
