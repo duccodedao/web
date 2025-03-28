@@ -3,58 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm vào màn hình chính</title>
-    <link rel="icon" type="image/png" href="icon.png"> <!-- Biểu tượng của web -->
+    <title>Mini App Telegram</title>
     <style>
-        body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: Arial, sans-serif;
-            text-align: center;
+        }
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
-        button:disabled {
-            background: gray;
-            cursor: not-allowed;
+        .profile {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+        }
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .username {
+            font-size: 14px;
+            color: gray;
+        }
+        .hot-projects {
+            margin-top: 20px;
+        }
+        .hot-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .project {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+        .project:hover {
+            transform: scale(1.05);
+        }
+        .project img {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            margin-right: 10px;
+        }
+        .project-info {
+            flex-grow: 1;
+        }
+        .project-name {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .project a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Thêm vào màn hình chính</h1>
-    <button id="installButton" style="display: flex;">Thêm vào màn hình chính</button>
+    <div class="container">
+        <!-- Hồ sơ cá nhân -->
+        <div class="profile">
+            <img src="avatar.jpg" alt="Avatar" class="avatar">
+            <div class="name">Nguyễn Văn A</div>
+            <div class="username">@nguyenvana</div>
+        </div>
 
-    <script>
-        let deferredPrompt;
+        <!-- Dự án hot -->
+        <div class="hot-projects">
+            <div class="hot-title">Dự án hot</div>
 
-        window.addEventListener('beforeinstallprompt', (event) => {
-            event.preventDefault();
-            deferredPrompt = event;
-            document.getElementById('installButton').style.display = 'block';
-        });
+            <div class="project">
+                <img src="project1.png" alt="Dự án 1">
+                <div class="project-info">
+                    <div class="project-name">Dự án 1</div>
+                    <a href="https://example.com" target="_blank">Xem chi tiết</a>
+                </div>
+            </div>
 
-        document.getElementById('installButton').addEventListener('click', () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Người dùng đã chấp nhận cài đặt');
-                    } else {
-                        console.log('Người dùng đã từ chối cài đặt');
-                    }
-                    deferredPrompt = null;
-                    document.getElementById('installButton').style.display = 'none';
-                });
-            }
-        });
-    </script>
+            <div class="project">
+                <img src="project2.png" alt="Dự án 2">
+                <div class="project-info">
+                    <div class="project-name">Dự án 2</div>
+                    <a href="https://example2.com" target="_blank">Xem chi tiết</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
 </body>
 </html>
