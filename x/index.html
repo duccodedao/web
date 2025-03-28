@@ -27,12 +27,6 @@
         .footer a { text-decoration: none; color: gray; font-size: 12px; display: flex; flex-direction: column; align-items: center; flex: 1; padding: 10px; }
         .footer a i { font-size: 20px; margin-bottom: 5px; }
         .footer a.active { color: #007bff; }
-
-        /* Nút chia sẻ & mở Telegram */
-        .buttons { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-        .btn-share { background: #007bff; color: white; }
-        .btn-open { background: #28a745; color: white; }
     </style>
 </head>
 <body>
@@ -43,12 +37,6 @@
             <img src="default-avatar.png" id="avatar">
             <h2 id="name">Tên Người Dùng</h2>
             <p id="username">@username</p>
-        </div>
-
-        <!-- Nút Chia sẻ và Mở Telegram -->
-        <div class="buttons">
-            <button class="btn btn-share" onclick="shareApp()">📢 Chia sẻ</button>
-            <button class="btn btn-open" onclick="openTelegram()">📲 Mở Telegram</button>
         </div>
 
         <!-- Ứng dụng nổi bật -->
@@ -80,14 +68,43 @@
     </div>
 
     <script>
+        let tg = window.Telegram.WebApp;
+
         function loadUserData() {
-            let tg = window.Telegram.WebApp;
+            tg.ready(); // Đảm bảo Mini App đã khởi động hoàn toàn
+            
+            // Kiểm tra dữ liệu đã lưu
+            tg.CloudStorage.getItem("userData", function(data) {
+                if (data) {
+                    let userData = JSON.parse(data);
+                    displayUserData(userData);
+                } else {
+                    fetchTelegramUser();
+                }
+            });
+        }
+
+        function fetchTelegramUser() {
             let user = tg.initDataUnsafe.user;
             if (user) {
-                document.getElementById("name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
-                document.getElementById("username").innerText = user.username ? "@" + user.username : "Không có username";
-                document.getElementById("avatar").src = user.photo_url ? user.photo_url : "default-avatar.png";
+                let userData = {
+                    name: user.first_name + (user.last_name ? " " + user.last_name : ""),
+                    username: user.username ? "@" + user.username : "Không có username",
+                    photo_url: user.photo_url ? user.photo_url : "default-avatar.png"
+                };
+
+                // Hiển thị dữ liệu
+                displayUserData(userData);
+
+                // Lưu vào Telegram Cloud Storage
+                tg.CloudStorage.setItem("userData", JSON.stringify(userData));
             }
+        }
+
+        function displayUserData(userData) {
+            document.getElementById("name").innerText = userData.name;
+            document.getElementById("username").innerText = userData.username;
+            document.getElementById("avatar").src = userData.photo_url;
         }
 
         function setActive(element) {
@@ -97,19 +114,6 @@
 
         function openApp(url) {
             window.open(url, "_blank");
-        }
-
-        function shareApp() {
-            let tg = window.Telegram.WebApp;
-            tg.showPopup({
-                title: "Chia sẻ ứng dụng",
-                message: "Gửi đường link ứng dụng này đến bạn bè trên Telegram!",
-                buttons: [{ text: "Chia sẻ", type: "default" }]
-            });
-        }
-
-        function openTelegram() {
-            window.Telegram.WebApp.close();
         }
 
         window.onload = loadUserData;
