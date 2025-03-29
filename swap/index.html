@@ -35,8 +35,6 @@
             margin: 0;
         }
 
-
-
         .user-info {
             display: flex;
             align-items: center;
@@ -53,8 +51,6 @@
             border-radius: 50%;
             border: 2px solid var(--primary-color);
         }
-
-
     </style>
 </head>
 
@@ -83,9 +79,12 @@
     <script>
         function loadUserData() {
             let tg = window.Telegram.WebApp;
-            tg.ready();
+            
+            tg.ready(); // Đảm bảo WebApp đã sẵn sàng trước khi lấy thông tin
+
             let user = tg.initDataUnsafe.user;
             if (user) {
+                // Cập nhật thông tin người dùng vào các phần tử trong HTML
                 document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
                 document.getElementById("avatar").src = user.photo_url ? user.photo_url : "https://bmasshd.click/logo-coin/bmlogo.jpg";
                 document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
@@ -93,7 +92,7 @@
                 console.error("Không thể lấy thông tin người dùng!");
             }
         }
-        loadUserData();
+        window.onload = loadUserData; // Đảm bảo rằng hàm loadUserData sẽ được gọi khi trang web tải
     </script>
 </body>
 
