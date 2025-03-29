@@ -35,22 +35,58 @@
             margin: 0;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--swap-container-background);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow-glow);
-        }
 
-        .user-info img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 2px solid var(--primary-color);
-        }
+
+ /* Cải thiện giao diện thông tin người dùng */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Khoảng cách giữa avatar và thông tin */
+    background: var(--user-info-background); /* Nền sáng */
+    padding: 15px;
+    border-radius: var(--border-radius); /* Bo tròn các góc */
+    box-shadow: var(--box-shadow-glow); /* Đổ bóng để tạo hiệu ứng sáng */
+    max-width: 400px; /* Chiều rộng tối đa */
+    width: 100%; /* Chiều rộng đầy đủ */
+    margin: 20px auto; /* Canh giữa */
+}
+
+/* Thiết lập cho ảnh avatar */
+.user-info img {
+    width: 70px; /* Kích thước ảnh */
+    height: 70px; /* Kích thước ảnh */
+    border-radius: 50%; /* Bo tròn ảnh thành hình tròn */
+    border: 2px solid var(--avatar-border-color); /* Viền quanh avatar */
+}
+
+/* Cải thiện thông tin người dùng */
+.user-info div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Tên người dùng */
+#username {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-color); /* Màu chữ tên người dùng */
+}
+
+/* Tên đầy đủ */
+#full-name {
+    font-size: 14px;
+    color: #7f8c8d; /* Màu chữ nhạt hơn */
+}
+
+/* Hiệu ứng hover cho avatar */
+.user-info img:hover {
+    cursor: pointer;
+    transform: scale(1.05); /* Phóng to một chút khi hover */
+    transition: transform 0.3s ease-in-out; /* Hiệu ứng mượt mà */
+}
+
+
     </style>
 </head>
 
@@ -79,12 +115,9 @@
     <script>
         function loadUserData() {
             let tg = window.Telegram.WebApp;
-            
-            tg.ready(); // Đảm bảo WebApp đã sẵn sàng trước khi lấy thông tin
-
+            tg.ready();
             let user = tg.initDataUnsafe.user;
             if (user) {
-                // Cập nhật thông tin người dùng vào các phần tử trong HTML
                 document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
                 document.getElementById("avatar").src = user.photo_url ? user.photo_url : "https://bmasshd.click/logo-coin/bmlogo.jpg";
                 document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
@@ -92,7 +125,7 @@
                 console.error("Không thể lấy thông tin người dùng!");
             }
         }
-        window.onload = loadUserData; // Đảm bảo rằng hàm loadUserData sẽ được gọi khi trang web tải
+        loadUserData();
     </script>
 </body>
 

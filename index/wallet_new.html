@@ -41,7 +41,7 @@
             <div class="token">
                 <img src="/logo-coin/bmlogo.jpg" alt="BMC">
                 <div class="token-info">
-                    <span>BMHD</span>
+                    <span>BMC</span>
                     <span id="token-balance">Loading...</span> <!-- Trạng thái Loading ban đầu -->
                 </div>
                 <div class="token-value" id="bmc-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
@@ -62,46 +62,29 @@
 
 
 
-    <div class="footer">
-        <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/nha.png" alt="Home">
-            <span class="new-badge">Hot</span>
-        </div>
-        <span>Home</span>
-    </a>
+<div class="footer">
+    <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/home_.png" alt="Home">
 
-    
-    <a href="/index/noti.html" class="footer-itemm" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/chuong.gif" alt="MuaCoin">
-        </div>
-        <span></span>
-    </a>
+    </div>
+    <span>Home</span>
+</a>
+<a href="/swap/index.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/swap_.png" alt="MuaCoin">
+    </div>
+    <span>Swap</span>
+</a> 
 
-    <a href="/history/history.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/history.png" alt="MuaCoin">
-        </div>
-        <span>History</span>
-    </a>
-    <a href="#" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/wallet0.jpg" alt="MuaCoin">
-        </div>
-        <span>Wallet</span>
-    </a> 
 
-    <a href="/index/wallet.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <div id="wallet-avatar-container">
-                <div class="skeleton-avatar"></div>
-                <span class="new-badge">Login</span>
-            </div>
-        </div>
-        <span>Profile</span>
-    </a>  
- 
+
+<a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/wallet_.png" alt="MuaCoin">
+    </div>
+    <span>Wallet</span>
+</a>
 </div>
 
     <script>
@@ -219,7 +202,7 @@ function getBMCBalance() {
     const valueElement = document.getElementById("bmc-value");
 
     if (balanceElement) {
-        balanceElement.innerText = `${bmcBalance.toLocaleString()} BMHD`;
+        balanceElement.innerText = `${bmcBalance.toLocaleString()} BMC`;
     }
     if (valueElement) {
         valueElement.innerText = `$${(bmcBalance * TON_VALUE_IN_USDT).toFixed(2)}`;
