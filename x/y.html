@@ -4,80 +4,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini App Telegram</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>MyTonSwap & Mini App</title>
+    
+    <!-- Telegram & TonConnect -->
+    <script async src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
-    <script async type="module" src="https://cdn.jsdelivr.net/gh/duccodedao/aa@main/js.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/duccodedao/aa@main/js.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f5f5f5; text-align: center; padding-bottom: 90px; transition: background 0.3s, color 0.3s; }
-        .dark-mode { background: #222; color: #fff; }
-
-        /* Container chính */
-        .container { max-width: 400px; margin: 20px auto; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); transition: background 0.3s; }
-        .dark-mode .container { background: #333; }
-
-        /* Hồ sơ người dùng */
-        .profile { display: flex; align-items: center; justify-content: space-between; padding: 10px; }
-        .profile-left { display: flex; align-items: center; }
-        .profile img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #007bff; }
-        .profile-info { margin-left: 15px; text-align: left; }
-        .profile-info h2 { font-size: 18px; color: #333; margin-bottom: 3px; }
-        .profile-info p { font-size: 14px; color: #666; }
-        .dark-mode .profile-info h2 { color: #fff; }
-        .dark-mode .profile-info p { color: #ccc; }
-
-        /* Nút chuyển đổi sáng/tối */
-        .toggle-mode { cursor: pointer; font-size: 24px; padding: 10px; transition: color 0.3s; }
-        .dark-mode .toggle-mode { color: yellow; }
-
-        /* MyTonSwap Widget */
-        #swap-widget { 
-            width: 90%; max-width: 600px; padding: 25px; 
-            background: #2c3e50; border-radius: 10px; 
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
-            border: 2px solid #8e44ad; color: white; 
-            margin: 20px auto;
+        :root {
+            --primary-color: #8e44ad;
+            --secondary-color: #34495e;
+            --background-color: #ecf0f1;
+            --modal-background-color: #ffffff;
+            --swap-container-background: #2c3e50;
+            --input-card-color: #ffffff;
+            --input-token-color: #ecf0f1;
+            --change-direction-background-color: #8e44ad;
+            --change-direction-icon-color: #fff;
+            --text-black-color: #2c3e50;
+            --text-white-color: #ffffff;
+            --text-fade-color: #bdc3c7;
+            --border-radius: 10px;
         }
 
-        /* Footer Menu */
-        .footer { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); border-top: 2px solid #ddd; transition: background 0.3s; }
-        .dark-mode .footer { background: #333; border-top: 2px solid #555; }
-        .footer a { text-decoration: none; color: gray; font-size: 14px; display: flex; flex-direction: column; align-items: center; flex: 1; padding: 10px; transition: color 0.3s; }
-        .footer a i { font-size: 22px; margin-bottom: 5px; }
-        .footer a.active { color: #007bff; }
-        .dark-mode .footer a { color: #bbb; }
-        .dark-mode .footer a.active { color: yellow; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding-bottom: 90px;
+            color: var(--text-black-color);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: var(--modal-background-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        /* Thông tin người dùng */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--swap-container-background);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            color: var(--text-white-color);
+        }
+
+        .user-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+        }
+
+        .user-info div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info span {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .user-info small {
+            font-size: 1.1rem;
+            color: var(--text-fade-color);
+        }
+
+        /* Swap Widget */
+        #swap-widget {
+            width: 100%;
+            padding: 20px;
+            background: var(--swap-container-background);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--primary-color);
+            color: var(--text-white-color);
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--modal-background-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            border-top: 2px solid #ddd;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: gray;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            padding: 10px;
+        }
+
+        .footer a i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .footer a.active {
+            color: var(--primary-color);
+        }
     </style>
 </head>
 
 <body>
 
     <div class="container">
-        <!-- Hồ sơ cá nhân -->
-        <div class="profile">
-            <div class="profile-left">
-                <img src="default-avatar.png" id="avatar">
-                <div class="profile-info">
-                    <h2 id="name">Tên Người Dùng</h2>
-                    <p id="username">@username</p>
-                </div>
-            </div>
-            <div class="toggle-mode" onclick="toggleDarkMode()">
-                <i class="fas fa-moon">🌚</i>
+        <!-- Hồ sơ người dùng -->
+        <div class="user-info">
+            <img id="avatar" src="default-avatar.png" alt="Avatar">
+            <div>
+                <span id="username">@username</span>
+                <small id="full-name">Tên Người Dùng</small>
             </div>
         </div>
+
+        <!-- Swap Widget -->
+        <div id="swap-widget"></div>
     </div>
 
-    <!-- MyTonSwap Widget -->
-    <div id="swap-widget"></div>
-
-    <!-- Footer Menu -->
+    <!-- Footer -->
     <div class="footer">
-        <a href="#" id="home" class="active" onclick="setActive(this)"><i class="fas fa-home"></i> Home</a>
-        <a href="#" id="wallet" onclick="setActive(this)"><i class="fas fa-wallet"></i> Wallet</a>
-        <a href="#" id="profile" onclick="setActive(this)"><i class="fas fa-user"></i> Profile</a>
+        <a href="#" id="home" class="active"><i class="fas fa-home"></i> Home</a>
+        <a href="#" id="wallet"><i class="fas fa-wallet"></i> Wallet</a>
+        <a href="#" id="profile"><i class="fas fa-user"></i> Profile</a>
     </div>
 
     <script type="module">
@@ -89,27 +164,20 @@
 
     <script>
         let tg = window.Telegram.WebApp;
+        tg.ready();
 
         function loadUserData() {
-            tg.ready();
             let user = tg.initDataUnsafe.user;
             if (user) {
-                document.getElementById("name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
                 document.getElementById("username").innerText = user.username ? "@" + user.username : "Không có username";
                 document.getElementById("avatar").src = user.photo_url ? user.photo_url : "default-avatar.png";
+                document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+            } else {
+                console.error("Không thể lấy thông tin người dùng!");
             }
         }
 
-        function setActive(element) {
-            document.querySelectorAll('.footer a').forEach(link => link.classList.remove('active'));
-            element.classList.add('active');
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-        }
-
-        window.onload = loadUserData;
+        loadUserData();
     </script>
 
 </body>
