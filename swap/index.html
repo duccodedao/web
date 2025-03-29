@@ -87,6 +87,71 @@
 }
 
 
+
+
+
+
+.footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #212121;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .footer-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #ccc;
+            font-size: 14px;
+            padding: 5px 10px;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 5px; /* Bo góc cho mục */
+        }
+        .footer-item img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+        .footer-itemm img {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 4px;
+        }
+        .footer-item:hover {
+            color: #fff;
+        }
+        .footer-item.active {
+            background-color: #3498db; /* Màu nền cho mục active */
+            color: white; /* Màu chữ cho mục active */
+            border-radius: 8px;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            padding: 1.5px 3.25px;
+            border-radius: 3px;
+            font-size: 7px;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+
+
     </style>
 </head>
 
@@ -105,6 +170,35 @@
         <div id="swap-widget"></div>
     </div>
 
+
+
+
+
+    <div class="footer">
+        <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/home_.png" alt="Home">
+    
+        </div>
+        <span>Home</span>
+    </a>
+    <a href="/swap/index.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/swap_.png" alt="MuaCoin">
+        </div>
+        <span>Swap</span>
+    </a> 
+    
+    
+    
+    <a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
+        <div class="img-wrapper">
+            <img src="/logo-coin/wallet_.png" alt="MuaCoin">
+        </div>
+        <span>Wallet</span>
+    </a>
+    </div>
+
     <script type="module">
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
@@ -113,19 +207,22 @@
     </script>
 
     <script>
-        function loadUserData() {
-            let tg = window.Telegram.WebApp;
-            tg.ready();
-            let user = tg.initDataUnsafe.user;
-            if (user) {
-                document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
-                document.getElementById("avatar").src = user.photo_url ? user.photo_url : "https://bmasshd.click/logo-coin/bmlogo.jpg";
-                document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
-            } else {
-                console.error("Không thể lấy thông tin người dùng!");
-            }
-        }
-        loadUserData();
+function loadUserData() {
+    let tg = window.Telegram.WebApp;
+    tg.ready();  // Đảm bảo Telegram WebApp đã sẵn sàng
+
+    // Đảm bảo rằng dữ liệu người dùng đã được tải đầy đủ
+    let user = tg.initDataUnsafe.user;
+    if (user) {
+        // Lấy thông tin người dùng và hiển thị
+        document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
+        document.getElementById("avatar").src = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
+        document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+    } else {
+        console.error("Không thể lấy thông tin người dùng!");
+    }
+}
+
     </script>
 </body>
 
