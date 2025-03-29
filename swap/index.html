@@ -206,23 +206,28 @@
         createSwap("swap-widget", { tonConnectInstance: tonConnectUI });
     </script>
 
-    <script>
-function loadUserData() {
-    let tg = window.Telegram.WebApp;
-    tg.ready();  // Đảm bảo Telegram WebApp đã sẵn sàng
+   <script>
+    function loadUserData() {
+        let tg = window.Telegram.WebApp;
+        tg.ready();  // Đảm bảo Telegram WebApp đã sẵn sàng
 
-    // Đảm bảo rằng dữ liệu người dùng đã được tải đầy đủ
-    let user = tg.initDataUnsafe.user;
-    if (user) {
-        // Lấy thông tin người dùng và hiển thị
-        document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
-        document.getElementById("avatar").src = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
-        document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
-    } else {
-        console.error("Không thể lấy thông tin người dùng!");
+        // Lấy thông tin người dùng từ WebApp
+        let user = tg.initDataUnsafe.user;
+
+        if (user) {
+            // Hiển thị thông tin người dùng
+            document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
+            document.getElementById("avatar").src = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
+            document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+        } else {
+            console.error("Không thể lấy thông tin người dùng!");
+        }
     }
-}
-window.onload = loadUserData;
+
+    // Gọi hàm loadUserData khi trang đã được tải
+    window.onload = loadUserData;
+</script>
+
 </body>
 
 </html>
