@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTonSwap & Mini App</title>
+
+    <!-- Telegram & TonConnect -->
+    <script async src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/duccodedao/web@main/js/swap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #3498db; /* Màu xanh lam */
+            --background-color: #f0f0f0; /* Nền sáng */
+            --modal-background-color: #ffffff; /* Nền modal sáng */
+            --swap-container-background: #ecf0f1; /* Hộp swap sáng */
+            --input-card-color: rgba(0, 0, 0, 0.1); /* Trong suốt nhẹ */
+            --text-white-color: #2c3e50; /* Chữ màu tối */
+            --border-radius: 12px;
+            --box-shadow-glow: 0 0 15px rgba(52, 152, 219, 0.5); /* Phát sáng nhẹ */
+        }
+
+        body {
+            background: var(--background-color);
+            color: var(--text-white-color);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Cải thiện giao diện thông tin người dùng */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Khoảng cách giữa avatar và thông tin */
+            background: var(--user-info-background); /* Nền sáng */
+            padding: 15px;
+            border-radius: var(--border-radius); /* Bo tròn các góc */
+            box-shadow: var(--box-shadow-glow); /* Đổ bóng để tạo hiệu ứng sáng */
+            max-width: 400px; /* Chiều rộng tối đa */
+            width: 100%; /* Chiều rộng đầy đủ */
+            margin: 20px auto; /* Canh giữa */
+        }
+
+        /* Thiết lập cho ảnh avatar */
+        .user-info img {
+            width: 70px; /* Kích thước ảnh */
+            height: 70px; /* Kích thước ảnh */
+            border-radius: 50%; /* Bo tròn ảnh thành hình tròn */
+            border: 2px solid var(--avatar-border-color); /* Viền quanh avatar */
+        }
+
+        /* Cải thiện thông tin người dùng */
+        .user-info div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Tên người dùng */
+        #username {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color); /* Màu chữ tên người dùng */
+        }
+
+        /* Tên đầy đủ */
+        #full-name {
+            font-size: 14px;
+            color: #7f8c8d; /* Màu chữ nhạt hơn */
+        }
+
+        /* Hiệu ứng hover cho avatar */
+        .user-info img:hover {
+            cursor: pointer;
+            transform: scale(1.05); /* Phóng to một chút khi hover */
+            transition: transform 0.3s ease-in-out; /* Hiệu ứng mượt mà */
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Hồ sơ người dùng -->
+        <div class="user-info">
+            <img id="avatar" src="default-avatar.png" alt="Avatar">
+            <div>
+                <span id="username">@username</span>
+                <small id="full-name">Name</small>
+            </div>
+        </div>
+
+        <!-- Swap Widget -->
+        <div id="swap-widget"></div>
+    </div>
+
+    <script type="module">
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+        });
+        createSwap("swap-widget", { tonConnectInstance: tonConnectUI });
+    </script>
+
+    <script>
+        function loadUserData() {
+            let tg = window.Telegram.WebApp;
+            tg.ready(); // Chắc chắn Telegram WebApp đã sẵn sàng
+            let user = tg.initDataUnsafe.user;
+
+            if (user) {
+                // Cập nhật thông tin người dùng vào giao diện
+                document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
+                document.getElementById("avatar").src = user.photo_url ? user.photo_url : "https://bmasshd.click/logo-coin/bmlogo.jpg";
+                document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+            } else {
+                console.error("Không thể lấy thông tin người dùng!");
+            }
+        }
+
+        // Gọi hàm để tải thông tin người dùng khi trang được tải
+        loadUserData();
+    </script>
+</body>
+
+</html>
