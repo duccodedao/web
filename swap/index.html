@@ -13,85 +13,103 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        
         :root {
-            --primary-color: #3498db; /* Màu xanh lam */
-            --background-color: #f0f0f0; /* Nền sáng */
-            --modal-background-color: #ffffff; /* Nền modal sáng */
-            --swap-container-background: #ecf0f1; /* Hộp swap sáng */
-            --input-card-color: rgba(0, 0, 0, 0.1); /* Trong suốt nhẹ */
-            --text-white-color: #2c3e50; /* Chữ màu tối */
+            --primary-color: #3498db;
+            --background-color: #f0f0f0;
+            --modal-background-color: #ffffff;
+            --swap-container-background: #ecf0f1;
+            --input-card-color: rgba(0, 0, 0, 0.1);
+            --text-white-color: #2c3e50;
             --border-radius: 12px;
-            --box-shadow-glow: 0 0 15px rgba(52, 152, 219, 0.5); /* Phát sáng nhẹ */
+            --box-shadow-glow: 0 0 15px rgba(52, 152, 219, 0.5);
         }
 
         body {
             background: var(--background-color);
             color: var(--text-white-color);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             height: 100vh;
             margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 15px;
+            background: white;
+            box-shadow: var(--box-shadow-glow);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-glow);
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .user-info img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-details span {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .user-details small {
+            font-size: 14px;
+            color: gray;
         }
 
 
 
- /* Cải thiện giao diện thông tin người dùng */
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Khoảng cách giữa avatar và thông tin */
-    background: var(--user-info-background); /* Nền sáng */
-    padding: 15px;
-    border-radius: var(--border-radius); /* Bo tròn các góc */
-    box-shadow: var(--box-shadow-glow); /* Đổ bóng để tạo hiệu ứng sáng */
-    max-width: 400px; /* Chiều rộng tối đa */
-    width: 100%; /* Chiều rộng đầy đủ */
-    margin: 20px auto; /* Canh giữa */
-}
 
-/* Thiết lập cho ảnh avatar */
-.user-info img {
-    width: 70px; /* Kích thước ảnh */
-    height: 70px; /* Kích thước ảnh */
-    border-radius: 50%; /* Bo tròn ảnh thành hình tròn */
-    border: 2px solid var(--avatar-border-color); /* Viền quanh avatar */
-}
-
-/* Cải thiện thông tin người dùng */
-.user-info div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-/* Tên người dùng */
-#username {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--primary-color); /* Màu chữ tên người dùng */
-}
-
-/* Tên đầy đủ */
-#full-name {
-    font-size: 14px;
-    color: #7f8c8d; /* Màu chữ nhạt hơn */
-}
-
-/* Hiệu ứng hover cho avatar */
-.user-info img:hover {
-    cursor: pointer;
-    transform: scale(1.05); /* Phóng to một chút khi hover */
-    transition: transform 0.3s ease-in-out; /* Hiệu ứng mượt mà */
-}
-
-
-
-
-
-
-.footer {
+        .footer {
             position: fixed;
             bottom: 0;
             left: 0;
@@ -151,25 +169,26 @@
         }
 
 
-
     </style>
 </head>
 
 <body>
+    <div class="header">
+        <img src="/logo-coin/bmlogo.jpg" alt="BmassK3 Logo">
+        <h1>BmassK3</h1>
+    </div>
+
     <div class="container">
-        <!-- Hồ sơ người dùng -->
         <div class="user-info">
             <img id="avatar" src="default-avatar.png" alt="Avatar">
-            <div>
+            <div class="user-details">
                 <span id="username">@username</span>
                 <small id="full-name">Name</small>
             </div>
         </div>
 
-        <!-- Swap Widget -->
         <div id="swap-widget"></div>
     </div>
-
 
 
 
@@ -197,8 +216,6 @@
         </div>
         <span>Wallet</span>
     </a>
-    </div>
-
     <script type="module">
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
@@ -206,28 +223,21 @@
         createSwap("swap-widget", { tonConnectInstance: tonConnectUI });
     </script>
 
-   <script>
-    function loadUserData() {
-        let tg = window.Telegram.WebApp;
-        tg.ready();  // Đảm bảo Telegram WebApp đã sẵn sàng
-
-        // Lấy thông tin người dùng từ WebApp
-        let user = tg.initDataUnsafe.user;
-
-        if (user) {
-            // Hiển thị thông tin người dùng
-            document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
-            document.getElementById("avatar").src = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
-            document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
-        } else {
-            console.error("Không thể lấy thông tin người dùng!");
+    <script>
+        function loadUserData() {
+            let tg = window.Telegram.WebApp;
+            tg.ready();
+            let user = tg.initDataUnsafe.user;
+            if (user) {
+                document.getElementById("username").innerText = user.username ? "@" + user.username : "No Username";
+                document.getElementById("avatar").src = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
+                document.getElementById("full-name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+            } else {
+                console.error("Không thể lấy thông tin người dùng!");
+            }
         }
-    }
-
-    // Gọi hàm loadUserData khi trang đã được tải
-    window.onload = loadUserData;
-</script>
-
+        window.onload = loadUserData;
+    </script>
 </body>
 
 </html>
