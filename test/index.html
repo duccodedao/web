@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập & Gửi dữ liệu</title>
-    <script src="https://telegram.org/js/telegram-login.js" data-telegram-login="BmassK3_bot" data-size="large" data-auth-url="" data-request-access="write"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         form { margin-top: 20px; display: none; }
@@ -48,8 +47,7 @@
             let nameEQ = name + "=";
             let ca = document.cookie.split(';');
             for(let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                let c = ca[i].trim();
                 if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
             }
             return null;
@@ -58,15 +56,16 @@
         function getTelegramUser() {
             let storedUser = getCookie("telegramUser");
             if (storedUser) {
-                telegramUser = JSON.parse(storedUser);
+                let telegramUser = JSON.parse(storedUser);
                 displayUserInfo(telegramUser);
                 return;
             }
 
-            TelegramLoginWidget.onAuth = function(user) {
-                telegramUser = user;
-                setCookie("telegramUser", JSON.stringify(user), 1);
-                displayUserInfo(user);
+            window.TelegramLoginWidget = {
+                onAuth: function(user) {
+                    setCookie("telegramUser", JSON.stringify(user), 1);
+                    displayUserInfo(user);
+                }
             };
         }
 
@@ -81,21 +80,24 @@
 
         document.getElementById("messageForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            if (!telegramUser) {
+            let storedUser = getCookie("telegramUser");
+            if (!storedUser) {
                 alert("Vui lòng đăng nhập Telegram trước!");
                 return;
             }
+            let telegramUser = JSON.parse(storedUser);
             let message = document.getElementById("message").value;
             let botToken = "6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs"; 
             let chatId = "@bmassk3_channel"; 
             let text = `📝 Tin nhắn từ ${telegramUser.first_name} (@${telegramUser.username || 'Không có'}):\n${message}`;
             
-            let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`;
-            
-            fetch(url).then(response => response.json()).then(data => {
-                if (data.ok) alert("Gửi thành công!");
-                else alert("Lỗi gửi tin nhắn!");
-            }).catch(error => alert("Lỗi kết nối!"));
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) alert("Gửi thành công!");
+                    else alert("Lỗi gửi tin nhắn!");
+                })
+                .catch(error => alert("Lỗi kết nối!"));
         });
     </script>
 </body>
