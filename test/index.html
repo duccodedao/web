@@ -23,24 +23,62 @@
     
     <div id="user-info" style="display: none;">
         <h3>Xin chào, <span id="username"></span>!</h3>
+        <p><strong>ID:</strong> <span id="user-id"></span></p>
+        <p><strong>Username:</strong> @<span id="user-username"></span></p>
+        <p><strong>Họ và tên:</strong> <span id="user-fullname"></span></p>
     </div>
     
-    <form id="messageForm">
+    <form id="messageForm" style="display: none;">
         <textarea id="message" placeholder="Nhập nội dung gửi" required></textarea><br>
         <button type="submit">Gửi đến nhóm</button>
     </form>
     
     <script>
-        let telegramUser = null;
+        function setCookie(name, value, hours) {
+            let expires = "";
+            if (hours) {
+                let date = new Date();
+                date.setTime(date.getTime() + (hours * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + value + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
         function getTelegramUser() {
+            let storedUser = getCookie("telegramUser");
+            if (storedUser) {
+                telegramUser = JSON.parse(storedUser);
+                displayUserInfo(telegramUser);
+                return;
+            }
+
             TelegramLoginWidget.onAuth = function(user) {
                 telegramUser = user;
-                document.getElementById("username").textContent = user.first_name;
-                document.getElementById("user-info").style.display = "block";
-                document.getElementById("messageForm").style.display = "block";
+                setCookie("telegramUser", JSON.stringify(user), 1);
+                displayUserInfo(user);
             };
         }
-        
+
+        function displayUserInfo(user) {
+            document.getElementById("username").textContent = user.first_name;
+            document.getElementById("user-id").textContent = user.id;
+            document.getElementById("user-username").textContent = user.username || "Không có";
+            document.getElementById("user-fullname").textContent = user.first_name + " " + (user.last_name || "");
+            document.getElementById("user-info").style.display = "block";
+            document.getElementById("messageForm").style.display = "block";
+        }
+
         document.getElementById("messageForm").addEventListener("submit", function(event) {
             event.preventDefault();
             if (!telegramUser) {
@@ -50,7 +88,7 @@
             let message = document.getElementById("message").value;
             let botToken = "6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs"; 
             let chatId = "@bmassk3_channel"; 
-            let text = `📝 Tin nhắn từ ${telegramUser.first_name} (@${telegramUser.username}):\n${message}`;
+            let text = `📝 Tin nhắn từ ${telegramUser.first_name} (@${telegramUser.username || 'Không có'}):\n${message}`;
             
             let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`;
             
