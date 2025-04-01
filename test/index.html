@@ -1,335 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Wallet</title>
-    <link rel="stylesheet" href="/css/wallet_new.css">
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+    <title>Đăng nhập & Gửi dữ liệu</title>
+    <script src="https://telegram.org/js/telegram-login.js" data-telegram-login="BmassK3_bot" data-size="large" data-auth-url="" data-request-access="write"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        form { margin-top: 20px; }
+        input, button { margin: 10px; padding: 10px; }
+    </style>
 </head>
 <body>
-    <div class="wallet">
-        <div class="wallet-card">
-            <div class="wallet-header">
-                <span>TON Wallet</span>
-                <div id="ton-connect"></div>
-                <!-- Thay thế địa chỉ ví bằng hình ảnh -->
-                <a id="wallet-link" class="wallet-address" href="#" target="_blank">
-                    <img src="/logo-coin/wallet.png" alt="Wallet" id="wallet-image" />
-                </a>
-            </div>
-            <div id="wallet-balance" class="wallet-balance">$0.00</div>
-            <div id="wallet-usdt-value" class="wallet-usdt-value">≈ 0 USDT</div>
-            <div class="wallet-actions">
-                <button class="receive" onclick="showComingSoon()">Receive</button>
-                <button class="send" onclick="sendTransaction()">Send →</button>
-                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint BMC</button> <!-- Thêm nút Mint BMC -->
-            </div>
-        </div>
-        <div class="tokens">
-            <div class="token">
-                <img src="/logo-coin/ton.jpg" alt="TON">
-                <div class="token-info">
-                    <span>TON</span>
-                    <span id="ton-balance">0 TON</span>
-                </div>
-                <div class="token-value" id="ton-value">$0.00</div>
-            </div>
-            <div class="token">
-                <img src="/logo-coin/bmlogo.jpg" alt="BMC">
-                <div class="token-info">
-                    <span>BMC</span>
-                    <span id="token-balance">Loading...</span> <!-- Trạng thái Loading ban đầu -->
-                </div>
-                <div class="token-value" id="bmc-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
-            </div>
-            
-            
-        </div>
-
-    </div>
-
-    <!-- Toast notification -->
-<div id="toast" class="toast">
-    <span id="toast-message"></span>
-</div>
-
-
-
-
-
-
-    <div class="footer">
-        <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/nha.png" alt="Home">
-            <span class="new-badge">Hot</span>
-        </div>
-        <span>Home</span>
-    </a>
-
+    <h2>Đăng nhập bằng Telegram</h2>
+    <script async src="https://telegram.org/js/telegram-widget.js?7"
+        data-telegram-login="BmassK3_bot" 
+        data-size="large"
+        data-userpic="false"
+        data-auth-url=""
+        data-request-access="write"
+        onload="getTelegramUser()"></script>
     
-    <a href="/index/noti.html" class="footer-itemm" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/chuong.gif" alt="MuaCoin">
-        </div>
-        <span></span>
-    </a>
-
-    <a href="/history/history.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/history.png" alt="MuaCoin">
-        </div>
-        <span>History</span>
-    </a>
-    <a href="#" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/wallet0.jpg" alt="MuaCoin">
-        </div>
-        <span>Wallet</span>
-    </a> 
-
-    <a href="/history/history.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <div id="wallet-avatar-container">
-                <div class="skeleton-avatar"></div>
-                <span class="new-badge">Login</span>
-            </div>
-        </div>
-        <span>Profile</span>
-    </a>  
- 
-</div>
-
+    <form id="messageForm" style="display:none;">
+        <textarea id="message" placeholder="Nhập nội dung gửi" required></textarea><br>
+        <button type="submit">Gửi đến nhóm</button>
+    </form>
+    
     <script>
-const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
-    buttonRootId: 'ton-connect'
-});
-
-async function fetchWalletData(wallet) {
-    if (!wallet) return;
-
-    const walletAddress = wallet.account.address.toString();
-    let displayName = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4); // Mặc định rút gọn
-
-    try {
-        // Chuyển đổi địa chỉ thành kiểu IntMsg
-        const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
-
-        // Hiển thị tên account hoặc địa chỉ IntMsg + link tonviewer
-        const walletLink = document.getElementById('wallet-link');
-        walletLink.href = `https://tonviewer.com/${intMsgAddress}`; // Chuyển hướng đến trang địa chỉ IntMsg
-
-        // Cập nhật hình ảnh ví
-        const walletImage = document.getElementById('wallet-image');
-        walletImage.src = '/logo-coin/wallet.png'; // Đảm bảo hình ảnh ví là /logo-coin/wallet.png
-
-        // Lấy số dư TON
-        const accountResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}`);
-        const accountData = await accountResponse.json();
-
-        const tonBalance = (accountData.balance / 1e9).toFixed(9);
-        document.getElementById('wallet-balance').textContent = `${tonBalance} TON`;
-
-        // Lấy giá TON từ CoinGecko
-        const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
-        const priceData = await priceResponse.json();
-        const tonPrice = priceData['the-open-network'].usd;
-
-        // Quy đổi sang USDT
-        const usdtValue = (tonBalance * tonPrice).toFixed(2);
-        document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
-
-        document.getElementById('ton-balance').textContent = `${tonBalance} TON`;
-        document.getElementById('ton-value').textContent = `$${usdtValue}`;
-
-    } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-    }
-}
-
-// Hàm chuyển đổi địa chỉ ví thành dạng IntMsg
-function convertToIntMsg(walletAddress) {
-    // Logic chuyển đổi địa chỉ sang dạng IntMsg nếu cần thiết
-    // Ví dụ: mã hóa hoặc chuyển đổi địa chỉ ví theo cách nào đó
-    return walletAddress; // Thay thế bằng logic thực tế nếu cần
-}
-
-// Khi trạng thái ví thay đổi, cập nhật dữ liệu
-tonConnectUI.onStatusChange(async (wallet) => {
-    if (wallet) {
-        fetchWalletData(wallet);
-    }
-});
-
-// Hàm hiển thị thông báo "Coming Soon" bằng SweetAlert ở góc phải trên cùng
-function showComingSoon() {
-    Swal.fire({
-        icon: 'info',
-        title: 'Coming Soon!',
-
-        showConfirmButton: false,
-        timer: 20000,  // Thời gian hiển thị là 2 giây
-        
-        toast: true,  // Chế độ toast (thông báo nhỏ, không có nút xác nhận)
-        showClass: {
-            popup: 'swal2-noanimation'  // Không sử dụng hoạt ảnh nếu cần
-        },
-        hideClass: {
-            popup: 'swal2-noanimation'  // Không sử dụng hoạt ảnh khi ẩn
+        let telegramUser = null;
+        function getTelegramUser() {
+            TelegramLoginWidget.onAuth = function(user) {
+                telegramUser = user;
+                document.getElementById("messageForm").style.display = "block";
+            };
         }
-    });
-}
-
-// Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
-function sendTransaction() {
-    const assetCurrency = "TON";  // Mã tài sản (TON)
-    const assetAddress = "your_wallet_address_here";  // Địa chỉ ví của bạn, thay thế bằng địa chỉ ví thực tế
-
-    const url = `https://walletbot.me/scw/receiver-search?assetCurrency=${assetCurrency}&assetAddress=${assetAddress}`;
-    window.location.href = url;  // Chuyển hướng người dùng đến URL
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;  // Mặc định BMC là 0 nếu chưa có dữ liệu trong localStorage
-const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
-
-// Cập nhật số dư BMC và giá trị vào giao diện
-function getBMCBalance() {
-    console.log('Số dư BMC:', bmcBalance);  // Kiểm tra số dư BMC
-    document.getElementById("token-balance").innerText = `${bmcBalance.toLocaleString()} BMC`;  // Hiển thị số dư BMC kèm đơn vị "BMC"
-    localStorage.setItem('bmcBalance', bmcBalance);  // Lưu số dư vào localStorage
-
-    // Cập nhật giá trị BMC (giả sử 1 BMC = 1 USDT)
-    const bmcValue = bmcBalance * TON_VALUE_IN_USDT;  // Giả sử 1 BMC = 1 USDT
-    document.getElementById("bmc-value").innerText = `$${bmcValue.toFixed(2)}`;
-}
-
-// Cập nhật giao diện thông báo bằng toast
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    
-    // Kiểm tra xem toast có đang hiển thị không
-    if (toast.classList.contains('show')) {
-        return;  // Nếu đang hiển thị, không làm gì cả
-    }
-
-    const toastMessage = document.getElementById('toast-message');
-    toastMessage.innerText = message; // Cập nhật thông báo
-    toast.classList.add('show');  // Hiển thị thông báo
-    
-    // Ẩn thông báo sau 3 giây
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-// Hàm Mint BMC (tăng số dư BMC sau khi giao dịch thành công)
-async function mintBMC() {
-    try {
-        // Cập nhật trạng thái loading trong khi giao dịch đang diễn ra
-        document.getElementById("token-balance").innerText = "Processing...";
-
-        const payload = "te6ccgEBAQEAAgAAAA=="; // Payload hợp đồng (có thể thay đổi theo yêu cầu)
-
-        const txParams = {
-            validUntil: Math.floor(Date.now() / 1000) + 600,  // Thời gian hết hạn giao dịch
-            messages: [{
-                address: "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD",  // Địa chỉ ví hợp đồng
-                amount: "1",  // 1 TON (nanoTON)
-                payload: payload  // Payload
-            }]
-        };
-
-        console.log("Gửi giao dịch:", txParams);
-        await tonConnectUI.sendTransaction(txParams);  // Gửi giao dịch
-
-        // Sau khi giao dịch thành công, giả sử mint được 100 BMC
-        bmcBalance += 100;  // Thêm 100 BMC vào số dư
-        getBMCBalance();  // Cập nhật số dư BMC trên giao diện
-        showToast(`Gửi thành công! Đang nhận BMC.`);  // Hiển thị thông báo
-    } catch (error) {
-        console.error("Lỗi khi gửi:", error);
-        showToast("Gửi thất bại! Kiểm tra lại ví.");  // Hiển thị thông báo lỗi
-    }
-}
-
-// Lấy số dư BMC khi trang được tải lần đầu tiên
-document.addEventListener("DOMContentLoaded", function() {
-    getBMCBalance();  // Gọi hàm để lấy số dư BMC khi trang được tải
-});
-
-
-
-
-
-
-async function mintBMC() {
-    const userAddress = localStorage.getItem('walletAddress');
-    if (!userAddress) {
-        alert('Vui lòng kết nối ví trước');
-        return;
-    }
-
-    const amount = 100;  // Số BMC cần mint
-
-    // Gửi giao dịch mint BMC
-    const transaction = {
-        to: '0xYourSmartContractAddress',  // Địa chỉ smart contract
-        data: `0xMintData${userAddress}${amount}`,  // Dữ liệu giao dịch
-        value: '0',  // Giá trị thanh toán (nếu có)
-        gas_limit: '1000000'  // Giới hạn gas
-    };
-
-    try {
-        await tonConnectUI.sendTransaction(transaction);  // Gửi giao dịch mint
-
-        // Sau khi giao dịch mint thành công, cập nhật số dư BMC vào blockchain
-        await updateBalanceOnBlockchain(userAddress, amount);  // Lưu số dư vào blockchain
-
-        getBMCBalance(userAddress);  // Cập nhật số dư BMC trên giao diện
-        showToast('Gửi thành công! Đang nhận BMC.');
-    } catch (error) {
-        console.error('Lỗi khi gửi giao dịch:', error);
-        showToast('Gửi thất bại! Kiểm tra lại ví.');
-    }
-}
-
-
-async function getBMCBalance(userAddress) {
-    try {
-        // Gọi smart contract để lấy số dư của người dùng từ blockchain
-        const balance = await tonConnectUI.getContractBalance(userAddress);  // Hàm này tùy vào smart contract của bạn
-
-        document.getElementById("token-balance").innerText = `${balance.toLocaleString()} BMC`;  // Hiển thị số dư
-    } catch (error) {
-        console.error('Lỗi khi lấy số dư:', error);
-        document.getElementById("token-balance").innerText = 'Không thể lấy số dư';
-    }
-}
-
-
-
-
-
-
-  </script>
+        
+        document.getElementById("messageForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            if (!telegramUser) {
+                alert("Vui lòng đăng nhập Telegram trước!");
+                return;
+            }
+            let message = document.getElementById("message").value;
+            let botToken = "6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs"; 
+            let chatId = "@bmassk3_channel"; 
+            let text = `📝 Tin nhắn từ ${telegramUser.first_name} (@${telegramUser.username}):\n${message}`;
+            
+            let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`;
+            
+            fetch(url).then(response => response.json()).then(data => {
+                if (data.ok) alert("Gửi thành công!");
+                else alert("Lỗi gửi tin nhắn!");
+            }).catch(error => alert("Lỗi kết nối!"));
+        });
+    </script>
 </body>
 </html>
