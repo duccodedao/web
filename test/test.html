@@ -3,87 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiểm tra số dư TON</title>
+    <title>TON Connect</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
             background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
         }
-        h2 {
-            color: #333;
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #ffffff;
         }
-        input, button {
-            margin: 10px;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
         }
-        button {
+
+        .connect-btn {
+            padding: 15px 30px;
+            font-size: 1rem;
             background-color: #007bff;
             color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        button:hover {
+
+        .connect-btn:hover {
             background-color: #0056b3;
         }
-        #balance {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 20px;
-            color: #28a745;
-        }
     </style>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
 <body>
-    <h2>Kiểm tra số dư địa chỉ TON</h2>
-    <button id="ton-connect">Kết nối ví TON</button>
-    <input type="text" id="address" placeholder="Nhập địa chỉ ví TON">
-    <button onclick="getBalance()">Kiểm tra</button>
-    <p id="balance"></p>
+    <div class="container">
+        <h1>TON Connect Example</h1>
+        <button id="ton-connect" class="connect-btn">Kết nối ví TON</button>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/gh/duccodedao/web@main/js/ton-connect_by_bmass.js"></script>
     <script>
+        // Initialize the TON Connect UI
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
 
+        // Function to connect to wallet
         async function connectToWallet() {
             try {
                 const connectedWallet = await tonConnectUI.connectWallet();
-                console.log(connectedWallet);
+                // Do something with the connectedWallet (e.g., display or log it)
+                console.log('Connected Wallet:', connectedWallet);
             } catch (error) {
-                console.error("Error connecting to wallet:", error);
+                console.error('Error connecting to wallet:', error);
             }
         }
 
+        // Event listener for button click
+        document.getElementById('ton-connect').addEventListener('click', connectToWallet);
+
+        // Configure UI options
         tonConnectUI.uiOptions = {
             twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='
         };
-
-        async function getBalance() {
-            const address = document.getElementById("address").value;
-            if (!address) {
-                alert("Vui lòng nhập địa chỉ ví TON");
-                return;
-            }
-            
-            const apiUrl = `https://toncenter.com/api/v2/getAddressBalance?address=${address}`;
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                if (data.ok) {
-                    document.getElementById("balance").innerText = `Số dư: ${data.result / 1e9} TON`;
-                } else {
-                    document.getElementById("balance").innerText = "Lỗi khi lấy số dư";
-                }
-            } catch (error) {
-                document.getElementById("balance").innerText = "Không thể lấy dữ liệu";
-            }
-        }
     </script>
 </body>
 </html>
