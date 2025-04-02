@@ -11348,7 +11348,7 @@ n)
                                             get color() {
                                                 return t.colors.connectButton.foreground
                                             },
-                                            children: "Connect wallet"
+                                            children: "Kết nối ví"
                                         })]
                                     }
                                 })
