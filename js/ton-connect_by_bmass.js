@@ -6274,12 +6274,12 @@ n)
       , Ur = {
         en: jr({
             common: {
-                close: "Close",
-                openWallet: "Open wallet",
-                copyLink: "Copy Link",
-                linkCopied: "Link Copied",
+                close: "Đóng",
+                openWallet: "Mở ví",
+                copyLink: "Sao chép link",
+                linkCopied: "Sao chép thành công!",
                 copied: "Copied",
-                yourWallet: "Your Wallet",
+                yourWallet: "Ví của bạn",
                 retry: "Retry",
                 get: "GET",
                 mobile: "Mobile",
@@ -6287,11 +6287,11 @@ n)
                 desktop: "Desktop"
             },
             button: {
-                connectWallet: "Connect Wallet",
+                connectWallet: "Kết nối ví",
                 dropdown: {
-                    copy: "Copy address",
-                    copied: "Address copied!",
-                    disconnect: "Disconnect"
+                    copy: "Sao chép",
+                    copied: "Sao chép thành công!",
+                    disconnect: "Hủy kết nối"
                 }
             },
             notifications: {
@@ -6317,7 +6317,7 @@ n)
                 loading: "Loading wallets",
                 wallets: "Wallets",
                 mobileUniversalModal: {
-                    connectYourWallet: "BmassK3 Connect",
+                    connectYourWallet: "Connect your TON wallet",
                     openWalletOnTelegramOrSelect: "Use Wallet in Telegram or choose other application",
                     openWalletOnTelegram: "Connect Wallet in Telegram",
                     chooseOtherApplication: "Choose other application",
@@ -6325,7 +6325,7 @@ n)
                     scan: "Scan with your mobile wallet"
                 },
                 desktopUniversalModal: {
-                    connectYourWallet: "BmassK3 Connect",
+                    connectYourWallet: "Connect your TON wallet",
                     scan: "Scan with your mobile wallet",
                     availableWallets: "Available wallets"
                 },
@@ -13395,7 +13395,7 @@ n)
 `
       , yu = e => [Yt(gu, {
         translationKey: "walletModal.mobileUniversalModal.connectYourWallet",
-        children: "BmassK3 Connect"
+        children: "Connect your TON wallet"
     }), Yt(fu, {
         translationKey: "walletModal.mobileUniversalModal.scan",
         children: "Scan with your mobile wallet"
@@ -13558,7 +13558,7 @@ n)
                         onClick: v
                     }), Yt(lu, {
                         translationKey: "walletModal.mobileUniversalModal.connectYourWallet",
-                        children: "BmassK3 Connect"
+                        children: "Connect your TON wallet"
                     }), Yt(rn, {
                         get when() {
                             return d()
