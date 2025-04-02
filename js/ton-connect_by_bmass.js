@@ -13373,10 +13373,10 @@ Ur = {
 `
       , yu = e => [Yt(gu, {
         translationKey: "walletModal.mobileUniversalModal.connectYourWallet",
-        children: "Connect your TON wallet"
+        children: "Connect your TON wallet1"
     }), Yt(fu, {
         translationKey: "walletModal.mobileUniversalModal.scan",
-        children: "Scan with your mobile wallet"
+        children: "Scan with your mobile wallet1"
     }), Yt(mu, {
         get children() {
             return Yt(ji, {
@@ -13741,10 +13741,10 @@ Ur = {
             get children() {
                 return [Yt(ss, {
                     translationKey: "walletModal.desktopUniversalModal.connectYourWallet",
-                    children: "Connect your wallet"
+                    children: "Connect your wallet2"
                 }), Yt(Tu, {
                     translationKey: "walletModal.desktopUniversalModal.scan",
-                    children: "Scan with your mobile wallet"
+                    children: "Scan with your mobile wallet2"
                 }), Yt(Lu, {
                     get sourceUrl() {
                         return Ec(i(), "none")
@@ -13757,7 +13757,7 @@ Ur = {
                     }
                 }), Yt(Au, {
                     translationKey: "walletModal.desktopUniversalModal.availableWallets",
-                    children: "Available wallets"
+                    children: "Available wallets1"
                 }), Yt(Mu, {
                     get children() {
                         return [Yt(nn, {
