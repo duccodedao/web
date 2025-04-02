@@ -11326,7 +11326,7 @@ Ur = {
                                             get color() {
                                                 return t.colors.connectButton.foreground
                                             },
-                                            children: "Connect wallet"
+                                            children: "Kết nối ví"
                                         })]
                                     }
                                 })
@@ -13562,7 +13562,7 @@ Ur = {
                                 get children() {
                                     return Yt(Sc, {
                                         translationKey: "walletModal.mobileUniversalModal.openWalletOnTelegram",
-                                        children: "Connect Wallet in Telegram"
+                                        children: "Kết nối ví in Telegram"
                                     })
                                 }
                             })]
@@ -14883,7 +14883,7 @@ Ur = {
                 if (this.tracker.trackTransactionSentForSignature(this.wallet, e),
                 !this.connected)
                     throw this.tracker.trackTransactionSigningFailed(this.wallet, e, "Wallet was not connected"),
-                    new lr("Connect wallet to send a transaction.");
+                    new lr("Kết nối ví to send a transaction.");
                 Ro() && Ao();
                 const {notifications: n, modals: r, returnStrategy: o, twaReturnUrl: i} = this.getModalsAndNotificationsConfiguration(t);
                 Ju({
