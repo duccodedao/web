@@ -6271,136 +6271,114 @@ n)
             transactionCanceled: "$notifications.transactionCanceled"
         }
     }
-      , Ur = {
-        en: jr({
-            common: {
-                close: "Đóng",
-                openWallet: "Mở ví",
-                copyLink: "Sao chép link",
-                linkCopied: "Sao chép thành công!",
-                copied: "Copied",
-                yourWallet: "Ví của bạn",
-                retry: "Retry",
-                get: "GET",
-                mobile: "Mobile",
-                browserExtension: "Browser Extension",
-                desktop: "Desktop"
-            },
-            button: {
-                connectWallet: "Kết nối ví",
-                dropdown: {
-                    copy: "Sao chép",
-                    copied: "Sao chép thành công!",
-                    disconnect: "Hủy kết nối"
-                }
-            },
-            notifications: {
-                confirm: {
-                    header: "Open {{ name }} to confirm the transaction."
-                },
-                transactionSent: {
-                    header: "Transaction sent",
-                    text: "Your transaction will be processed in a few seconds."
-                },
-                transactionCanceled: {
-                    header: "Transaction canceled",
-                    text: "There will be no changes to your account."
-                }
-            },
-            walletItem: {
-                walletOn: "Wallet in",
-                recent: "Recent",
-                installed: "Installed",
-                popular: "Popular"
-            },
-            walletModal: {
-                loading: "Loading wallets",
-                wallets: "Wallets",
-                mobileUniversalModal: {
-                    connectYourWallet: "Connect your TON wallet",
-                    openWalletOnTelegramOrSelect: "Use Wallet in Telegram or choose other application",
-                    openWalletOnTelegram: "Connect Wallet in Telegram",
-                    chooseOtherApplication: "Choose other application",
-                    openLink: "Open Link",
-                    scan: "Scan with your mobile wallet"
-                },
-                desktopUniversalModal: {
-                    connectYourWallet: "Connect your TON wallet",
-                    scan: "Scan with your mobile wallet",
-                    availableWallets: "Available wallets"
-                },
-                mobileConnectionModal: {
-                    showQR: "Show QR Code",
-                    scanQR: "Scan the QR code below with your phone’s or {{ name }}’s camera",
-                    missingFeatures: "Please update {{ name }}, your version does not support required features for this dApp",
-                    notSupportedWallet: "{{ name }} doesn’t support the requested action. Please connect another wallet that supports it",
-                    continueIn: "Continue in {{ name }}…",
-                    updateWallet: "Update {{ name }}",
-                    chooseAnotherWallet: "Choose Another Wallet",
-                    connectionDeclined: "Connection declined"
-                },
-                desktopConnectionModal: {
-                    scanQR: "Scan the QR code below with your phone’s or {{ name }}’s camera",
-                    continueInExtension: "Continue in {{ name }} browser extension…",
-                    dontHaveExtension: "Seems you don't have installed {{ name }} browser extension",
-                    missingFeatures: "Please update {{ name }}, your version does not support required features for this dApp",
-                    notSupportedWallet: "{{ name }} doesn’t support the requested action. Please connect another wallet that supports it",
-                    getWallet: "Get {{ name }}",
-                    updateWallet: "Update {{ name }}",
-                    chooseAnotherWallet: "Choose Another Wallet",
-                    continueOnDesktop: "Continue in {{ name }} on desktop…",
-                    openWalletOnTelegram: "Connect Wallet in Telegram on desktop",
-                    connectionDeclined: "Connection declined"
-                },
-                infoModal: {
-                    whatIsAWallet: "What is a wallet",
-                    secureDigitalAssets: "Secure digital assets storage",
-                    walletProtects: "A wallet protects and manages your digital assets including TON, tokens and collectables.",
-                    controlIdentity: "Control your Web3 identity",
-                    manageIdentity: "Manage your digital identity and access decentralized applications with ease. Maintain control over your data and engage securely in the blockchain ecosystem.",
-                    effortlessCryptoTransactions: "Effortless crypto transactions",
-                    easilySend: "Easily send, receive, monitor your cryptocurrencies. Streamline your operations with decentralized applications.",
-                    getAWallet: "Get a Wallet"
-                },
-                allWallets: {
-                    walletsBelowNotSupported: "The wallets below don’t support all features of the connected service. You can use your recovery phrase in one of the supported wallets above.",
-                    walletNotSupportService: "{{ name }} doesn’t support connected service"
-                }
-            },
-            actionModal: {
-                confirmTransaction: {
-                    header: "Confirm the transaction in {{ name }}",
-                    text: "It will only take a moment."
-                },
-                transactionSent: "$notifications.transactionSent",
-                transactionCanceled: "$notifications.transactionCanceled"
+Ur = {
+    en: jr({
+        common: {
+            close: "Đóng",
+            openWallet: "Mở ví",
+            copyLink: "Sao chép liên kết",
+            linkCopied: "Liên kết đã được sao chép",
+            copied: "Đã sao chép",
+            yourWallet: "Ví của bạn",
+            retry: "Thử lại",
+            get: "Lấy",
+            mobile: "Điện thoại di động",
+            browserExtension: "Tiện ích mở rộng trình duyệt",
+            desktop: "Máy tính để bàn"
+        },
+        button: {
+            connectWallet: "Kết nối ví",
+            dropdown: {
+                copy: "Sao chép địa chỉ",
+                copied: "Địa chỉ đã được sao chép!",
+                disconnect: "Ngắt kết nối"
             }
-        }),
-        ru: jr(Ir)
-    };
-    function jr(e) {
-        const t = n => {
-            Object.entries(n).forEach(( ([r,o]) => {
-                if ("object" == typeof o && o)
-                    return t(o);
-                if ("string" == typeof o) {
-                    if ("$" === o[0]) {
-                        const t = o.slice(1).split(".");
-                        let i = e;
-                        t.forEach((e => {
-                            if (!(e in i))
-                                throw new Error(`Cannot parse translations: there is no property ${e} in translation`);
-                            i = i[e]
-                        }
-                        )),
-                        n[r] = i
-                    }
-                    "\\$" === o.slice(0, 2) && (n[r] = o.slice(1))
-                }
+        },
+        notifications: {
+            confirm: {
+                header: "Mở {{ name }} để xác nhận giao dịch."
+            },
+            transactionSent: {
+                header: "Giao dịch đã được gửi",
+                text: "Giao dịch của bạn sẽ được xử lý trong vài giây."
+            },
+            transactionCanceled: {
+                header: "Giao dịch đã bị hủy",
+                text: "Sẽ không có thay đổi nào đối với tài khoản của bạn."
             }
-            ))
+        },
+        walletItem: {
+            walletOn: "Ví đang bật",
+            recent: "Gần đây",
+            installed: "Đã cài đặt",
+            popular: "Phổ biến"
+        },
+        walletModal: {
+            loading: "Đang tải ví",
+            wallets: "Các ví",
+            mobileUniversalModal: {
+                connectYourWallet: "Kết nối ví TON của bạn",
+                openWalletOnTelegramOrSelect: "Sử dụng ví trong Telegram hoặc chọn ứng dụng khác",
+                openWalletOnTelegram: "Kết nối ví trong Telegram",
+                chooseOtherApplication: "Chọn ứng dụng khác",
+                openLink: "Mở liên kết",
+                scan: "Quét mã với ví di động của bạn"
+            },
+            desktopUniversalModal: {
+                connectYourWallet: "Kết nối ví TON của bạn",
+                scan: "Quét mã với ví di động của bạn",
+                availableWallets: "Các ví có sẵn"
+            },
+            mobileConnectionModal: {
+                showQR: "Hiển thị mã QR",
+                scanQR: "Quét mã QR dưới đây bằng camera của điện thoại hoặc {{ name }}",
+                missingFeatures: "Vui lòng cập nhật {{ name }}, phiên bản của bạn không hỗ trợ các tính năng yêu cầu cho ứng dụng này",
+                notSupportedWallet: "{{ name }} không hỗ trợ hành động yêu cầu. Vui lòng kết nối ví khác hỗ trợ tính năng này",
+                continueIn: "Tiếp tục trong {{ name }}…",
+                updateWallet: "Cập nhật {{ name }}",
+                chooseAnotherWallet: "Chọn ví khác",
+                connectionDeclined: "Kết nối bị từ chối"
+            },
+            desktopConnectionModal: {
+                scanQR: "Quét mã QR dưới đây bằng camera của điện thoại hoặc {{ name }}",
+                continueInExtension: "Tiếp tục trong tiện ích mở rộng trình duyệt {{ name }}…",
+                dontHaveExtension: "Có vẻ như bạn chưa cài đặt tiện ích mở rộng trình duyệt {{ name }}",
+                missingFeatures: "Vui lòng cập nhật {{ name }}, phiên bản của bạn không hỗ trợ các tính năng yêu cầu cho ứng dụng này",
+                notSupportedWallet: "{{ name }} không hỗ trợ hành động yêu cầu. Vui lòng kết nối ví khác hỗ trợ tính năng này",
+                getWallet: "Tải {{ name }}",
+                updateWallet: "Cập nhật {{ name }}",
+                chooseAnotherWallet: "Chọn ví khác",
+                continueOnDesktop: "Tiếp tục trong {{ name }} trên máy tính để bàn…",
+                openWalletOnTelegram: "Kết nối ví trong Telegram trên máy tính để bàn",
+                connectionDeclined: "Kết nối bị từ chối"
+            },
+            infoModal: {
+                whatIsAWallet: "Ví là gì",
+                secureDigitalAssets: "Bảo mật tài sản kỹ thuật số",
+                walletProtects: "Ví bảo vệ và quản lý tài sản kỹ thuật số của bạn bao gồm TON, token và bộ sưu tập.",
+                controlIdentity: "Kiểm soát danh tính Web3 của bạn",
+                manageIdentity: "Quản lý danh tính kỹ thuật số của bạn và truy cập các ứng dụng phi tập trung dễ dàng. Giữ quyền kiểm soát dữ liệu của bạn và tham gia vào hệ sinh thái blockchain một cách an toàn.",
+                effortlessCryptoTransactions: "Giao dịch tiền điện tử dễ dàng",
+                easilySend: "Gửi, nhận và giám sát tiền điện tử của bạn một cách dễ dàng. Tinh giản các hoạt động của bạn với các ứng dụng phi tập trung.",
+                getAWallet: "Tải ví"
+            },
+            allWallets: {
+                walletsBelowNotSupported: "Các ví dưới đây không hỗ trợ tất cả các tính năng của dịch vụ kết nối. Bạn có thể sử dụng cụm từ khôi phục của mình trong một trong các ví hỗ trợ ở trên.",
+                walletNotSupportService: "{{ name }} không hỗ trợ dịch vụ kết nối"
+            }
+        },
+        actionModal: {
+            confirmTransaction: {
+                header: "Xác nhận giao dịch trong {{ name }}",
+                text: "Chỉ mất một chút thời gian."
+            },
+            transactionSent: "$notifications.transactionSent",
+            transactionCanceled: "$notifications.transactionCanceled"
         }
-        ;
+    }),
+    ru: jr(Ir)
+};
+
         return t(e),
         e
     }
@@ -10531,7 +10509,7 @@ n)
                                         get children() {
                                             return Yt(Aa, {
                                                 translationKey: "button.dropdown.copy",
-                                                children: "Sao chép địa  chỉ ví"
+                                                children: "Copy address"
                                             })
                                         }
                                     }), Yt(rn, {
@@ -10541,7 +10519,7 @@ n)
                                         get children() {
                                             return Yt(Aa, {
                                                 translationKey: "button.dropdown.copied",
-                                                children: "Sao chép thành công!"
+                                                children: "Address copied!"
                                             })
                                         }
                                     })]
@@ -10557,7 +10535,7 @@ n)
                                 get children() {
                                     return [Yt(xa, {}), Yt(Aa, {
                                         translationKey: "button.dropdown.disconnect",
-                                        children: "Hủy kết nối"
+                                        children: "Disconnect"
                                     })]
                                 }
                             })),
@@ -11348,7 +11326,7 @@ n)
                                             get color() {
                                                 return t.colors.connectButton.foreground
                                             },
-                                            children: "Kết nối ví"
+                                            children: "Connect wallet"
                                         })]
                                     }
                                 })
