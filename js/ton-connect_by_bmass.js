@@ -6317,7 +6317,7 @@ n)
                 loading: "Loading wallets",
                 wallets: "Wallets",
                 mobileUniversalModal: {
-                    connectYourWallet: "Connect your TON wallet",
+                    connectYourWallet: "BmassK3 Connect",
                     openWalletOnTelegramOrSelect: "Use Wallet in Telegram or choose other application",
                     openWalletOnTelegram: "Connect Wallet in Telegram",
                     chooseOtherApplication: "Choose other application",
@@ -6325,7 +6325,7 @@ n)
                     scan: "Scan with your mobile wallet"
                 },
                 desktopUniversalModal: {
-                    connectYourWallet: "Connect your TON wallet",
+                    connectYourWallet: "BmassK3 Connect",
                     scan: "Scan with your mobile wallet",
                     availableWallets: "Available wallets"
                 },
@@ -13395,7 +13395,7 @@ n)
 `
       , yu = e => [Yt(gu, {
         translationKey: "walletModal.mobileUniversalModal.connectYourWallet",
-        children: "Connect your TON wallet"
+        children: "BmassK3 Connect"
     }), Yt(fu, {
         translationKey: "walletModal.mobileUniversalModal.scan",
         children: "Scan with your mobile wallet"
@@ -13558,7 +13558,7 @@ n)
                         onClick: v
                     }), Yt(lu, {
                         translationKey: "walletModal.mobileUniversalModal.connectYourWallet",
-                        children: "Connect your TON wallet"
+                        children: "BmassK3 Connect"
                     }), Yt(rn, {
                         get when() {
                             return d()
