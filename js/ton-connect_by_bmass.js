@@ -10531,7 +10531,7 @@ n)
                                         get children() {
                                             return Yt(Aa, {
                                                 translationKey: "button.dropdown.copy",
-                                                children: "Copy address"
+                                                children: "Sao chép địa  chỉ ví"
                                             })
                                         }
                                     }), Yt(rn, {
@@ -10541,7 +10541,7 @@ n)
                                         get children() {
                                             return Yt(Aa, {
                                                 translationKey: "button.dropdown.copied",
-                                                children: "Address copied!"
+                                                children: "Sao chép thành công!"
                                             })
                                         }
                                     })]
@@ -10557,7 +10557,7 @@ n)
                                 get children() {
                                     return [Yt(xa, {}), Yt(Aa, {
                                         translationKey: "button.dropdown.disconnect",
-                                        children: "Disconnect"
+                                        children: "Hủy kết nối"
                                     })]
                                 }
                             })),
