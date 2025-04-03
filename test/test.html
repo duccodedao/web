@@ -3,77 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Connect</title>
+    <title>Kết Nối Ví TON</title>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
             background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
         }
 
         .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #ffffff;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        .connect-btn {
-            padding: 15px 30px;
-            font-size: 1rem;
-            background-color: #007bff;
+        button {
+            background: #0088cc;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 10px 20px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            font-size: 16px;
+            border-radius: 5px;
         }
 
-        .connect-btn:hover {
-            background-color: #0056b3;
+        button:hover {
+            background: #006699;
+        }
+
+        pre {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
+            overflow-x: auto;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>TON Connect Example</h1>
-        <button id="ton-connect" class="connect-btn">Kết nối ví TON</button>
+        <h1>Kết Nối Ví TON</h1>
+        <!-- TonConnect Button sẽ được hiển thị ở đây -->
+        <div id="ton-connect"></div>
+        <p><strong>Địa chỉ ví:</strong> <span id="walletAddress">Chưa kết nối</span></p>
+        <p><strong>Thông tin tài khoản:</strong></p>
+        <pre id="accountData">Chưa có dữ liệu</pre>
     </div>
 
-    <script src="/js/ton-connect-bmass.js"></script>
     <script>
-        // Initialize the TON Connect UI
+        // Khởi tạo TonConnect UI
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL của manifest
+            buttonRootId: 'ton-connect'  // Địa chỉ để hiển thị nút kết nối
         });
 
-        // Function to connect to wallet
+        // Hàm kết nối ví
         async function connectToWallet() {
             try {
-                const connectedWallet = await tonConnectUI.connectWallet();
-                // Do something with the connectedWallet (e.g., display or log it)
-                console.log('Connected Wallet:', connectedWallet);
+                const connectedWallet = await tonConnectUI.connectWallet();  // Kết nối ví
+
+                if (connectedWallet && connectedWallet.account) {
+                    // Lấy địa chỉ ví và hiển thị
+                    const walletAddress = connectedWallet.account.address;
+                    document.getElementById('walletAddress').textContent = walletAddress;
+
+                    // Lấy dữ liệu tài khoản từ Toncenter (hoặc API tương tự)
+                    fetchTonAccountData(walletAddress);
+                } else {
+                    console.error("Không thể kết nối ví.");
+                }
             } catch (error) {
-                console.error('Error connecting to wallet:', error);
+                console.error("Lỗi kết nối ví:", error);
             }
         }
 
-        // Event listener for button click
-        document.getElementById('ton-connect').addEventListener('click', connectToWallet);
+        // Hàm lấy dữ liệu tài khoản từ API Toncenter
+        async function fetchTonAccountData(address) {
+            const url = `https://toncenter.com/api/v2/getAddressInfo?address=${address}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
 
-        // Configure UI options
+                if (data.ok) {
+                    document.getElementById('accountData').textContent = JSON.stringify(data.result, null, 2);
+                } else {
+                    document.getElementById('accountData').textContent = "Không tìm thấy thông tin tài khoản.";
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+                document.getElementById('accountData').textContent = "Lỗi khi lấy dữ liệu tài khoản.";
+            }
+        }
+
+        // Gọi hàm kết nối khi trang được tải
         tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='
+            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='  // Thêm TWA return URL nếu cần
         };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            connectToWallet();
+        });
     </script>
+
 </body>
 </html>
