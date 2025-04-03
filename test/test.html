@@ -3,122 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết Nối Ví TON và Lấy Thông Tin Tài Khoản</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <title>Quét Thông Tin Ví và Giao Dịch TON</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
             background-color: #f4f4f4;
-        }
-
-        .container {
-            background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: auto;
         }
-
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
         button {
-            background: #0088cc;
+            background-color: #0088cc;
             color: white;
-            border: none;
             padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            border-radius: 5px;
+            margin-top: 10px;
         }
-
         button:hover {
-            background: #006699;
+            background-color: #006699;
         }
-
         pre {
-            background: #f8f8f8;
+            background-color: #f8f8f8;
             padding: 10px;
-            border-radius: 5px;
-            text-align: left;
+            border-radius: 4px;
             overflow-x: auto;
+            white-space: pre-wrap;
         }
-
-        #ton-connect {
+        .response-container {
             margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Kết Nối Ví TON</h1>
-        <!-- TonConnect Button sẽ được hiển thị ở đây -->
-        <div id="ton-connect"></div>
-        <p><strong>Địa chỉ ví:</strong> <span id="walletAddress">Chưa kết nối</span></p>
-        <p><strong>Thông tin tài khoản:</strong></p>
-        <pre id="accountData">Chưa có dữ liệu</pre>
+<div class="container">
+    <h1>Quét Thông Tin Ví và Giao Dịch TON</h1>
+
+    <!-- Form nhập địa chỉ ví -->
+    <label for="address">Nhập địa chỉ ví:</label>
+    <input type="text" id="address" placeholder="Nhập địa chỉ ví TON">
+    <button onclick="scanAddress()">Quét Thông Tin Ví</button>
+
+    <!-- Form nhập id giao dịch -->
+    <label for="transactionId">Nhập ID giao dịch:</label>
+    <input type="text" id="transactionId" placeholder="Nhập ID giao dịch">
+    <button onclick="scanTransaction()">Quét Thông Tin Giao Dịch</button>
+
+    <div class="response-container">
+        <h2>Thông Tin:</h2>
+        <pre id="responseData">Kết quả sẽ hiển thị ở đây...</pre>
     </div>
+</div>
 
-    <script>
-        // Khởi tạo TonConnect UI
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',  // URL của manifest
-            buttonRootId: 'ton-connect'  // Địa chỉ để hiển thị nút kết nối
-        });
-
-        // Hàm kết nối ví
-        async function connectToWallet() {
-            try {
-                const connectedWallet = await tonConnectUI.connectWallet();  // Kết nối ví
-
-                if (connectedWallet && connectedWallet.account) {
-                    // Lấy địa chỉ ví và hiển thị
-                    const walletAddress = connectedWallet.account.address;
-                    document.getElementById('walletAddress').textContent = walletAddress;
-
-                    // Lấy dữ liệu tài khoản từ API Toncenter
-                    fetchAccountInfo(walletAddress);
-                } else {
-                    console.error("Không thể kết nối ví.");
-                }
-            } catch (error) {
-                console.error("Lỗi kết nối ví:", error);
-            }
+<script>
+    // Hàm quét thông tin ví khi người dùng nhập địa chỉ ví và bấm nút "Quét Thông Tin Ví"
+    async function scanAddress() {
+        const address = document.getElementById('address').value;
+        if (!address) {
+            alert('Vui lòng nhập địa chỉ ví.');
+            return;
         }
 
-        // Hàm lấy dữ liệu tài khoản từ API Toncenter (sử dụng getAddressInfo)
-        async function fetchAccountInfo(address) {
-            const url = `https://toncenter.com/api/v2/getAddressInfo?address=${address}`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                // Kiểm tra nếu API trả về dữ liệu hợp lệ
-                if (data.ok) {
-                    console.log("Thông tin tài khoản:", data.result);
-                    // Hiển thị toàn bộ thông tin trả về
-                    document.getElementById('accountData').textContent = JSON.stringify(data.result, null, 2);
-                } else {
-                    document.getElementById('accountData').textContent = "Không tìm thấy thông tin tài khoản.";
-                }
-            } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu:", error);
-                document.getElementById('accountData').textContent = "Lỗi khi lấy dữ liệu tài khoản.";
-            }
+        // Gửi yêu cầu GET cho tất cả các endpoint liên quan đến ví
+        const endpoints = [
+            '/getAddressInformation',
+            '/getExtendedAddressInformation',
+            '/getWalletInformation',
+            '/getTransactions',
+            '/getAddressBalance',
+            '/getAddressState',
+            '/packAddress',
+            '/unpackAddress',
+            '/getTokenData',
+            '/detectAddress'
+        ];
+
+        let allResults = "";
+        
+        for (const endpoint of endpoints) {
+            const url = `https://toncenter.com/api/v2${endpoint}?address=${address}`;
+            const data = await fetchData(url);
+            allResults += `Kết quả từ ${endpoint}:\n${JSON.stringify(data, null, 2)}\n\n`;
         }
 
-        // Gọi hàm kết nối khi trang được tải
-        tonConnectUI.uiOptions = {
-            twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='  // Thêm TWA return URL nếu cần
-        };
+        // Hiển thị kết quả
+        document.getElementById('responseData').textContent = allResults;
+    }
 
-        // Kết nối ví và lấy thông tin tài khoản khi trang tải
-        document.addEventListener("DOMContentLoaded", () => {
-            connectToWallet();
-        });
-    </script>
+    // Hàm quét thông tin giao dịch khi người dùng nhập ID giao dịch và bấm nút "Quét Thông Tin Giao Dịch"
+    async function scanTransaction() {
+        const transactionId = document.getElementById('transactionId').value;
+        if (!transactionId) {
+            alert('Vui lòng nhập ID giao dịch.');
+            return;
+        }
+
+        // Gửi yêu cầu GET cho tất cả các endpoint liên quan đến giao dịch
+        const transactionEndpoints = [
+            '/getTransactions',
+            '/getBlockTransactions',
+            '/getBlockTransactionsExt',
+            '/tryLocateTx',
+            '/tryLocateResultTx',
+            '/tryLocateSourceTx'
+        ];
+
+        let allResults = "";
+        
+        for (const endpoint of transactionEndpoints) {
+            const url = `https://toncenter.com/api/v2${endpoint}?txid=${transactionId}`;
+            const data = await fetchData(url);
+            allResults += `Kết quả từ ${endpoint}:\n${JSON.stringify(data, null, 2)}\n\n`;
+        }
+
+        // Hiển thị kết quả
+        document.getElementById('responseData').textContent = allResults;
+    }
+
+    // Hàm lấy dữ liệu từ API
+    async function fetchData(url) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Không thể lấy dữ liệu từ API');
+            }
+            return await response.json();
+        } catch (error) {
+            return { error: error.message };
+        }
+    }
+</script>
 
 </body>
 </html>
