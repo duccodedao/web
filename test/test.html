@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết Nối Ví TON</title>
+    <title>Kết Nối Ví TON và Lấy Thông Tin Tài Khoản</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         body {
@@ -78,7 +78,7 @@
                     document.getElementById('walletAddress').textContent = walletAddress;
 
                     // Lấy dữ liệu tài khoản từ API Toncenter
-                    fetchTonAccountData(walletAddress);
+                    fetchAccountInfo(walletAddress);
                 } else {
                     console.error("Không thể kết nối ví.");
                 }
@@ -87,18 +87,19 @@
             }
         }
 
-        // Hàm lấy dữ liệu tài khoản từ API Toncenter (sử dụng getExtendedAddressInformation)
-        async function fetchTonAccountData(address) {
-            const url = `https://toncenter.com/api/v2/getExtendedAddressInformation?address=${address}`;
+        // Hàm lấy dữ liệu tài khoản từ API Toncenter (sử dụng getAddressInfo)
+        async function fetchAccountInfo(address) {
+            const url = `https://toncenter.com/api/v2/getAddressInfo?address=${address}`;
             
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-
+                
+                // Kiểm tra nếu API trả về dữ liệu hợp lệ
                 if (data.ok) {
-                    // Truy xuất và hiển thị "account_address"
-                    const accountAddress = data.result.account_address;
-                    document.getElementById('accountData').textContent = `Account Address: ${accountAddress}`;
+                    console.log("Thông tin tài khoản:", data.result);
+                    // Hiển thị toàn bộ thông tin trả về
+                    document.getElementById('accountData').textContent = JSON.stringify(data.result, null, 2);
                 } else {
                     document.getElementById('accountData').textContent = "Không tìm thấy thông tin tài khoản.";
                 }
@@ -113,6 +114,7 @@
             twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='  // Thêm TWA return URL nếu cần
         };
 
+        // Kết nối ví và lấy thông tin tài khoản khi trang tải
         document.addEventListener("DOMContentLoaded", () => {
             connectToWallet();
         });
