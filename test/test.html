@@ -43,6 +43,10 @@
             text-align: left;
             overflow-x: auto;
         }
+
+        #ton-connect {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -73,7 +77,7 @@
                     const walletAddress = connectedWallet.account.address;
                     document.getElementById('walletAddress').textContent = walletAddress;
 
-                    // Lấy dữ liệu tài khoản từ Toncenter (hoặc API tương tự)
+                    // Lấy dữ liệu tài khoản từ API Toncenter
                     fetchTonAccountData(walletAddress);
                 } else {
                     console.error("Không thể kết nối ví.");
@@ -83,16 +87,18 @@
             }
         }
 
-        // Hàm lấy dữ liệu tài khoản từ API Toncenter
+        // Hàm lấy dữ liệu tài khoản từ API Toncenter (sử dụng getExtendedAddressInformation)
         async function fetchTonAccountData(address) {
-            const url = `https://toncenter.com/api/v2/getAddressInfo?address=${address}`;
+            const url = `https://toncenter.com/api/v2/getExtendedAddressInformation?address=${address}`;
             
             try {
                 const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.ok) {
-                    document.getElementById('accountData').textContent = JSON.stringify(data.result, null, 2);
+                    // Truy xuất và hiển thị "account_address"
+                    const accountAddress = data.result.account_address;
+                    document.getElementById('accountData').textContent = `Account Address: ${accountAddress}`;
                 } else {
                     document.getElementById('accountData').textContent = "Không tìm thấy thông tin tài khoản.";
                 }
