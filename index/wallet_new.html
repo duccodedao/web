@@ -4,16 +4,462 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TON Wallet</title>
-    <link rel="stylesheet" href="/css/wallet_new.css">
+
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
-
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+   
 </head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #eeeeee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.wallet {
+    width: 420px; /* Mở rộng giao diện */
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.wallet-card {
+    background: linear-gradient(135deg, #007bff, #00c3ff);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+}
+
+.wallet-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 16px;
+
+}
+
+.wallet-address {
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px; /* Giới hạn độ dài địa chỉ */
+
+}
+
+.wallet-balance {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.wallet-usdt-value {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.wallet-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.wallet-actions button {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    margin: 5px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.receive {
+    background: #4caf50;
+    color: white;
+}
+
+.send {
+    background: #ff5722;
+    color: white;
+}
+
+.tokens {
+    margin-top: 15px;
+}
+
+.token {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.token img {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+    border-radius: 25px;
+}
+
+.token-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.token span {
+    font-size: 16px;
+}
+
+.token-info i {
+    margin-left: 5px;
+    color: red;
+    cursor: pointer;
+}
+
+.token-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+
+
+/* Đảm bảo hình ảnh ví được hiển thị trong thẻ a */
+#wallet-link {
+    display: inline-block; /* Giữ cho thẻ a không bị chiếm toàn bộ không gian */
+    width: 40px; /* Đặt kích thước hình ảnh ví */
+    height: 40px; /* Đặt chiều cao hình ảnh ví */
+    overflow: hidden; /* Ẩn phần hình ảnh vượt ngoài giới hạn */
+    border-radius: 50%; /* Tạo hình tròn cho ảnh */
+}
+
+/* Căn chỉnh hình ảnh bên trong thẻ a */
+#wallet-link img {
+    width: 100%; /* Đảm bảo hình ảnh chiếm hết diện tích của thẻ a */
+    height: 100%; /* Đảm bảo hình ảnh không bị méo */
+    object-fit: cover; /* Giữ tỷ lệ hình ảnh đúng mà không bị kéo dãn */
+}
+
+
+
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #212121;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid #333;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.footer-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #ccc;
+    font-size: 14px;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 5px; /* Bo góc cho mục */
+}
+.footer-item img {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+.footer-itemm img {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 4px;
+}
+.footer-item:hover {
+    color: #fff;
+}
+
+.new-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    padding: 1.5px 3.25px;
+    border-radius: 3px;
+    font-size: 7px;
+    font-weight: bold;
+    z-index: 1;
+}
+
+
+/* Toast container */
+#toast {
+    visibility: hidden; /* Ẩn toast mặc định */
+    max-width: 50%;
+    margin: 0 auto;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 16px;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 17px;
+    z-index: 9999;
+    transition: opacity 0.5s ease, bottom 0.5s ease;
+}
+
+/* Khi toast hiển thị */
+#toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;  /* Đưa toast lên một chút */
+}
+
+/* Nội dung trong toast */
+#toast-message {
+    font-weight: bold;
+    line-height: 1.5;
+}
+
+/* Hiệu ứng chuyển động khi toast xuất hiện */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Hiệu ứng chuyển động khi toast ẩn */
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Thiết lập kiểu dáng của thông báo */
+.notification {
+    position: fixed;
+    top: -100px;  /* Bắt đầu bên ngoài màn hình */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    z-index: 9999;
+    transition: top 0.5s ease-in-out;
+}
+
+/* Cấu hình cho nút Swap */
+button.swap {
+    background-color: #4caf50;  /* Màu nền xanh lá */
+    color: white;  /* Màu chữ trắng */
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Thay đổi màu sắc khi di chuột qua nút Swap */
+button.swap:hover {
+    background-color: #45a049;  /* Màu nền khi hover */
+}
+
+
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    color:#333;
+}
+
+.modal-content input {
+    width: 90%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.modal-content button {
+    background: #0084ff;
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.slider-labels span {
+    cursor: pointer;
+    font-size: 14px;
+    color: #007bff;
+}
+.slider-labels span:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Cấu trúc container */
+.task-container {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Giao diện cho task */
+.task {
+    display: grid;
+    grid-template-columns: 60px 1fr 120px; /* 3 cột: ảnh, thông tin nhiệm vụ, hành động */
+    align-items: center;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Cột ảnh */
+.task-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.task-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* Cột thông tin nhiệm vụ */
+.task-info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 10px;
+}
+
+.task-info-container h3 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+}
+
+.task-info-container p {
+    font-size: 14px;
+    color: #888;
+    margin: 5px 0;
+}
+
+/* Cột hành động */
+.task-actions-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+/* Nút Check-in / Claim */
+button {
+    padding: 8px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Đặt chiều rộng của nút */
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Hiệu ứng hover cho button */
+button:hover {
+    background-color: #45a049;
+}
+
+/* Đồng hồ đếm ngược */
+.countdown {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+</style>
 <body>
     <div class="wallet">
         <div class="wallet-card">
@@ -28,9 +474,87 @@
             <div id="wallet-balance" class="wallet-balance">$0.00</div>
             <div id="wallet-usdt-value" class="wallet-usdt-value">≈ 0 USDT</div>
             <div class="wallet-actions">
-                <button class="receive">Receive</button>
+                <button class="receive" onclick="showComingSoon()">Receive</button>
                 <button class="send" onclick="sendTransaction()">Buy</button>
-                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint</button> <!-- Thêm nút Mint BMC -->
+                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint</button>
+                <button class="withdraw" onclick="showWithdrawForm()">Withdraw</button>
+            </div>
+            
+<!-- Form nhập địa chỉ và số lượng rút -->
+<div id="withdraw-form" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeWithdrawForm()">&times;</span>
+        <h2>Withdraw BMC</h2>
+        <p>Available: <span id="available-bmc">0</span> BMC</p>
+        <input type="text" id="withdraw-address" placeholder="Enter wallet address">
+        
+        <input type="number" id="withdraw-amount" min="1" placeholder="Enter amount">
+        
+        <!-- Thanh kéo chọn số lượng -->
+        <input type="range" id="withdraw-slider" min="0" max="100" step="25" value="0" onchange="updateWithdrawAmount()">
+        <div class="slider-labels">
+            <span onclick="setSliderValue(0)">0%</span>
+            <span onclick="setSliderValue(25)">25%</span>
+            <span onclick="setSliderValue(50)">50%</span>
+            <span onclick="setSliderValue(100)">100%</span>
+            <span onclick="setSliderValue('max')">MAX</span>
+        </div>
+
+        <button onclick="withdrawBMC()">Confirm Withdraw</button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="task-container">
+    <div class="task">
+        <div class="task-image-container">
+            <img src="task.png" alt="Task Image" class="task-image">
+        </div>
+        <div class="task-info-container">
+            <h3 id="task-name">Check-in</h3>
+            <p id="task-bmc">+100 BMC</p>
+        </div>
+        <div class="task-actions-container">
+            <button id="check-in-btn" onclick="checkIn()">Check-in</button>
+            <div class="countdown" id="countdown-timer">Reset 00:00 UTC</div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+            
+            <div id="notification" class="notification" style="display: none;">
+                🚀 Coming Soon! Tính năng này đang được phát triển.
             </div>
         </div>
         <div class="tokens">
@@ -91,8 +615,8 @@
 </a>
 </div>
 
-    <script>
-const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+<script>
+   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
     buttonRootId: 'ton-connect'
 });
@@ -100,40 +624,50 @@ const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
 async function fetchWalletData(wallet) {
     if (!wallet) return;
 
-    const walletAddress = wallet.account.address.toString();  // Lấy địa chỉ ví
+    const walletAddress = wallet.account.address.toString();
     let displayName = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4); // Mặc định rút gọn
 
     try {
+        // Chuyển đổi địa chỉ thành kiểu IntMsg
         const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
 
-        // Cập nhật liên kết ví và hình ảnh
+        // Hiển thị tên account hoặc địa chỉ IntMsg + link tonviewer
         const walletLink = document.getElementById('wallet-link');
-        walletLink.href = `https://tonviewer.com/${intMsgAddress}`;
+        walletLink.href = `https://tonviewer.com/${intMsgAddress}`; // Chuyển hướng đến trang địa chỉ IntMsg
 
+        // Cập nhật hình ảnh ví
         const walletImage = document.getElementById('wallet-image');
-        walletImage.src = '/logo-coin/wallet.png';
+        walletImage.src = '/logo-coin/wallet.png'; // Đảm bảo hình ảnh ví là /logo-coin/wallet.png
 
-        // Lấy số dư TON và giá trị USD
+        // Lấy số dư TON
         const accountResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}`);
         const accountData = await accountResponse.json();
+
         const tonBalance = (accountData.balance / 1e9).toFixed(9);
         document.getElementById('wallet-balance').textContent = `${tonBalance} TON`;
 
+        // Lấy giá TON từ CoinGecko
         const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
         const priceData = await priceResponse.json();
         const tonPrice = priceData['the-open-network'].usd;
-        const usdtValue = (tonBalance * tonPrice).toFixed(2);
 
+        // Quy đổi sang USDT
+        const usdtValue = (tonBalance * tonPrice).toFixed(2);
         document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
+
         document.getElementById('ton-balance').textContent = `${tonBalance} TON`;
         document.getElementById('ton-value').textContent = `$${usdtValue}`;
-
-        // Cập nhật biến toàn cục `walletAddress` cho việc sử dụng sau
-        window.walletAddress = walletAddress;
 
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
     }
+}
+
+// Hàm chuyển đổi địa chỉ ví thành dạng IntMsg
+function convertToIntMsg(walletAddress) {
+    // Logic chuyển đổi địa chỉ sang dạng IntMsg nếu cần thiết
+    // Ví dụ: mã hóa hoặc chuyển đổi địa chỉ ví theo cách nào đó
+    return walletAddress; // Thay thế bằng logic thực tế nếu cần
 }
 
 // Khi trạng thái ví thay đổi, cập nhật dữ liệu
@@ -143,40 +677,6 @@ tonConnectUI.onStatusChange(async (wallet) => {
     }
 });
 
-// Hàm tạo mã QR
-function generateQRCode(tonUrl) {
-    Swal.fire({
-        title: 'Scan this QR Code',
-        text: 'Use your wallet to scan this QR code and send funds.',
-        icon: 'info',
-        html: `<canvas id="qrCanvas"></canvas>`,
-        didOpen: () => {
-            const qrCanvas = document.getElementById('qrCanvas');
-            QRCode.toCanvas(qrCanvas, tonUrl, function(error) {
-                if (error) {
-                    console.error(error);
-                } else {
-                    console.log('QR code generated!');
-                }
-            });
-        },
-        confirmButtonText: 'Close'
-    });
-}
-
-// Khi bấm vào nút "Receive"
-document.querySelector('.receive').addEventListener('click', function() {
-    if (!window.walletAddress) {
-        console.error('Không có địa chỉ ví');
-        return;
-    }
-
-    const intMsgAddress = convertToIntMsg(window.walletAddress); // Đảm bảo lấy đúng walletAddress
-    const tonUrl = `ton://transfer/${intMsgAddress}`; // Tạo URL với địa chỉ ví
-
-    // Tạo mã QR
-    generateQRCode(tonUrl);
-});
 
 
 // Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
@@ -260,16 +760,229 @@ async function mintBMC() {
         bmcBalance += 100;
         localStorage.setItem('bmcBalance', bmcBalance);
         getBMCBalance();
-        showToast("Gửi thành công! Đang nhận BMC.");
+        showToast("Thành công!");
     } catch (error) {
         console.error("Lỗi khi gửi:", error);
-        showToast("Gửi thất bại! Kiểm tra lại ví.");
+        showToast("Thất bại");
     }
 }
-
 // Lấy số dư BMC khi trang được tải
 document.addEventListener("DOMContentLoaded", getBMCBalance);
 
-  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Hàm hiển thị thông báo "Coming Soon" với hiệu ứng Slide In
+function showComingSoon() {
+    var notification = document.getElementById('notification');
+    
+    // Hiển thị thông báo và di chuyển vào vị trí
+    notification.style.display = 'block';
+    setTimeout(function() {
+        notification.style.top = '20px'; // Hiển thị ở vị trí trên cùng
+    }, 100);
+
+    // Ẩn thông báo sau 5 giây
+    setTimeout(function() {
+        notification.style.top = '-100px';  // Di chuyển ra ngoài màn hình
+        setTimeout(function() {
+            notification.style.display = 'none';  // Ẩn thông báo
+        }, 500);
+    }, 5000);  // Thời gian hiển thị 5 giây
+}
+
+
+
+
+
+// Hiển thị form rút và cập nhật số dư khả dụng
+function showWithdrawForm() {
+    document.getElementById("available-bmc").innerText = bmcBalance;
+    document.getElementById("withdraw-form").style.display = "block";
+}
+
+// Đóng form rút
+function closeWithdrawForm() {
+    document.getElementById("withdraw-form").style.display = "none";
+}
+
+// Cập nhật số lượng rút theo thanh kéo
+function updateWithdrawAmount() {
+    const sliderValue = parseInt(document.getElementById("withdraw-slider").value);
+    const withdrawAmount = Math.floor((sliderValue / 100) * bmcBalance);
+    document.getElementById("withdraw-amount").value = withdrawAmount;
+}
+
+// Khi click vào các mức % trên thanh kéo
+function setSliderValue(value) {
+    let amount;
+    if (value === "max") {
+        amount = bmcBalance;
+        document.getElementById("withdraw-slider").value = 100;
+    } else {
+        amount = Math.floor((value / 100) * bmcBalance);
+        document.getElementById("withdraw-slider").value = value;
+    }
+    document.getElementById("withdraw-amount").value = amount;
+}
+
+// Xử lý rút BMC
+async function withdrawBMC() {
+    const address = document.getElementById("withdraw-address").value.trim();
+    const amount = parseInt(document.getElementById("withdraw-amount").value);
+
+    if (!address) {
+        showToast("Please enter a valid wallet address!");
+        return;
+    }
+    
+    if (!amount || amount <= 0) {
+        showToast("Please enter a valid amount!");
+        return;
+    }
+
+    if (amount > bmcBalance) {
+        showToast("Insufficient BMC balance!");
+        return;
+    }
+
+    try {
+        // Trừ số lượng đã rút
+        bmcBalance -= amount;
+        localStorage.setItem("bmcBalance", bmcBalance);
+        getBMCBalance();
+
+        showToast(`Successfully withdrawn ${amount} BMC!`);
+        closeWithdrawForm();
+    } catch (error) {
+        console.error("Withdraw error:", error);
+        showToast("Withdraw failed! Try again.");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// Cập nhật trạng thái nhiệm vụ và thời gian đếm ngược
+let checkInDone = JSON.parse(localStorage.getItem('checkInDone')) || false; // Lấy trạng thái check-in
+let nextCheckInTime = JSON.parse(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime(); // Lấy thời gian check-in tiếp theo
+
+// Cập nhật nút Check-in và trạng thái
+updateCheckInButton();
+
+// Kiểm tra trạng thái và cập nhật nút
+document.getElementById('check-in-btn').addEventListener('click', function () {
+    if (!checkInDone) {
+        checkIn();
+    } else {
+        claimReward();
+    }
+});
+
+function checkIn() {
+    checkInDone = true;
+    localStorage.setItem('checkInDone', JSON.stringify(checkInDone)); // Lưu trạng thái check-in
+    document.getElementById('check-in-btn').textContent = 'Claim';
+    startCountdown();
+
+    // Cộng 100 BMC sau khi check-in thành công
+    bmcBalance += 100;
+    localStorage.setItem('bmcBalance', bmcBalance); // Lưu số dư BMC vào localStorage
+    document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`; // Cập nhật hiển thị BMC
+}
+
+function claimReward() {
+    document.getElementById('check-in-btn').disabled = true;
+    document.getElementById('check-in-btn').textContent = 'Claimed';
+
+    // Cập nhật trạng thái check-in đã hoàn thành và lưu vào localStorage
+    checkInDone = false;
+    localStorage.setItem('checkInDone', JSON.stringify(checkInDone));
+}
+
+function startCountdown() {
+    const countdownElement = document.getElementById('countdown-timer');
+    const interval = setInterval(function () {
+        const remainingTime = getRemainingTime(nextCheckInTime);
+
+        if (remainingTime <= 0) {
+            clearInterval(interval);
+            document.getElementById('check-in-btn').disabled = false;
+            document.getElementById('check-in-btn').textContent = 'Check-in';
+            nextCheckInTime = getNextCheckInTime(); // Cập nhật thời gian check-in tiếp theo
+            localStorage.setItem('nextCheckInTime', JSON.stringify(nextCheckInTime)); // Lưu vào localStorage
+            checkInDone = false;
+            localStorage.setItem('checkInDone', JSON.stringify(checkInDone));
+        } else {
+            const hours = Math.floor(remainingTime / 3600);
+            const minutes = Math.floor((remainingTime % 3600) / 60);
+            const seconds = remainingTime % 60;
+            countdownElement.textContent = `Thời gian tiếp theo: ${hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        }
+    }, 1000);
+}
+
+// Tính toán thời gian còn lại để check-in
+function getRemainingTime(nextCheckInTime) {
+    const now = new Date();
+    const timeRemaining = nextCheckInTime - now;
+    return timeRemaining / 1000; // Trả về tính bằng giây
+}
+
+// Lấy thời gian check-in tiếp theo (7 giờ sáng mai)
+function getNextCheckInTime() {
+    const now = new Date();
+    const nextCheckIn = new Date();
+    nextCheckIn.setHours(7, 0, 0, 0); // Set 7:00 sáng
+    if (now > nextCheckIn) {
+        nextCheckIn.setDate(nextCheckIn.getDate() + 1); // Nếu đã qua 7 giờ sáng, thì đặt cho ngày hôm sau
+    }
+    return nextCheckIn;
+}
+
+function updateCheckInButton() {
+    const checkInButton = document.getElementById('check-in-btn');
+    if (checkInDone) {
+        checkInButton.textContent = 'Claim'; // Hiển thị "Claim" khi đã check-in
+        checkInButton.disabled = false; // Nút "Claim" vẫn hoạt động
+    } else {
+        checkInButton.textContent = 'Check-in'; // Hiển thị "Check-in" khi chưa check-in
+        checkInButton.disabled = true; // Vô hiệu hóa nút "Check-in" cho đến khi làm mới nhiệm vụ
+    }
+}
+ 
+</script>
 </body>
 </html>
