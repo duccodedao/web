@@ -111,6 +111,15 @@ async function fetchWalletData(wallet) {
         const walletLink = document.getElementById('wallet-link');
         walletLink.href = `https://tonviewer.com/${intMsgAddress}`; // Chuyển hướng đến trang địa chỉ IntMsg
 
+
+
+      
+
+    
+
+
+        
+
         // Cập nhật hình ảnh ví
         const walletImage = document.getElementById('wallet-image');
         walletImage.src = '/logo-coin/wallet.png'; // Đảm bảo hình ảnh ví là /logo-coin/wallet.png
@@ -154,7 +163,7 @@ tonConnectUI.onStatusChange(async (wallet) => {
 });
 
 document.querySelector('.receive').addEventListener('click', function() {
-        const walletAddress = 'TON_WALLET_ADDRESS'; // Thay đổi với địa chỉ ví thực tế của bạn
+        const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
 
         // Tạo URL với địa chỉ ví
         const tonUrl = `ton://transfer/${intMsgAddress}`;
