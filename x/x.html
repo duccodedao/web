@@ -3,127 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON DEX Swap</title>
-    <script src="https://unpkg.com/@tonconnect/ui"></script>
-    <script src="https://unpkg.com/tonweb"></script>
-    <script src="https://unpkg.com/@ston-fi/sdk"></script>
+    <title>TON Connect + Toncenter</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background: #f4f4f4;
+            background: #eef2f3;
+            margin: 0;
+            padding: 0;
         }
         .container {
-            width: 300px;
-            margin: 50px auto;
-            padding: 20px;
+            max-width: 500px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 50px auto;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
         }
         h1 {
-            font-size: 20px;
+            color: #0056b3;
         }
-        .swap-box {
-            margin-top: 20px;
+        p {
+            font-size: 16px;
+            margin: 5px 0;
         }
-        input, select, button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+        .hidden {
+            display: none;
         }
-        button {
+        #ton-connect {
             background: #007bff;
             color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
-        button:hover {
+        #ton-connect:hover {
             background: #0056b3;
-        }
-        #status {
-            margin-top: 10px;
-            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Swap Token trên TON</h1>
-
-        <button id="connect-wallet">Kết nối Ví</button>
-        <p id="wallet-address">Chưa kết nối</p>
-
-        <div class="swap-box">
-            <label for="amount">Nhập số lượng TON:</label>
-            <input type="number" id="amount" placeholder="Nhập số lượng">
-
-            <label for="jetton">Chọn token:</label>
-            <select id="jetton">
-                <option value="EQA2kCVN...G9T6bO">USDT (TON)</option>
-                <option value="EQD9cX...XJ2mbC">BTC (TON)</option>
-            </select>
-
-            <button id="swap-btn">Swap</button>
+        <h1>Kết nối TON Wallet</h1>
+        <button id="ton-connect">Kết nối Wallet</button>
+        <div id="wallet-info" class="hidden">
+            <h2>Địa chỉ ví:</h2>
+            <p id="wallet-address"></p>
+            <h2>Account Address (Toncenter):</h2>
+            <p id="account-address"></p>
         </div>
-
-        <p id="status"></p>
     </div>
 
     <script>
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: "https://yourdomain.com/tonconnect-manifest.json",
-        });
-
-        document.getElementById("connect-wallet").onclick = async () => {
-            await tonConnectUI.connectWallet();
-            const walletInfo = await tonConnectUI.getWalletInfo();
-            document.getElementById("wallet-address").innerText = walletInfo?.address || "Kết nối thất bại!";
-        };
-
-        document.getElementById("swap-btn").onclick = async () => {
-            const walletAddress = document.getElementById("wallet-address").innerText;
-            if (!walletAddress || walletAddress === "Chưa kết nối") {
-                alert("Vui lòng kết nối ví trước!");
-                return;
-            }
-
-            const amount = document.getElementById("amount").value;
-            const jettonAddress = document.getElementById("jetton").value;
-
-            if (!amount || amount <= 0) {
-                alert("Nhập số lượng hợp lệ!");
-                return;
-            }
-
-            const provider = new TonWeb.HttpProvider();
-            const router = new STONFI.Router(provider, {
-                revision: STONFI.ROUTER_REVISION.V1,
-                address: STONFI.ROUTER_REVISION_ADDRESS.V1,
+        // Kiểm tra xem TON Connect UI đã được tải chưa
+        if (typeof TON_CONNECT_UI === "undefined" || !TON_CONNECT_UI.TonConnectUI) {
+            console.error("TON Connect UI chưa được tải đúng cách. Vui lòng kiểm tra lại kết nối.");
+        } else {
+            const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+                buttonRootId: 'ton-connect'
             });
 
-            try {
-                const swapTxParams = await router.buildSwapProxyTonTxParams({
-                    userWalletAddress: walletAddress,
-                    proxyTonAddress: 'EQCM3B12QK1e4yZSf8GtBRT0aLMNyEsBc_DhVfRRtOEffLez',
-                    offerAmount: new TonWeb.utils.BN(amount * 1e9),
-                    askJettonAddress: jettonAddress,
-                    minAskAmount: new TonWeb.utils.BN('1'),
-                    queryId: Date.now(),
-                });
+            // Hàm kết nối ví và lấy địa chỉ ví
+            async function connectToWallet() {
+                try {
+                    const connectedWallet = await tonConnectUI.connectWallet();
+                    console.log(connectedWallet); // Xem toàn bộ thông tin ví trong console
 
-                document.getElementById("status").innerText = "Đang gửi giao dịch...";
-                
-                setTimeout(() => {
-                    document.getElementById("status").innerText = "Swap thành công!";
-                }, 3000);
+                    // Hiển thị địa chỉ ví trong giao diện
+                    const walletAddress = connectedWallet.account.address;
+                    document.getElementById('wallet-address').textContent = walletAddress;
 
-            } catch (error) {
-                document.getElementById("status").innerText = "Lỗi swap!";
-                console.error(error);
+                    // Gọi API Toncenter để lấy thông tin Extended Address
+                    fetchExtendedAddressInfo(walletAddress);
+
+                    // Hiển thị phần thông tin ví
+                    document.getElementById('wallet-info').classList.remove('hidden');
+                } catch (error) {
+                    console.error("Error connecting to wallet:", error);
+                }
             }
-        };
+
+            // Lấy thông tin Extended Address từ Toncenter API
+            async function fetchExtendedAddressInfo(address) {
+                const API_KEY = '7ca49f3a2594045069f2613f51acdcd2c5c303c0c2ec4134137ea31b7afa4b6d'; // API Key của bạn từ Toncenter
+                const url = `https://toncenter.com/api/v2/getExtendedAddressInformation?address=${address}&api_key=${API_KEY}`;
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.ok) {
+                        // Hiển thị thông tin account_address từ Toncenter
+                        document.getElementById('account-address').textContent = data.result.account_address || "Không có dữ liệu";
+                    } else {
+                        console.error("Lỗi lấy dữ liệu từ Toncenter:", data.error);
+                        document.getElementById('account-address').textContent = "Lỗi lấy dữ liệu";
+                    }
+                } catch (error) {
+                    console.error("Lỗi kết nối API Toncenter:", error);
+                    document.getElementById('account-address').textContent = "Lỗi kết nối API";
+                }
+            }
+
+            // Gắn sự kiện click vào nút để kết nối ví
+            document.getElementById("ton-connect").addEventListener("click", connectToWallet);
+
+            // Cấu hình tùy chọn giao diện (UI options)
+            tonConnectUI.uiOptions = {
+                twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='
+            };
+        }
     </script>
 </body>
 </html>
+
