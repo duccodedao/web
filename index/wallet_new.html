@@ -24,7 +24,7 @@
             <div id="wallet-balance" class="wallet-balance">$0.00</div>
             <div id="wallet-usdt-value" class="wallet-usdt-value">≈ 0 USDT</div>
             <div class="wallet-actions">
-                <button class="receive" onclick="showComingSoon()">Receive</button>
+                <button class="receive">Receive</button>
                 <button class="send" onclick="sendTransaction()">Buy</button>
                 <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint</button> <!-- Thêm nút Mint BMC -->
             </div>
@@ -149,24 +149,32 @@ tonConnectUI.onStatusChange(async (wallet) => {
     }
 });
 
-// Hàm hiển thị thông báo "Coming Soon" bằng SweetAlert ở góc phải trên cùng
-function showComingSoon() {
-    Swal.fire({
-        icon: 'info',
-        title: 'Coming Soon!',
+document.querySelector('.receive').addEventListener('click', function() {
+        const walletAddress = 'TON_WALLET_ADDRESS'; // Thay đổi với địa chỉ ví thực tế của bạn
 
-        showConfirmButton: false,
-        timer: 20000,  // Thời gian hiển thị là 2 giây
-        
-        toast: true,  // Chế độ toast (thông báo nhỏ, không có nút xác nhận)
-        showClass: {
-            popup: 'swal2-noanimation'  // Không sử dụng hoạt ảnh nếu cần
-        },
-        hideClass: {
-            popup: 'swal2-noanimation'  // Không sử dụng hoạt ảnh khi ẩn
-        }
+        // Tạo URL với địa chỉ ví
+        const tonUrl = `ton://transfer/${walletAddress}`;
+
+        // Sử dụng SweetAlert2 để hiển thị mã QR
+        Swal.fire({
+            title: 'Scan this QR Code',
+            text: 'Use your wallet to scan this QR code and send funds.',
+            icon: 'info',
+            html: `<canvas id="qrCanvas"></canvas>`,
+            didOpen: () => {
+                // Vẽ mã QR lên canvas
+                const qrCanvas = document.getElementById('qrCanvas');
+                QRCode.toCanvas(qrCanvas, tonUrl, function(error) {
+                    if (error) {
+                        console.error(error);
+                    } else {
+                        console.log('QR code generated!');
+                    }
+                });
+            },
+            confirmButtonText: 'Close'
+        });
     });
-}
 
 // Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
 function sendTransaction() {
