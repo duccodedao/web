@@ -100,59 +100,40 @@ const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
 async function fetchWalletData(wallet) {
     if (!wallet) return;
 
-    const walletAddress = wallet.account.address.toString();
+    const walletAddress = wallet.account.address.toString();  // Lấy địa chỉ ví
     let displayName = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4); // Mặc định rút gọn
 
     try {
-        // Chuyển đổi địa chỉ thành kiểu IntMsg
         const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
 
-        // Hiển thị tên account hoặc địa chỉ IntMsg + link tonviewer
+        // Cập nhật liên kết ví và hình ảnh
         const walletLink = document.getElementById('wallet-link');
-        walletLink.href = `https://tonviewer.com/${intMsgAddress}`; // Chuyển hướng đến trang địa chỉ IntMsg
+        walletLink.href = `https://tonviewer.com/${intMsgAddress}`;
 
-
-
-      
-
-    
-
-
-        
-
-        // Cập nhật hình ảnh ví
         const walletImage = document.getElementById('wallet-image');
-        walletImage.src = '/logo-coin/wallet.png'; // Đảm bảo hình ảnh ví là /logo-coin/wallet.png
+        walletImage.src = '/logo-coin/wallet.png';
 
-        // Lấy số dư TON
+        // Lấy số dư TON và giá trị USD
         const accountResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}`);
         const accountData = await accountResponse.json();
-
         const tonBalance = (accountData.balance / 1e9).toFixed(9);
         document.getElementById('wallet-balance').textContent = `${tonBalance} TON`;
 
-        // Lấy giá TON từ CoinGecko
         const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
         const priceData = await priceResponse.json();
         const tonPrice = priceData['the-open-network'].usd;
-
-        // Quy đổi sang USDT
         const usdtValue = (tonBalance * tonPrice).toFixed(2);
-        document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
 
+        document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
         document.getElementById('ton-balance').textContent = `${tonBalance} TON`;
         document.getElementById('ton-value').textContent = `$${usdtValue}`;
+
+        // Cập nhật biến toàn cục `walletAddress` cho việc sử dụng sau
+        window.walletAddress = walletAddress;
 
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
     }
-}
-
-// Hàm chuyển đổi địa chỉ ví thành dạng IntMsg
-function convertToIntMsg(walletAddress) {
-    // Logic chuyển đổi địa chỉ sang dạng IntMsg nếu cần thiết
-    // Ví dụ: mã hóa hoặc chuyển đổi địa chỉ ví theo cách nào đó
-    return walletAddress; // Thay thế bằng logic thực tế nếu cần
 }
 
 // Khi trạng thái ví thay đổi, cập nhật dữ liệu
@@ -162,32 +143,41 @@ tonConnectUI.onStatusChange(async (wallet) => {
     }
 });
 
-document.querySelector('.receive').addEventListener('click', function() {
-        const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
-
-        // Tạo URL với địa chỉ ví
-        const tonUrl = `ton://transfer/${intMsgAddress}`;
-
-        // Sử dụng SweetAlert2 để hiển thị mã QR
-        Swal.fire({
-            title: 'Scan this QR Code',
-            text: 'Use your wallet to scan this QR code and send funds.',
-            icon: 'info',
-            html: `<canvas id="qrCanvas"></canvas>`,
-            didOpen: () => {
-                // Vẽ mã QR lên canvas
-                const qrCanvas = document.getElementById('qrCanvas');
-                QRCode.toCanvas(qrCanvas, tonUrl, function(error) {
-                    if (error) {
-                        console.error(error);
-                    } else {
-                        console.log('QR code generated!');
-                    }
-                });
-            },
-            confirmButtonText: 'Close'
-        });
+// Hàm tạo mã QR
+function generateQRCode(tonUrl) {
+    Swal.fire({
+        title: 'Scan this QR Code',
+        text: 'Use your wallet to scan this QR code and send funds.',
+        icon: 'info',
+        html: `<canvas id="qrCanvas"></canvas>`,
+        didOpen: () => {
+            const qrCanvas = document.getElementById('qrCanvas');
+            QRCode.toCanvas(qrCanvas, tonUrl, function(error) {
+                if (error) {
+                    console.error(error);
+                } else {
+                    console.log('QR code generated!');
+                }
+            });
+        },
+        confirmButtonText: 'Close'
     });
+}
+
+// Khi bấm vào nút "Receive"
+document.querySelector('.receive').addEventListener('click', function() {
+    if (!window.walletAddress) {
+        console.error('Không có địa chỉ ví');
+        return;
+    }
+
+    const intMsgAddress = convertToIntMsg(window.walletAddress); // Đảm bảo lấy đúng walletAddress
+    const tonUrl = `ton://transfer/${intMsgAddress}`; // Tạo URL với địa chỉ ví
+
+    // Tạo mã QR
+    generateQRCode(tonUrl);
+});
+
 
 // Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
 function sendTransaction() {
