@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TON Wallet</title>
+    <link rel="stylesheet" href="/css/wallet_new.css">
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="wallet">
+        <div class="wallet-card">
+            <div class="wallet-header">
+                <span>TON Wallet</span>
+                <div id="ton-connect"></div>
+                <!-- Thay thế địa chỉ ví bằng hình ảnh -->
+                <a id="wallet-link" class="wallet-address" href="#" target="_blank">
+                    <img src="/logo-coin/wallet.png" alt="Wallet" id="wallet-image" />
+                </a>
+            </div>
+            <div id="wallet-balance" class="wallet-balance">$0.00</div>
+            <div id="wallet-usdt-value" class="wallet-usdt-value">≈ 0 USDT</div>
+            <div class="wallet-actions">
+                <button class="receive">Receive</button>
+                <button class="send" onclick="sendTransaction()">Buy</button>
+                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint</button> <!-- Thêm nút Mint BMC -->
+            </div>
+        </div>
+        <div class="tokens">
+            <div class="token">
+                <img src="/logo-coin/ton.jpg" alt="TON">
+                <div class="token-info">
+                    <span>TON</span>
+                    <span id="ton-balance">0 TON</span>
+                </div>
+                <div class="token-value" id="ton-value">$0.00</div>
+            </div>
+            <div class="token">
+                <img src="/logo-coin/bmlogo.jpg" alt="BMC">
+                <div class="token-info">
+                    <span>BMC</span>
+                    <span id="token-balance">Loading...</span> <!-- Trạng thái Loading ban đầu -->
+                </div>
+                <div class="token-value" id="bmc-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
+            </div>
+            
+            
+        </div>
+
+    </div>
+
+    <!-- Toast notification -->
+<div id="toast" class="toast">
+    <span id="toast-message"></span>
+</div>
+
+
+
+
+
+
+<div class="footer">
+    <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/home_.png" alt="Home">
+
+    </div>
+    <span>Home</span>
+</a>
+<a href="/swap/index.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/swap_.png" alt="MuaCoin">
+    </div>
+    <span>Swap</span>
+</a> 
+
+
+
+<a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/wallet_.png" alt="MuaCoin">
+    </div>
+    <span>Wallet</span>
+</a>
+</div>
+
+    <script>
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect'
+});
+
+async function fetchWalletData(wallet) {
+    if (!wallet) return;
+
+    const walletAddress = wallet.account.address.toString();
+    let displayName = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4); // Mặc định rút gọn
+
+    try {
+        // Chuyển đổi địa chỉ thành kiểu IntMsg nếu cần
+        const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
+
+        // Hiển thị tên account hoặc địa chỉ IntMsg + link tonviewer
+        const walletLink = document.getElementById('wallet-link');
+        walletLink.href = `https://tonviewer.com/${intMsgAddress}`; // Chuyển hướng đến trang địa chỉ IntMsg
+
+        // Cập nhật hình ảnh ví
+        const walletImage = document.getElementById('wallet-image');
+        walletImage.src = '/logo-coin/wallet.png'; // Đảm bảo hình ảnh ví là /logo-coin/wallet.png
+
+        // Lấy số dư TON
+        const accountResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}`);
+        const accountData = await accountResponse.json();
+
+        const tonBalance = (accountData.balance / 1e9).toFixed(9);
+        document.getElementById('wallet-balance').textContent = `${tonBalance} TON`;
+
+        // Lấy giá TON từ CoinGecko
+        const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        const priceData = await priceResponse.json();
+        const tonPrice = priceData['the-open-network'].usd;
+
+        // Quy đổi sang USDT
+        const usdtValue = (tonBalance * tonPrice).toFixed(2);
+        document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
+
+        document.getElementById('ton-balance').textContent = `${tonBalance} TON`;
+        document.getElementById('ton-value').textContent = `$${usdtValue}`;
+
+        // Tạo QR Code với địa chỉ ví
+        const tonUrl = `ton://transfer/${intMsgAddress}`; // Tạo URL chuyển tiền TON với địa chỉ IntMsg
+        generateQRCode(tonUrl); // Hàm tạo mã QR cho URL
+
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+}
+
+// Hàm tạo mã QR
+function generateQRCode(tonUrl) {
+    Swal.fire({
+        title: 'Scan this QR Code',
+        text: 'Use your wallet to scan this QR code and send funds.',
+        icon: 'info',
+        html: `<canvas id="qrCanvas"></canvas>`,
+        didOpen: () => {
+            // Vẽ mã QR lên canvas
+            const qrCanvas = document.getElementById('qrCanvas');
+            QRCode.toCanvas(qrCanvas, tonUrl, function(error) {
+                if (error) {
+                    console.error(error);
+                } else {
+                    console.log('QR code generated!');
+                }
+            });
+        },
+        confirmButtonText: 'Close'
+    });
+}
+
+
+// Hàm chuyển đổi địa chỉ ví thành dạng IntMsg
+function convertToIntMsg(walletAddress) {
+    // Logic chuyển đổi địa chỉ sang dạng IntMsg nếu cần thiết
+    // Ví dụ: mã hóa hoặc chuyển đổi địa chỉ ví theo cách nào đó
+    return walletAddress; // Thay thế bằng logic thực tế nếu cần
+}
+
+// Khi trạng thái ví thay đổi, cập nhật dữ liệu
+tonConnectUI.onStatusChange(async (wallet) => {
+    if (wallet) {
+        fetchWalletData(wallet);
+    }
+});
+
+
+    });
+
+// Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
+function sendTransaction() {
+    const assetCurrency = "TON";  // Mã tài sản (TON)
+    const assetAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ ví của bạn, thay thế bằng địa chỉ ví thực tế
+
+    const url = `https://t.me/aliniex_bot/amp?startapp=tel_8xb3PN6dKJEXBWd`;
+    window.location.href = url;  // Chuyển hướng người dùng đến URL
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Lấy số dư BMC từ localStorage, tránh mất dữ liệu khi số dư lớn
+let bmcBalance = Number(localStorage.getItem('bmcBalance')) || 0;  
+const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
+
+// Hàm cập nhật số dư BMC và giá trị hiển thị
+function getBMCBalance() {
+    const balanceElement = document.getElementById("token-balance");
+    const valueElement = document.getElementById("bmc-value");
+
+    if (balanceElement) {
+        balanceElement.innerText = `${bmcBalance.toLocaleString()} BMC`;
+    }
+    if (valueElement) {
+        valueElement.innerText = `$${(bmcBalance * TON_VALUE_IN_USDT).toFixed(2)}`;
+    }
+
+    localStorage.setItem('bmcBalance', bmcBalance);
+}
+
+// Hàm hiển thị thông báo toast
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    const toastMessage = document.getElementById('toast-message');
+    toastMessage.innerText = message;
+
+    toast.classList.add('show');
+
+    // Xóa timeout cũ nếu có
+    clearTimeout(toast.timeout);
+    toast.timeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Hàm Mint BMC (Nhận BMC sau khi giao dịch thành công)
+async function mintBMC() {
+    try {
+        const payload = "te6ccgEBAQEAAgAAAA==";  // Payload hợp đồng
+
+        const txParams = {
+            validUntil: Math.floor(Date.now() / 1000) + 600,  // Hạn giao dịch
+            messages: [{
+                address: "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD",  
+                amount: "1000000000",  // 1 TON (nanoTON)
+                payload: payload
+            }]
+        };
+
+        console.log("Gửi giao dịch:", txParams);
+        await tonConnectUI.sendTransaction(txParams);  
+
+        // Sau khi giao dịch thành công, nhận 100 BMC
+        bmcBalance += 100;
+        localStorage.setItem('bmcBalance', bmcBalance);
+        getBMCBalance();
+        showToast("Gửi thành công! Đang nhận BMC.");
+    } catch (error) {
+        console.error("Lỗi khi gửi:", error);
+        showToast("Gửi thất bại! Kiểm tra lại ví.");
+    }
+}
+
+// Lấy số dư BMC khi trang được tải
+document.addEventListener("DOMContentLoaded", getBMCBalance);
+
+  </script>
+</body>
+</html>
