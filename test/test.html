@@ -33,23 +33,32 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", async function () {
-            const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: "https://ton.org/tonconnect-manifest.json" });
-            tonConnectUI.renderConnectorButton("#ton-connect");
-
-            tonConnectUI.onStatusChange(async (wallet) => {
-                if (wallet) {
-                    const address = wallet.account.address;
-                    document.getElementById("wallet-address").textContent = address;
-                    document.getElementById("wallet-info").classList.remove("hidden");
-
-                    fetchToncenterData(address);
-                }
-            });
+        // Khởi tạo TonConnect UI
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
+            twaReturnUrl: "https://t.me/bmassk3_bot/?startapp="
         });
 
+        // Hiển thị nút kết nối
+        tonConnectUI.renderConnectorButton("#ton-connect");
+
+        // Khi người dùng kết nối ví
+        tonConnectUI.onStatusChange(async (wallet) => {
+            if (wallet) {
+                const address = wallet.account.address;
+                document.getElementById("wallet-address").textContent = address;
+                document.getElementById("wallet-info").classList.remove("hidden");
+
+                // Gọi API Toncenter để lấy thông tin tài khoản
+                fetchToncenterData(address);
+            } else {
+                document.getElementById("wallet-info").classList.add("hidden");
+            }
+        });
+
+        // Hàm lấy dữ liệu từ Toncenter API
         async function fetchToncenterData(address) {
-            const API_KEY = "7ca49f3a2594045069f2613f51acdcd2c5c303c0c2ec4134137ea31b7afa4b6d"; // API key của bạn
+            const API_KEY = "7ca49f3a2594045069f2613f51acdcd2c5c303c0c2ec4134137ea31b7afa4b6d";
             const url = `https://toncenter.com/api/v2/getExtendedAddressInformation?address=${address}&api_key=${API_KEY}`;
 
             try {
