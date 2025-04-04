@@ -104,7 +104,7 @@ async function fetchWalletData(wallet) {
     let displayName = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4); // Mặc định rút gọn
 
     try {
-        // Chuyển đổi địa chỉ thành kiểu IntMsg nếu cần
+        // Chuyển đổi địa chỉ thành kiểu IntMsg
         const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
 
         // Hiển thị tên account hoặc địa chỉ IntMsg + link tonviewer
@@ -134,10 +134,11 @@ async function fetchWalletData(wallet) {
         document.getElementById('ton-balance').textContent = `${tonBalance} TON`;
         document.getElementById('ton-value').textContent = `$${usdtValue}`;
 
-        // Tạo QR Code với địa chỉ ví
         const tonUrl = `ton://transfer/${intMsgAddress}`; // Tạo URL chuyển tiền TON với địa chỉ IntMsg
         generateQRCode(tonUrl); // Hàm tạo mã QR cho URL
 
+
+        
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
     }
