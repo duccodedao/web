@@ -3,204 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quét Thông Tin Ví và Giao Dịch TON</title>
+    <title>TON Connect + Toncenter</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-        }
-        label {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        button {
-            background-color: #0088cc;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #006699;
-        }
-        .response-container {
-            margin-top: 20px;
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 20px;
-            color: #0088cc;
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .info-table th, .info-table td {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        .info-table th {
-            background-color: #f2f2f2;
-        }
-        .info-table td {
-            background-color: #fafafa;
-        }
-        .error-message {
-            color: red;
-            font-weight: bold;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; }
+        .container { max-width: 500px; background: white; padding: 20px; margin: 50px auto; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        h1, h2, h3 { color: #007bff; }
+        p { font-size: 16px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>TON Connect + Toncenter</h1>
+        <div id="ton-connect"></div> <!-- Nút kết nối ví -->
 
-<div class="container">
-    <h1>Quét Thông Tin Ví và Giao Dịch TON</h1>
+        <div id="wallet-info" class="hidden">
+            <h2>Địa chỉ Wallet:</h2>
+            <p id="wallet-address"></p>
+            <h2>Địa chỉ Base64:</h2>
+            <p id="wallet-base64"></p>
 
-    <!-- Form nhập địa chỉ ví -->
-    <label for="address">Nhập địa chỉ ví:</label>
-    <input type="text" id="address" placeholder="Nhập địa chỉ ví TON">
-    <button onclick="scanAddress()">Quét Thông Tin Ví</button>
-
-    <!-- Form nhập id giao dịch -->
-    <label for="transactionId">Nhập ID giao dịch:</label>
-    <input type="text" id="transactionId" placeholder="Nhập ID giao dịch">
-    <button onclick="scanTransaction()">Quét Thông Tin Giao Dịch</button>
-
-    <div class="response-container">
-        <h2>Thông Tin:</h2>
-        <div id="responseData">Kết quả sẽ hiển thị ở đây...</div>
+            <h3>Thông tin tài khoản:</h3>
+            <p><strong>Số dư:</strong> <span id="balance">Đang tải...</span></p>
+            <p><strong>Code Hash:</strong> <span id="code-hash">Đang tải...</span></p>
+            <p><strong>Data Hash:</strong> <span id="data-hash">Đang tải...</span></p>
+            <p><strong>Trạng thái:</strong> <span id="account-state">Đang tải...</span></p>
+        </div>
     </div>
-</div>
 
-<script>
-    // Hàm quét thông tin ví khi người dùng nhập địa chỉ ví và bấm nút "Quét Thông Tin Ví"
-    async function scanAddress() {
-        const address = document.getElementById('address').value;
-        if (!address) {
-            alert('Vui lòng nhập địa chỉ ví.');
-            return;
-        }
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: "https://ton.org/tonconnect-manifest.json" });
+            tonConnectUI.renderConnectorButton("#ton-connect");
 
-        // Gửi yêu cầu GET cho tất cả các endpoint liên quan đến ví
-        const endpoints = [
-            '/getAddressInformation',
-            '/getExtendedAddressInformation',
-            '/getWalletInformation',
-            '/getTransactions',
-            '/getAddressBalance',
-            '/getAddressState',
-            '/packAddress',
-            '/unpackAddress',
-            '/getTokenData',
-            '/detectAddress'
-        ];
+            tonConnectUI.onStatusChange(async (wallet) => {
+                if (wallet) {
+                    const address = wallet.account.address;
+                    document.getElementById("wallet-address").textContent = address;
+                    document.getElementById("wallet-info").classList.remove("hidden");
 
-        let allResults = "";
-        
-        for (const endpoint of endpoints) {
-            const url = `https://toncenter.com/api/v2${endpoint}?address=${address}`;
-            const data = await fetchData(url);
-            allResults += formatResponse(endpoint, data);
-        }
+                    fetchToncenterData(address);
+                }
+            });
+        });
 
-        // Hiển thị kết quả
-        document.getElementById('responseData').innerHTML = allResults;
-    }
+        async function fetchToncenterData(address) {
+            const API_KEY = "7ca49f3a2594045069f2613f51acdcd2c5c303c0c2ec4134137ea31b7afa4b6d"; // API key của bạn
+            const url = `https://toncenter.com/api/v2/getExtendedAddressInformation?address=${address}&api_key=${API_KEY}`;
 
-    // Hàm quét thông tin giao dịch khi người dùng nhập ID giao dịch và bấm nút "Quét Thông Tin Giao Dịch"
-    async function scanTransaction() {
-        const transactionId = document.getElementById('transactionId').value;
-        if (!transactionId) {
-            alert('Vui lòng nhập ID giao dịch.');
-            return;
-        }
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
 
-        // Gửi yêu cầu GET cho tất cả các endpoint liên quan đến giao dịch
-        const transactionEndpoints = [
-            '/getTransactions',
-            '/getBlockTransactions',
-            '/getBlockTransactionsExt',
-            '/tryLocateTx',
-            '/tryLocateResultTx',
-            '/tryLocateSourceTx'
-        ];
-
-        let allResults = "";
-        
-        for (const endpoint of transactionEndpoints) {
-            const url = `https://toncenter.com/api/v2${endpoint}?txid=${transactionId}`;
-            const data = await fetchData(url);
-            allResults += formatResponse(endpoint, data);
-        }
-
-        // Hiển thị kết quả
-        document.getElementById('responseData').innerHTML = allResults;
-    }
-
-    // Hàm lấy dữ liệu từ API
-    async function fetchData(url) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Không thể lấy dữ liệu từ API');
+                if (data.ok) {
+                    document.getElementById("wallet-base64").textContent = data.result.address || "Không có dữ liệu";
+                    document.getElementById("balance").textContent = (data.result.balance / 1e9) + " TON"; // Chuyển từ nanoTON sang TON
+                    document.getElementById("code-hash").textContent = data.result.code_hash || "Không có dữ liệu";
+                    document.getElementById("data-hash").textContent = data.result.data_hash || "Không có dữ liệu";
+                    document.getElementById("account-state").textContent = data.result.state || "Không xác định";
+                } else {
+                    console.error("Lỗi lấy dữ liệu:", data.error);
+                    document.getElementById("balance").textContent = "Lỗi lấy dữ liệu";
+                }
+            } catch (error) {
+                console.error("Lỗi kết nối API:", error);
+                document.getElementById("balance").textContent = "Lỗi kết nối API";
             }
-            return await response.json();
-        } catch (error) {
-            return { error: error.message };
         }
-    }
-
-    // Hàm format kết quả trả về thành dạng dễ đọc
-    function formatResponse(endpoint, data) {
-        let formattedResponse = `<div class="section-title">Kết quả từ ${endpoint}:</div>`;
-        if (data.error) {
-            formattedResponse += `<div class="error-message">Lỗi: ${data.error}</div>`;
-        } else {
-            formattedResponse += `<table class="info-table">`;
-
-            for (const [key, value] of Object.entries(data)) {
-                formattedResponse += `
-                    <tr>
-                        <th>${capitalizeFirstLetter(key.replace(/([A-Z])/g, ' $1'))}</th>
-                        <td>${JSON.stringify(value, null, 2)}</td>
-                    </tr>
-                `;
-            }
-            formattedResponse += `</table>`;
-        }
-        return formattedResponse;
-    }
-
-    // Hàm để in hoa chữ cái đầu tiên
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-</script>
-
+    </script>
 </body>
 </html>
