@@ -1,0 +1,267 @@
+/* Reset cơ bản */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f2f2;
+    color: #333;
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+
+/* Header */
+.header {
+    background-color: #fff;
+    padding: 15px 20px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.header h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: #333;
+}
+
+/* Tab điều hướng */
+.tabs {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.tab {
+    padding: 8px 16px;
+    background-color: #eee;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.tab.active, .tab:hover {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+/* Ton Connect */
+.ton-connect-container {
+    padding: 20px;
+    background-color: #efefef;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Banner khuyến mãi */
+.banner {
+    background-color: #7e57c2;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+/* Container sản phẩm */
+.container {
+    padding: 20px;
+    margin-bottom: 60px;
+}
+
+/* Grid sản phẩm */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 cột */
+    gap: 20px;
+}
+
+/* Card sản phẩm */
+.product-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Hình ảnh sản phẩm */
+.product-image {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    background-color: #f9f9f9;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Tag (nhãn) */
+.tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ff6f61;
+    color: #fff;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+/* Thông tin sản phẩm */
+.product-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.product-info h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.product-info .price {
+    font-size: 16px;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+/* Nút mua */
+.buy-btn {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    border: none;
+    color: #fff;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.buy-btn:hover {
+    background-color: #43a047;
+}
+
+/* Thanh điều hướng dưới cùng */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 100;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #777;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.bottom-nav a:hover {
+    color: #4CAF50;
+}
+
+.bottom-nav i {
+    font-size: 20px;
+    margin-bottom: 3px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 cột cho màn hình điện thoại */
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 cột cho màn hình rất nhỏ */
+    }
+}
+
+/* Footer */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #212121;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid #333;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.footer-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #ccc;
+    font-size: 14px;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 5px;
+}
+
+.footer-item img {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+
+.footer-itemm img {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 4px;
+}
+
+.footer-item:hover {
+    color: #fff;
+}
+
+.footer-item.active {
+    background-color: #333;
+    color: #ff0;
+}
+
+.new-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    padding: 1.5px 3.25px;
+    border-radius: 3px;
+    font-size: 7px;
+    font-weight: bold;
+    z-index: 1;
+}
