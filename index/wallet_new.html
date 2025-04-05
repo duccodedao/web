@@ -906,100 +906,11 @@ async function withdrawBMC() {
 
 
     
-// Lấy thời gian check-in kế tiếp
-let nextCheckInTime = new Date(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime();
-let hasCheckedIn = localStorage.getItem('hasCheckedIn') === 'true';
-
-updateCheckInButton();
-startCountdown();
-
-document.getElementById('check-in-btn').addEventListener('click', function () {
-  if (!hasCheckedIn && getRemainingTime(nextCheckInTime) <= 0) {
-    checkIn();
-  } else if (hasCheckedIn) {
-    claimReward();
-  }
-});
-
-function checkIn() {
-  hasCheckedIn = true;
-  nextCheckInTime = getNextCheckInTime();
-
-  localStorage.setItem('hasCheckedIn', 'true');
-  localStorage.setItem('nextCheckInTime', nextCheckInTime);
-
-  document.getElementById('check-in-btn').textContent = 'Claim';
-
-  // Cộng BMC
-  bmcBalance += 100;
-  localStorage.setItem('bmcBalance', bmcBalance);
-  document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`;
-}
-
-function claimReward() {
-  document.getElementById('check-in-btn').textContent = 'Claimed';
-  document.getElementById('check-in-btn').disabled = true;
-}
-
-function updateCheckInButton() {
-  const btn = document.getElementById('check-in-btn');
-  const remainingTime = getRemainingTime(nextCheckInTime);
-
-  if (hasCheckedIn) {
-    btn.textContent = 'Claim';
-    btn.disabled = false;
-  } else if (remainingTime > 0) {
-    btn.textContent = 'Check-in';
-    btn.disabled = true;
-  } else {
-    btn.textContent = 'Check-in';
-    btn.disabled = false;
-  }
-}
-
-function startCountdown() {
-  const countdownElement = document.getElementById('countdown-timer');
-
-  const interval = setInterval(() => {
-    const remaining = getRemainingTime(nextCheckInTime);
-
-    if (remaining <= 0) {
-      countdownElement.textContent = 'Đã đến giờ check-in!';
-      if (!hasCheckedIn) {
-        document.getElementById('check-in-btn').disabled = false;
-      }
-    } else {
-      const hours = Math.floor(remaining / 3600);
-      const minutes = Math.floor((remaining % 3600) / 60);
-      const seconds = Math.floor(remaining % 60);
-      countdownElement.textContent = `Thời gian tiếp theo: ${hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
-    }
-  }, 1000);
-}
-
-// Trả về số giây còn lại
-function getRemainingTime(nextTime) {
-  const now = new Date();
-  return Math.floor((new Date(nextTime) - now) / 1000);
-}
-
-// Trả về thời gian 7h sáng hôm sau
-function getNextCheckInTime() {
-  const now = new Date();
-  const next = new Date();
-  next.setHours(7, 0, 0, 0);
-
-  if (now >= next) {
-    next.setDate(next.getDate() + 1);
-  }
-
-  return next;
-}let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;
+let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;
 let nextCheckInTime = new Date(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime();
 let hasCheckedIn = localStorage.getItem('hasCheckedIn') === 'true';
 let hasClaimed = localStorage.getItem('hasClaimed') === 'true';
 
-document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`;
 updateButtonState();
 startCountdown();
 
@@ -1029,7 +940,7 @@ function claimReward() {
 
   bmcBalance += 100;
   localStorage.setItem('bmcBalance', bmcBalance);
-  document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`;
+  // Đã bỏ dòng cập nhật giao diện số dư BMC vì đã xử lý chỗ khác
 
   document.getElementById('check-in-btn').textContent = 'Claimed';
   document.getElementById('check-in-btn').disabled = true;
