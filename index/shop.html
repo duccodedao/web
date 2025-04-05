@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHOP - BMC Token</title>
+  <link rel="stylesheet" href="/css/shop.css">
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <h1>$BMC Pre-Sale</h1>
+    <div class="tabs">
+      <button class="tab active">Tickets</button>
+      <!-- Nút Ton Connect sẽ được đặt giữa đây -->
+      <div id="ton-connect"></div>
+      <button class="tab">Season Pass</button>
+    </div>
+  </header>
+
+  <!-- Banner Khuyến mãi -->
+  <section class="banner">
+    <p>GET 2X ON YOUR FIRST PURCHASE!</p>
+  </section>
+
+  <!-- Nội dung sản phẩm -->
+  <main class="container">
+    <div class="product-grid">
+      <!-- Sản phẩm -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="/pre1.png" alt="50 BMC">
+          <span class="tag">POPULAR</span>
+        </div>
+        <div class="product-info">
+          <h3>50 BMC</h3>
+          <p class="price">0.5 TON</p>
+          <button class="buy-btn" id="buy-50">Mua</button>
+        </div>
+      </div>
+
+      <!-- Sản phẩm 2 -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="/pre2.png" alt="100 BMC">
+
+        </div>
+        <div class="product-info">
+          <h3>100 BMC</h3>
+          <p class="price">0.89 TON</p>
+          <button class="buy-btn" id="buy-100">Mua</button>
+        </div>
+      </div>
+
+            <!-- Sản phẩm 3 -->
+            <div class="product-card">
+                <div class="product-image">
+                  <img src="/pre3.png" alt="100 BMC">
+
+                </div>
+                <div class="product-info">
+                  <h3>200 BMC</h3>
+                  <p class="price">1.5 TON</p>
+                  <button class="buy-btn" id="buy-200">Mua</button>
+                </div>
+              </div>
+
+                    <!-- Sản phẩm 4 -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="/pre4.png" alt="200 BMC">
+
+        </div>
+        <div class="product-info">
+          <h3>500 BMC</h3>
+          <p class="price">4 TON</p>
+          <button class="buy-btn" id="buy-500">Mua</button>
+        </div>
+      </div>
+
+            <!-- Sản phẩm 5 -->
+            <div class="product-card">
+                <div class="product-image">
+                  <img src="/pre5.png" alt="100 BMC">
+
+                </div>
+                <div class="product-info">
+                  <h3>1000 BMC</h3>
+                  <p class="price">6.9 TON</p>
+                  <button class="buy-btn" id="buy-1000">Mua</button>
+                </div>
+              </div>
+
+                    <!-- Sản phẩm 6 -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="/pre6.png" alt="100 BMC">
+          <span class="tag">BEST DEAL</span>
+        </div>
+        <div class="product-info">
+          <h3>2000 BMC</h3>
+          <p class="price">10 TON</p>
+          <button class="buy-btn" id="buy-2000">Mua</button>
+        </div>
+      </div>
+
+      <!-- Thêm các sản phẩm khác ở đây... -->
+
+    </div>
+  </main>
+
+  <div class="footer">
+    <a href="#" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/home_.png" alt="Home">
+        <span class="new-badge">Hot</span>
+    </div>
+    <span>Home</span>
+</a>
+<a href="/swap/index.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/swap_.png" alt="MuaCoin">
+    </div>
+    <span>Swap</span>
+</a> 
+
+
+
+<a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/wallet_.png" alt="MuaCoin">
+    </div>
+    <span>Wallet</span>
+</a> 
+
+<a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
+    <div class="img-wrapper">
+        <img src="/logo-coin/wallet_.png" alt="MuaCoin">
+    </div>
+    <span>Shop</span>
+</a>
+</div>
+
+  <script src="/js/shop.js"></script>
+</body>
+</html>
