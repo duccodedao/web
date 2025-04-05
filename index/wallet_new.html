@@ -895,94 +895,95 @@ async function withdrawBMC() {
 
 
 
-// Cập nhật trạng thái nhiệm vụ và thời gian đếm ngược
-let checkInDone = JSON.parse(localStorage.getItem('checkInDone')) || false; // Lấy trạng thái check-in
-let nextCheckInTime = JSON.parse(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime(); // Lấy thời gian check-in tiếp theo
+// Lấy thời gian check-in kế tiếp
+let nextCheckInTime = new Date(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime();
+let hasCheckedIn = localStorage.getItem('hasCheckedIn') === 'true';
 
-// Cập nhật nút Check-in và trạng thái
 updateCheckInButton();
+startCountdown();
 
-// Kiểm tra trạng thái và cập nhật nút
 document.getElementById('check-in-btn').addEventListener('click', function () {
-    if (!checkInDone) {
-        checkIn();
-    } else {
-        claimReward();
-    }
+  if (!hasCheckedIn && getRemainingTime(nextCheckInTime) <= 0) {
+    checkIn();
+  } else if (hasCheckedIn) {
+    claimReward();
+  }
 });
 
 function checkIn() {
-    checkInDone = true;
-    localStorage.setItem('checkInDone', JSON.stringify(checkInDone)); // Lưu trạng thái check-in
-    document.getElementById('check-in-btn').textContent = 'Claim';
-    startCountdown();
+  hasCheckedIn = true;
+  nextCheckInTime = getNextCheckInTime();
 
-    // Cộng 100 BMC sau khi check-in thành công
-    bmcBalance += 100;
-    localStorage.setItem('bmcBalance', bmcBalance); // Lưu số dư BMC vào localStorage
-    document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`; // Cập nhật hiển thị BMC
+  localStorage.setItem('hasCheckedIn', 'true');
+  localStorage.setItem('nextCheckInTime', nextCheckInTime);
+
+  document.getElementById('check-in-btn').textContent = 'Claim';
+
+  // Cộng BMC
+  bmcBalance += 100;
+  localStorage.setItem('bmcBalance', bmcBalance);
+  document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`;
 }
 
 function claimReward() {
-    document.getElementById('check-in-btn').disabled = true;
-    document.getElementById('check-in-btn').textContent = 'Claimed';
-
-    // Cập nhật trạng thái check-in đã hoàn thành và lưu vào localStorage
-    checkInDone = false;
-    localStorage.setItem('checkInDone', JSON.stringify(checkInDone));
-}
-
-function startCountdown() {
-    const countdownElement = document.getElementById('countdown-timer');
-    const interval = setInterval(function () {
-        const remainingTime = getRemainingTime(nextCheckInTime);
-
-        if (remainingTime <= 0) {
-            clearInterval(interval);
-            document.getElementById('check-in-btn').disabled = false;
-            document.getElementById('check-in-btn').textContent = 'Check-in';
-            nextCheckInTime = getNextCheckInTime(); // Cập nhật thời gian check-in tiếp theo
-            localStorage.setItem('nextCheckInTime', JSON.stringify(nextCheckInTime)); // Lưu vào localStorage
-            checkInDone = false;
-            localStorage.setItem('checkInDone', JSON.stringify(checkInDone));
-        } else {
-            const hours = Math.floor(remainingTime / 3600);
-            const minutes = Math.floor((remainingTime % 3600) / 60);
-            const seconds = remainingTime % 60;
-            countdownElement.textContent = `Thời gian tiếp theo: ${hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-        }
-    }, 1000);
-}
-
-// Tính toán thời gian còn lại để check-in
-function getRemainingTime(nextCheckInTime) {
-    const now = new Date();
-    const timeRemaining = nextCheckInTime - now;
-    return timeRemaining / 1000; // Trả về tính bằng giây
-}
-
-// Lấy thời gian check-in tiếp theo (7 giờ sáng mai)
-function getNextCheckInTime() {
-    const now = new Date();
-    const nextCheckIn = new Date();
-    nextCheckIn.setHours(7, 0, 0, 0); // Set 7:00 sáng
-    if (now > nextCheckIn) {
-        nextCheckIn.setDate(nextCheckIn.getDate() + 1); // Nếu đã qua 7 giờ sáng, thì đặt cho ngày hôm sau
-    }
-    return nextCheckIn;
+  document.getElementById('check-in-btn').textContent = 'Claimed';
+  document.getElementById('check-in-btn').disabled = true;
 }
 
 function updateCheckInButton() {
-    const checkInButton = document.getElementById('check-in-btn');
-    if (checkInDone) {
-        checkInButton.textContent = 'Claim'; // Hiển thị "Claim" khi đã check-in
-        checkInButton.disabled = false; // Nút "Claim" vẫn hoạt động
-    } else {
-        checkInButton.textContent = 'Check-in'; // Hiển thị "Check-in" khi chưa check-in
-        checkInButton.disabled = true; // Vô hiệu hóa nút "Check-in" cho đến khi làm mới nhiệm vụ
-    }
+  const btn = document.getElementById('check-in-btn');
+  const remainingTime = getRemainingTime(nextCheckInTime);
+
+  if (hasCheckedIn) {
+    btn.textContent = 'Claim';
+    btn.disabled = false;
+  } else if (remainingTime > 0) {
+    btn.textContent = 'Check-in';
+    btn.disabled = true;
+  } else {
+    btn.textContent = 'Check-in';
+    btn.disabled = false;
+  }
 }
- 
+
+function startCountdown() {
+  const countdownElement = document.getElementById('countdown-timer');
+
+  const interval = setInterval(() => {
+    const remaining = getRemainingTime(nextCheckInTime);
+
+    if (remaining <= 0) {
+      countdownElement.textContent = 'Đã đến giờ check-in!';
+      if (!hasCheckedIn) {
+        document.getElementById('check-in-btn').disabled = false;
+      }
+    } else {
+      const hours = Math.floor(remaining / 3600);
+      const minutes = Math.floor((remaining % 3600) / 60);
+      const seconds = Math.floor(remaining % 60);
+      countdownElement.textContent = `Thời gian tiếp theo: ${hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+    }
+  }, 1000);
+}
+
+// Trả về số giây còn lại
+function getRemainingTime(nextTime) {
+  const now = new Date();
+  return Math.floor((new Date(nextTime) - now) / 1000);
+}
+
+// Trả về thời gian 7h sáng hôm sau
+function getNextCheckInTime() {
+  const now = new Date();
+  const next = new Date();
+  next.setHours(7, 0, 0, 0);
+
+  if (now >= next) {
+    next.setDate(next.getDate() + 1);
+  }
+
+  return next;
+}
 </script>
 </body>
 </html>
