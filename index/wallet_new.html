@@ -521,7 +521,7 @@ button:hover {
 <div class="task-container">
     <div class="task">
         <div class="task-image-container">
-            <img src="task.png" alt="Task Image" class="task-image">
+            <img src="/logo-coin/task.png" alt="Task Image" class="task-image">
         </div>
         <div class="task-info-container">
             <h3 id="task-name">Check-in</h3>
@@ -906,7 +906,7 @@ async function withdrawBMC() {
 
 
     
-let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;
+
 let nextCheckInTime = new Date(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime();
 let hasCheckedIn = localStorage.getItem('hasCheckedIn') === 'true';
 let hasClaimed = localStorage.getItem('hasClaimed') === 'true';
