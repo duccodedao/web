@@ -895,6 +895,17 @@ async function withdrawBMC() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+    
 // Lấy thời gian check-in kế tiếp
 let nextCheckInTime = new Date(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime();
 let hasCheckedIn = localStorage.getItem('hasCheckedIn') === 'true';
@@ -982,6 +993,103 @@ function getNextCheckInTime() {
     next.setDate(next.getDate() + 1);
   }
 
+  return next;
+}let bmcBalance = parseInt(localStorage.getItem('bmcBalance')) || 0;
+let nextCheckInTime = new Date(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime();
+let hasCheckedIn = localStorage.getItem('hasCheckedIn') === 'true';
+let hasClaimed = localStorage.getItem('hasClaimed') === 'true';
+
+document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`;
+updateButtonState();
+startCountdown();
+
+document.getElementById('check-in-btn').addEventListener('click', () => {
+  const now = new Date();
+
+  if (now >= new Date(nextCheckInTime)) {
+    resetDailyState();
+  }
+
+  if (!hasCheckedIn) {
+    checkIn();
+  } else if (!hasClaimed) {
+    claimReward();
+  }
+});
+
+function checkIn() {
+  hasCheckedIn = true;
+  localStorage.setItem('hasCheckedIn', 'true');
+  document.getElementById('check-in-btn').textContent = 'Claim';
+}
+
+function claimReward() {
+  hasClaimed = true;
+  localStorage.setItem('hasClaimed', 'true');
+
+  bmcBalance += 100;
+  localStorage.setItem('bmcBalance', bmcBalance);
+  document.getElementById('bmc-balance').textContent = `Số dư BMC: ${bmcBalance}`;
+
+  document.getElementById('check-in-btn').textContent = 'Claimed';
+  document.getElementById('check-in-btn').disabled = true;
+}
+
+function updateButtonState() {
+  const now = new Date();
+  if (now >= new Date(nextCheckInTime)) {
+    resetDailyState();
+  }
+
+  const btn = document.getElementById('check-in-btn');
+  if (!hasCheckedIn) {
+    btn.textContent = 'Check-in';
+    btn.disabled = false;
+  } else if (hasCheckedIn && !hasClaimed) {
+    btn.textContent = 'Claim';
+    btn.disabled = false;
+  } else {
+    btn.textContent = 'Claimed';
+    btn.disabled = true;
+  }
+}
+
+function resetDailyState() {
+  hasCheckedIn = false;
+  hasClaimed = false;
+  localStorage.setItem('hasCheckedIn', 'false');
+  localStorage.setItem('hasClaimed', 'false');
+
+  nextCheckInTime = getNextCheckInTime();
+  localStorage.setItem('nextCheckInTime', nextCheckInTime);
+}
+
+function startCountdown() {
+  const countdownElement = document.getElementById('countdown-timer');
+
+  const interval = setInterval(() => {
+    const now = new Date();
+    const remaining = Math.floor((new Date(nextCheckInTime) - now) / 1000);
+
+    if (remaining <= 0) {
+      countdownElement.textContent = 'Đã đến giờ check-in mới!';
+      updateButtonState();
+    } else {
+      const hours = Math.floor(remaining / 3600);
+      const minutes = Math.floor((remaining % 3600) / 60);
+      const seconds = remaining % 60;
+
+      countdownElement.textContent =
+        `Thời gian tiếp theo: ${hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+    }
+  }, 1000);
+}
+
+function getNextCheckInTime() {
+  const now = new Date();
+  const next = new Date();
+  next.setHours(7, 0, 0, 0);
+  if (now >= next) next.setDate(next.getDate() + 1);
   return next;
 }
 </script>
