@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BmassHD</title>
     <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/footer.css">
   <script src="https://cdn.jsdelivr.net/gh/duccodedao/web@main/ton-connect-bmass.js"></script>
 
 </head>
@@ -70,6 +71,57 @@
             <span>The website will undergo maintenance on May 15, 2025.</span>
         </div>
     </div>
+
+
+
+
+<!-- LINK FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<footer>
+  <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+    <i class="fas fa-wallet"></i>
+    <span>Wallet</span>
+  </a>
+  <a href="/swap/index.html" class="footer-item" data-page="index.html">
+    <i class="fas fa-right-left"></i>
+    <span>Swap</span>
+  </a>
+
+  <!-- HOME NỔI BẬT KHÔNG ACTIVE -->
+  <a href="/index/index.html" class="footer-item home">
+    <div class="home-circle">
+      <i class="fas fa-house"></i>
+    </div>
+    <span>Home</span>
+  </a>
+
+  <a href="/index/main.html" class="footer-item" data-page="main.html">
+    <i class="fas fa-th"></i>
+    <span>App</span>
+  </a>
+  <a href="/index/shop.html" class="footer-item" data-page="shop.html">
+    <i class="fas fa-store"></i>
+    <span>Shop</span>
+  </a>
+</footer>
+    <script>
+        // Tự động active tab đang mở
+const currentPage = location.pathname.split("/").pop();
+const items = document.querySelectorAll(".footer-item");
+
+items.forEach(item => {
+  const page = item.getAttribute("data-page");
+  if (page === currentPage) {
+    item.classList.add("active");
+  }
+});
+    </script>
+
+
+
+
+    
     <script>
         function toggleMenu() {
             document.getElementById("navbar").classList.toggle("active");
