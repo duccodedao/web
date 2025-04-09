@@ -3,138 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BmassK3 - Footer Anim</title>
+  <title>Footer Style 2</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: Arial, sans-serif;
-      background-color: #fefefe;
-      padding-bottom: 90px;
-      transition: opacity 0.3s ease-in-out;
+      font-family: 'Arial', sans-serif;
+      background: #fefefe;
+      padding-bottom: 100px;
+      margin: 0;
     }
 
-    /* FOOTER */
     footer {
       position: fixed;
       bottom: 0;
+      left: 0;
       width: 100%;
       height: 80px;
-      background: #f2f3f5;
+      background-color: #ffffff;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-around;
       align-items: center;
-      box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      z-index: 1000;
+      z-index: 999;
     }
 
     .footer-item {
-      text-align: center;
-      font-size: 12px;
-      color: #888;
-      text-decoration: none;
       flex: 1;
-      transition: color 0.3s ease;
+      text-align: center;
+      color: #888;
+      font-size: 12px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
     }
 
     .footer-item i {
-      font-size: 20px;
+      font-size: 22px;
+      margin-bottom: 4px;
       display: block;
-      margin-bottom: 5px;
     }
 
-    /* Home Icon giữa */
+    .footer-item.active {
+      color: #3366ff;
+      transform: scale(1.1);
+    }
+
+    .footer-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: #3366ff;
+      border-radius: 50%;
+    }
+
+    /* Home đặc biệt giữa */
     .home-btn {
-      position: relative;
-      top: -30px;
+      position: absolute;
+      top: -35px;
       background: linear-gradient(135deg, #4f8bff, #8e6bff);
-      color: #fff;
       width: 70px;
       height: 70px;
       border-radius: 50%;
-      text-align: center;
-      line-height: 70px;
-      font-size: 26px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      border: 5px solid #f2f3f5;
-      transition: transform 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+      border: 6px solid #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease;
     }
 
-    .home-btn:hover {
-      transform: scale(1.05);
+    .home-btn:active {
+      transform: scale(0.95);
     }
 
-    /* Active tab */
-    .footer-item.active {
-      color: #4f8bff;
-      font-weight: bold;
-      transform: scale(1.05);
-    }
-
-    /* Hiệu ứng xuất hiện */
-    .fade-in {
-      animation: fadeIn 0.4s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    /* Responsive nhỏ */
     @media(max-width: 500px) {
       .footer-item i {
         font-size: 18px;
       }
+
       .footer-item span {
         font-size: 11px;
       }
     }
   </style>
 </head>
-<body class="fade-in">
+<body>
 
   <div style="padding: 30px; text-align: center;">
-    <h2>Trang demo hiệu ứng chuyển tab</h2>
-    <p>Footer có nút Home giữa, active tự động, và hiệu ứng chuyển động</p>
+    <h2>Trang Demo Footer Mẫu 2</h2>
+    <p>Thiết kế bo cong đẹp, hiệu ứng mượt, icon Home giữa</p>
   </div>
 
-  <!-- FOOTER -->
+  <!-- Footer -->
   <footer>
     <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
       <i class="fas fa-wallet"></i>
       <span>Wallet</span>
     </a>
     <a href="/Swap/index.html" class="footer-item" data-page="index.html">
-      <i class="fas fa-exchange-alt"></i>
+      <i class="fas fa-right-left"></i>
       <span>Swap</span>
     </a>
-    
-    <!-- HOME chính giữa -->
+
+    <!-- Home ở giữa -->
     <a href="/index/main.html" class="home-btn" data-page="main.html">
-      <i class="fas fa-home"></i>
+      <i class="fas fa-diamond"></i>
     </a>
 
     <a href="/index/apps.html" class="footer-item" data-page="apps.html">
-      <i class="fas fa-th-large"></i>
+      <i class="fas fa-th"></i>
       <span>Apps</span>
     </a>
     <a href="/index/shop.html" class="footer-item" data-page="shop.html">
-      <i class="fas fa-shopping-cart"></i>
+      <i class="fas fa-store"></i>
       <span>Shop</span>
     </a>
   </footer>
 
   <script>
-    // Xác định file đang xem để set active
     const currentPage = location.pathname.split("/").pop();
-
     const items = document.querySelectorAll(".footer-item, .home-btn");
 
     items.forEach(item => {
@@ -143,9 +139,6 @@
         item.classList.add("active");
       }
     });
-
-    // Thêm hiệu ứng chuyển mượt khi đổi tab (bằng class fade-in)
-    document.body.classList.add("fade-in");
   </script>
 
 </body>
