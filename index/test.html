@@ -1,58 +1,52 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Footer Dark Modern</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Footer Dark Even Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   <style>
     body {
       margin: 0;
       padding-bottom: 100px;
-      background-color: #0e0e0e;
-      color: #fff;
+      background-color: #0f0f0f;
       font-family: 'Segoe UI', sans-serif;
+      color: #fff;
     }
 
     footer {
       position: fixed;
       bottom: 0;
-      left: 0;
       width: 100%;
       height: 80px;
-      background: #1b1b1b;
+      background-color: #1a1a1a;
       display: flex;
-      justify-content: space-evenly;
+      justify-content: space-between;
       align-items: center;
-      box-shadow: 0 -3px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
       z-index: 999;
     }
 
     .footer-item {
-      text-align: center;
-      text-decoration: none;
-      color: #aaa;
-      font-size: 12px;
       flex: 1;
-      transition: all 0.3s ease;
+      text-align: center;
+      color: #aaa;
+      text-decoration: none;
+      font-size: 12px;
       position: relative;
+      transition: all 0.3s ease;
     }
 
     .footer-item i {
       font-size: 20px;
+      margin-bottom: 4px;
       display: block;
-      margin-bottom: 3px;
-      transition: transform 0.3s ease;
     }
 
     .footer-item:hover {
       color: #00e0ff;
-    }
-
-    .footer-item:hover i {
-      transform: scale(1.15);
     }
 
     .footer-item.active {
@@ -71,25 +65,17 @@
       border-radius: 50%;
     }
 
-    .home-btn {
-      position: absolute;
-      top: -32px;
-      background: linear-gradient(135deg, #00e0ff, #3375ff);
-      width: 65px;
-      height: 65px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-size: 26px;
-      border: 5px solid #1b1b1b;
-      box-shadow: 0 5px 15px rgba(0,224,255,0.3);
-      transition: transform 0.2s ease;
+    .footer-item.home {
+      margin-top: -30px;
     }
 
-    .home-btn:active {
-      transform: scale(0.9);
+    .footer-item.home i {
+      background: linear-gradient(135deg, #00e0ff, #3366ff);
+      padding: 18px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 24px;
+      box-shadow: 0 0 15px rgba(0,224,255,0.4);
     }
 
     @media (max-width: 480px) {
@@ -102,8 +88,8 @@
 <body>
 
   <div style="padding: 40px; text-align: center;">
-    <h2>Demo Footer Mẫu 4</h2>
-    <p>Thiết kế đẹp, đều khoảng cách, Home giữa nổi bật</p>
+    <h2>Footer Mẫu 5</h2>
+    <p>Bố cục chia đều 5 tab, home chính giữa như tab bình thường</p>
   </div>
 
   <!-- Footer -->
@@ -117,9 +103,9 @@
       <span>Swap</span>
     </a>
 
-    <!-- Home nằm giữa -->
-    <a href="/index/main.html" class="home-btn" data-page="main.html">
+    <a href="/index/main.html" class="footer-item home" data-page="main.html">
       <i class="fas fa-diamond"></i>
+      <span>Home</span>
     </a>
 
     <a href="/index/apps.html" class="footer-item" data-page="apps.html">
@@ -134,7 +120,7 @@
 
   <script>
     const currentPage = location.pathname.split("/").pop();
-    const items = document.querySelectorAll(".footer-item, .home-btn");
+    const items = document.querySelectorAll(".footer-item");
 
     items.forEach(item => {
       const page = item.getAttribute("data-page");
