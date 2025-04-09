@@ -1,56 +1,84 @@
-.footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #212121;
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-            padding: 10px 0;
-            border-top: 1px solid #333;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-        .footer-item {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #ccc;
-            font-size: 14px;
-            padding: 5px 10px;
-            transition: background-color 0.3s, color 0.3s;
-            border-radius: 5px; /* Bo góc cho mục */
-        }
-        .footer-item img {
-            width: 24px;
-            height: 24px;
-            margin-bottom: 4px;
-        }
-        .footer-itemm img {
-            width: 45px;
-            height: 45px;
-            margin-bottom: 4px;
-        }
-        .footer-item:hover {
-            color: #fff;
-        }
-        .footer-item.active {
-            background-color: #333; /* Màu nền khi mục được chọn */
-            color: #ff0; /* Màu chữ khi mục được chọn */
-        }
-        .new-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: red;
-            color: white;
-            padding: 1.5px 3.25px;
-            border-radius: 3px;
-            font-size: 7px;
-            font-weight: bold;
-            z-index: 1;
-        }
+/* Footer Style */
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #1b1b1b;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 80px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.footer-item {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  color: #aaa;
+  font-size: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.footer-item i {
+  font-size: 20px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.footer-item:hover {
+  color: #00e0ff;
+}
+
+.footer-item.active {
+  color: #00e0ff;
+}
+
+.footer-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #00e0ff;
+  border-radius: 50%;
+}
+
+/* Home Nổi Bật */
+.footer-item.home {
+  position: relative;
+  top: -25px;
+  z-index: 101;
+}
+
+.footer-item.home .home-circle {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #00e0ff, #006eff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 224, 255, 0.4);
+  margin: 0 auto 5px auto;
+}
+
+.footer-item.home i {
+  font-size: 26px;
+  color: #fff;
+  margin: 0;
+}
+
+.footer-item.home span {
+  margin-top: 3px;
+  display: block;
+  color: #fff;
+  font-size: 12px;
+}
