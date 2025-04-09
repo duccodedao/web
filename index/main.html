@@ -349,39 +349,40 @@
 
 
     
-    <div class="footer">
-        <a href="#" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/home_.png" alt="Home">
+    <!-- LINK FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        </div>
-        <span>Home</span>
-    </a>
-    <a href="/swap/index.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/swap_.png" alt="MuaCoin">
-        </div>
-        <span>Swap</span>
-    </a> 
+<!-- FOOTER -->
+<footer>
+  <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+    <i class="fas fa-wallet"></i>
+    <span>Wallet</span>
+  </a>
+  <a href="/Swap/index.html" class="footer-item" data-page="index.html">
+    <i class="fas fa-right-left"></i>
+    <span>Swap</span>
+  </a>
+
+  <!-- HOME NỔI BẬT -->
+  <a href="/index/main.html" class="footer-item home" data-page="main.html">
+    <div class="home-circle">
+      <i class="fas fa-house"></i>
+    </div>
+    <span>Home</span>
+  </a>
+
+  <a href="/index/apps.html" class="footer-item" data-page="apps.html">
+    <i class="fas fa-th"></i>
+    <span>Apps</span>
+  </a>
+  <a href="/index/shop.html" class="footer-item" data-page="shop.html">
+    <i class="fas fa-store"></i>
+    <span>Shop</span>
+  </a>
+</footer>
+
 
     
-
-    <a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/wallet_.png" alt="MuaCoin">
-        </div>
-        <span>Wallet</span>
-    </a> 
-
-<a href="/index/shop.html" class="footer-item" onclick="setActive(this)">
-    <div class="img-wrapper">
-        <img src="/logo-coin/shop.png" alt="MuaCoin">
-    </div>
-    <span>Shop</span>
-</a>
- 
-</div>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const savedUser = localStorage.getItem("telegram_user");
@@ -394,13 +395,7 @@
     });
 </script>
 
-<style>
-    .footer-item.disabled {
-        pointer-events: none; /* Vô hiệu hóa click */
-        opacity: 0.5; /* Làm mờ */
-        cursor: not-allowed; /* Hiển thị con trỏ không cho phép */
-    }
-</style>
+
     
     
 <script>
