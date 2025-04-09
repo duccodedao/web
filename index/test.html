@@ -3,67 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BmassK3 - Trang Chính</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <title>BmassK3 - Footer Anim</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       font-family: Arial, sans-serif;
       background-color: #fefefe;
-      padding-bottom: 70px;
-    }
-
-    /* HEADER */
-    header {
-      background: #fff;
-      border-bottom: 1px solid #ddd;
-      padding: 15px 20px;
-    }
-
-    .header-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-      color: #0077cc;
-    }
-
-    .social-links {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .social-links a {
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.3s;
-    }
-
-    .social-links a:hover {
-      color: #0077cc;
-    }
-
-    /* CONTENT */
-    .content {
-      padding: 30px 20px;
-      text-align: center;
+      padding-bottom: 90px;
+      transition: opacity 0.3s ease-in-out;
     }
 
     /* FOOTER */
@@ -71,108 +24,128 @@
       position: fixed;
       bottom: 0;
       width: 100%;
-      background: #fff;
-      border-top: 1px solid #ddd;
+      height: 80px;
+      background: #f2f3f5;
       display: flex;
       justify-content: space-around;
       align-items: center;
-      height: 60px;
-      z-index: 999;
+      box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      z-index: 1000;
     }
 
-    footer a {
-      flex: 1;
+    .footer-item {
       text-align: center;
-      text-decoration: none;
-      color: #888;
       font-size: 12px;
-      padding: 8px 0;
-      transition: 0.3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      color: #888;
+      text-decoration: none;
+      flex: 1;
+      transition: color 0.3s ease;
     }
 
-    footer a i {
-      font-size: 18px;
-      margin-bottom: 2px;
+    .footer-item i {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 5px;
     }
 
-    footer a.active {
-      color: #0077cc;
+    /* Home Icon giữa */
+    .home-btn {
+      position: relative;
+      top: -30px;
+      background: linear-gradient(135deg, #4f8bff, #8e6bff);
+      color: #fff;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 70px;
+      font-size: 26px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      border: 5px solid #f2f3f5;
+      transition: transform 0.3s;
     }
 
-    footer a.active i {
-      animation: pop 0.3s ease-in-out;
+    .home-btn:hover {
+      transform: scale(1.05);
     }
 
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
+    /* Active tab */
+    .footer-item.active {
+      color: #4f8bff;
+      font-weight: bold;
+      transform: scale(1.05);
     }
 
-    @media (max-width: 600px) {
-      .header-container {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
+    /* Hiệu ứng xuất hiện */
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media(max-width: 500px) {
+      .footer-item i {
+        font-size: 18px;
       }
-
-      .social-links {
-        justify-content: center;
+      .footer-item span {
+        font-size: 11px;
       }
     }
   </style>
 </head>
-<body>
+<body class="fade-in">
 
-  <!-- HEADER -->
-  <header>
-    <div class="header-container">
-      <div class="logo">BmassK3</div>
-      <div class="social-links">
-        <a href="https://t.me/BmassK3" target="_blank"><i class="fab fa-telegram"></i> @BmassK3</a>
-        <a href="https://t.me/BmassK3_Channel" target="_blank"><i class="fab fa-telegram-plane"></i> Channel</a>
-        <a href="https://t.me/BmassK3_bot" target="_blank"><i class="fas fa-robot"></i> Bot</a>
-        <a href="https://t.me/bmassk3_bot/bmassk3" target="_blank"><i class="fas fa-puzzle-piece"></i> Mini App</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- NỘI DUNG TRANG -->
-  <div class="content">
-    <h2>Chào mừng đến với hệ sinh thái BmassK3</h2>
-    <p>Khám phá các chức năng chính bên dưới.</p>
+  <div style="padding: 30px; text-align: center;">
+    <h2>Trang demo hiệu ứng chuyển tab</h2>
+    <p>Footer có nút Home giữa, active tự động, và hiệu ứng chuyển động</p>
   </div>
 
   <!-- FOOTER -->
   <footer>
-    <a href="/index/main.html" class="footer-link active" onclick="setActive(this)">
-      <i class="fas fa-home"></i>
-      Main
-    </a>
-    <a href="/Swap/index.html" class="footer-link" onclick="setActive(this)">
-      <i class="fas fa-exchange-alt"></i>
-      Swap
-    </a>
-    <a href="/index/wallet_new.html" class="footer-link" onclick="setActive(this)">
+    <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
       <i class="fas fa-wallet"></i>
-      Wallet
+      <span>Wallet</span>
     </a>
-    <a href="/index/shop.html" class="footer-link" onclick="setActive(this)">
+    <a href="/Swap/index.html" class="footer-item" data-page="index.html">
+      <i class="fas fa-exchange-alt"></i>
+      <span>Swap</span>
+    </a>
+    
+    <!-- HOME chính giữa -->
+    <a href="/index/main.html" class="home-btn" data-page="main.html">
+      <i class="fas fa-home"></i>
+    </a>
+
+    <a href="/index/apps.html" class="footer-item" data-page="apps.html">
+      <i class="fas fa-th-large"></i>
+      <span>Apps</span>
+    </a>
+    <a href="/index/shop.html" class="footer-item" data-page="shop.html">
       <i class="fas fa-shopping-cart"></i>
-      Shop
+      <span>Shop</span>
     </a>
   </footer>
 
-  <!-- SCRIPT xử lý hiệu ứng chuyển tab -->
   <script>
-    function setActive(el) {
-      document.querySelectorAll('.footer-link').forEach(link => link.classList.remove('active'));
-      el.classList.add('active');
-    }
+    // Xác định file đang xem để set active
+    const currentPage = location.pathname.split("/").pop();
+
+    const items = document.querySelectorAll(".footer-item, .home-btn");
+
+    items.forEach(item => {
+      const page = item.getAttribute("data-page");
+      if (page === currentPage) {
+        item.classList.add("active");
+      }
+    });
+
+    // Thêm hiệu ứng chuyển mượt khi đổi tab (bằng class fade-in)
+    document.body.classList.add("fade-in");
   </script>
 
 </body>
