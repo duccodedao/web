@@ -161,59 +161,7 @@ body {
 
 
 
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #212121;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    padding: 10px 0;
-    border-top: 1px solid #333;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-.footer-item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #ccc;
-    font-size: 14px;
-    padding: 5px 10px;
-    transition: background-color 0.3s, color 0.3s;
-    border-radius: 5px; /* Bo góc cho mục */
-}
-.footer-item img {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 4px;
-}
-.footer-itemm img {
-    width: 45px;
-    height: 45px;
-    margin-bottom: 4px;
-}
-.footer-item:hover {
-    color: #fff;
-}
 
-.new-badge {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-color: red;
-    color: white;
-    padding: 1.5px 3.25px;
-    border-radius: 3px;
-    font-size: 7px;
-    font-weight: bold;
-    z-index: 1;
-}
 
 
 /* Toast container */
@@ -590,39 +538,48 @@ button:hover {
 
 
 
-<div class="footer">
-    <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
-    <div class="img-wrapper">
-        <img src="/logo-coin/home_.png" alt="Home">
+<!-- LINK FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+<footer>
+  <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+    <i class="fas fa-wallet"></i>
+    <span>Wallet</span>
+  </a>
+  <a href="/swap/index.html" class="footer-item" data-page="index.html">
+    <i class="fas fa-right-left"></i>
+    <span>Swap</span>
+  </a>
+
+  <!-- HOME NỔI BẬT KHÔNG ACTIVE -->
+  <a href="/index/index.html" class="footer-item home">
+    <div class="home-circle">
+      <i class="fas fa-house"></i>
     </div>
     <span>Home</span>
-</a>
-<a href="/swap/index.html" class="footer-item" onclick="setActive(this)">
-    <div class="img-wrapper">
-        <img src="/logo-coin/swap_.png" alt="MuaCoin">
-    </div>
-    <span>Swap</span>
-</a> 
+  </a>
 
-
-
-<a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
-    <div class="img-wrapper">
-        <img src="/logo-coin/wallet_.png" alt="MuaCoin">
-    </div>
-    <span>Wallet</span>
-</a>
-
-
-    <a href="/index/shop.html" class="footer-item" onclick="setActive(this)">
-    <div class="img-wrapper">
-        <img src="/logo-coin/shop.png" alt="MuaCoin">
-    </div>
+  <a href="/index/main.html" class="footer-item" data-page="main.html">
+    <i class="fas fa-th"></i>
+    <span>App</span>
+  </a>
+  <a href="/index/shop.html" class="footer-item" data-page="shop.html">
+    <i class="fas fa-store"></i>
     <span>Shop</span>
-</a>
-</div>
+  </a>
+</footer>
+    <script>
+        // Tự động active tab đang mở
+const currentPage = location.pathname.split("/").pop();
+const items = document.querySelectorAll(".footer-item");
 
+items.forEach(item => {
+  const page = item.getAttribute("data-page");
+  if (page === currentPage) {
+    item.classList.add("active");
+  }
+});
+    </script>
 <script>
    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
