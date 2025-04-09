@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Footer Dark Even Home</title>
+  <title>Footer Fixed</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   <style>
     body {
       margin: 0;
-      padding-bottom: 100px;
+      padding-bottom: 90px;
       background-color: #0f0f0f;
       font-family: 'Segoe UI', sans-serif;
       color: #fff;
@@ -19,34 +19,39 @@
       bottom: 0;
       width: 100%;
       height: 80px;
-      background-color: #1a1a1a;
+      background-color: #1b1b1b;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       align-items: center;
-      box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
       z-index: 999;
     }
 
     .footer-item {
       flex: 1;
       text-align: center;
-      color: #aaa;
       text-decoration: none;
+      color: #aaa;
       font-size: 12px;
-      position: relative;
       transition: all 0.3s ease;
+      position: relative;
     }
 
     .footer-item i {
       font-size: 20px;
-      margin-bottom: 4px;
       display: block;
+      margin-bottom: 4px;
+      transition: transform 0.3s ease;
     }
 
     .footer-item:hover {
       color: #00e0ff;
+    }
+
+    .footer-item:hover i {
+      transform: scale(1.1);
     }
 
     .footer-item.active {
@@ -54,7 +59,7 @@
     }
 
     .footer-item.active::after {
-      content: "";
+      content: '';
       position: absolute;
       bottom: 5px;
       left: 50%;
@@ -65,31 +70,26 @@
       border-radius: 50%;
     }
 
-    .footer-item.home {
-      margin-top: -30px;
-    }
-
+    /* Đặc biệt cho Home */
     .footer-item.home i {
-      background: linear-gradient(135deg, #00e0ff, #3366ff);
-      padding: 18px;
+      font-size: 24px;
+      background: linear-gradient(135deg, #00e0ff, #006eff);
+      padding: 12px;
       border-radius: 50%;
       color: #fff;
-      font-size: 24px;
-      box-shadow: 0 0 15px rgba(0,224,255,0.4);
+      box-shadow: 0 0 10px rgba(0,224,255,0.3);
     }
 
-    @media (max-width: 480px) {
-      .footer-item span {
-        font-size: 10px;
-      }
+    .footer-item.home.active {
+      color: #00e0ff;
     }
   </style>
 </head>
 <body>
 
   <div style="padding: 40px; text-align: center;">
-    <h2>Footer Mẫu 5</h2>
-    <p>Bố cục chia đều 5 tab, home chính giữa như tab bình thường</p>
+    <h2>Footer Chuẩn Layout</h2>
+    <p>Home cân giữa, icon nhà, layout mượt</p>
   </div>
 
   <!-- Footer -->
@@ -104,7 +104,7 @@
     </a>
 
     <a href="/index/main.html" class="footer-item home" data-page="main.html">
-      <i class="fas fa-diamond"></i>
+      <i class="fas fa-house"></i>
       <span>Home</span>
     </a>
 
