@@ -21,6 +21,7 @@
             padding: 15px 20px;
             box-sizing: border-box;
             z-index: 1000;
+        margin-top: 65px;
         }
         .logo-container {
             display: flex;
