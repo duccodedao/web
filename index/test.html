@@ -1,91 +1,179 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Trang Demo với Header & Footer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BmassK3 - Trang Chính</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+
+    body {
       font-family: Arial, sans-serif;
-      padding-bottom: 80px;
+      background-color: #fefefe;
+      padding-bottom: 70px;
     }
 
+    /* HEADER */
     header {
-      background-color: #f5f5f5;
-      padding: 15px 20px;
+      background: #fff;
       border-bottom: 1px solid #ddd;
+      padding: 15px 20px;
     }
 
-    header .social {
+    .header-container {
       display: flex;
       flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #0077cc;
+    }
+
+    .social-links {
+      display: flex;
       gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.3s;
+    }
+
+    .social-links a:hover {
+      color: #0077cc;
+    }
+
+    /* CONTENT */
+    .content {
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    /* FOOTER */
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 60px;
+      z-index: 999;
+    }
+
+    footer a {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      color: #888;
+      font-size: 12px;
+      padding: 8px 0;
+      transition: 0.3s;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
     }
 
-    header a {
-      text-decoration: none;
-      color: #333;
-      font-weight: bold;
+    footer a i {
+      font-size: 18px;
+      margin-bottom: 2px;
     }
 
-    footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: #333;
-      color: #fff;
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      font-size: 14px;
+    footer a.active {
+      color: #0077cc;
     }
 
-    footer a {
-      color: #fff;
-      text-decoration: none;
+    footer a.active i {
+      animation: pop 0.3s ease-in-out;
     }
 
-    footer a:hover {
-      text-decoration: underline;
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
     }
 
-    .content {
-      padding: 30px;
-      text-align: center;
+    @media (max-width: 600px) {
+      .header-container {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .social-links {
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- HEADER -->
   <header>
-    <div class="social">
-      <span><i class="fab fa-telegram"></i> <a href="https://t.me/BmassK3" target="_blank">@BmassK3</a></span>
-      <span><i class="fab fa-telegram-plane"></i> <a href="https://t.me/BmassK3_Channel" target="_blank">@BmassK3_Channel</a></span>
-      <span><i class="fas fa-robot"></i> <a href="https://t.me/BmassK3_bot" target="_blank">@BmassK3_bot</a></span>
-      <span><i class="fas fa-puzzle-piece"></i> <a href="https://t.me/bmassk3_bot/bmassk3" target="_blank">Mini App</a></span>
+    <div class="header-container">
+      <div class="logo">BmassK3</div>
+      <div class="social-links">
+        <a href="https://t.me/BmassK3" target="_blank"><i class="fab fa-telegram"></i> @BmassK3</a>
+        <a href="https://t.me/BmassK3_Channel" target="_blank"><i class="fab fa-telegram-plane"></i> Channel</a>
+        <a href="https://t.me/BmassK3_bot" target="_blank"><i class="fas fa-robot"></i> Bot</a>
+        <a href="https://t.me/bmassk3_bot/bmassk3" target="_blank"><i class="fas fa-puzzle-piece"></i> Mini App</a>
+      </div>
     </div>
   </header>
 
-  <!-- Nội dung trang -->
+  <!-- NỘI DUNG TRANG -->
   <div class="content">
-    <h2>Chào mừng bạn đến với BmassK3</h2>
-    <p>Đây là phần nội dung chính của trang.</p>
+    <h2>Chào mừng đến với hệ sinh thái BmassK3</h2>
+    <p>Khám phá các chức năng chính bên dưới.</p>
   </div>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer>
-    <a href="/index/main.html"><i class="fas fa-home"></i> Main</a>
-    <a href="/Swap/index.html"><i class="fas fa-exchange-alt"></i> Swap</a>
-    <a href="/index/wallet_new.html"><i class="fas fa-wallet"></i> Wallet</a>
-    <a href="/index/shop.html"><i class="fas fa-shopping-cart"></i> Shop</a>
+    <a href="/index/main.html" class="footer-link active" onclick="setActive(this)">
+      <i class="fas fa-home"></i>
+      Main
+    </a>
+    <a href="/Swap/index.html" class="footer-link" onclick="setActive(this)">
+      <i class="fas fa-exchange-alt"></i>
+      Swap
+    </a>
+    <a href="/index/wallet_new.html" class="footer-link" onclick="setActive(this)">
+      <i class="fas fa-wallet"></i>
+      Wallet
+    </a>
+    <a href="/index/shop.html" class="footer-link" onclick="setActive(this)">
+      <i class="fas fa-shopping-cart"></i>
+      Shop
+    </a>
   </footer>
+
+  <!-- SCRIPT xử lý hiệu ứng chuyển tab -->
+  <script>
+    function setActive(el) {
+      document.querySelectorAll('.footer-link').forEach(link => link.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
 
 </body>
 </html>
