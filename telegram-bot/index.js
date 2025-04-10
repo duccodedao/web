@@ -13,11 +13,12 @@ app.post(`/webhook`, async (req, res) => {
   if (message) {
     const chatId = message.chat.id;
     const fullName = `${message.from.first_name || ''} ${message.from.last_name || ''}`.trim();
-    const text = `*Chào mừng ${fullName} đến với Mini App của BmassHD*`;
+    const caption = `Chào mừng *${fullName}* đến với Mini App của BmassHD`;
 
-    await axios.post(`${TELEGRAM_API}/sendMessage`, {
+    await axios.post(`${TELEGRAM_API}/sendPhoto`, {
       chat_id: chatId,
-      text: text,
+      photo: 'http://duccodedao.github.io/web/logo-coin/IMG_1613.png',
+      caption: caption,
       parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
