@@ -7,12 +7,27 @@ const TELEGRAM_API = `https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I
 const CHANNEL_ID = "@bmassk3_channel";
 const IMAGE_URL = "https://duccodedao.github.io/web/logo-coin/IMG_1613.png";
 
-let userData = {}; // Lưu UID, BMP, BMC, lastCheckin, address, pendingWithdraw
+let userData = {};
 
 function getToday7AM() {
   const now = new Date();
   now.setHours(7, 0, 0, 0);
   return now.getTime();
+}
+
+async function isMember(uid) {
+  try {
+    const res = await axios.get(`${TELEGRAM_API}/getChatMember`, {
+      params: {
+        chat_id: CHANNEL_ID,
+        user_id: uid
+      }
+    });
+    const status = res.data.result.status;
+    return ['member', 'administrator', 'creator'].includes(status);
+  } catch (err) {
+    return false;
+  }
 }
 
 async function sendMenu(chatId, fullName) {
@@ -49,14 +64,13 @@ app.post('/webhook', async (req, res) => {
         bmc: 0,
         lastCheckin: 0,
         address: null,
-        pendingWithdraw: null
+        pendingWithdraw: null,
+        joinedChannel: false
       };
     }
 
-    // Nếu người dùng vừa nhập địa chỉ ví để rút
     if (text && userData[uid].bmc >= 1000 && !userData[uid].pendingWithdraw) {
       userData[uid].pendingWithdraw = { address: text };
-
       await axios.post(`${TELEGRAM_API}/sendMessage`, {
         chat_id: chatId,
         text: `Bạn có xác nhận rút *${userData[uid].bmc} BMC* qua địa chỉ:\n\n*${text}* không?`,
@@ -87,7 +101,8 @@ app.post('/webhook', async (req, res) => {
         bmc: 0,
         lastCheckin: 0,
         address: null,
-        pendingWithdraw: null
+        pendingWithdraw: null,
+        joinedChannel: false
       };
     }
 
@@ -114,11 +129,54 @@ app.post('/webhook', async (req, res) => {
               { text: "🔁 Swap BMP → BMC", callback_data: "swap" },
               { text: "📤 Rút BMC", callback_data: "withdraw" }
             ],
-            [{ text: "📢 Referral", callback_data: "ref" }],
+            [{ text: "📢 Tham gia Telegram +1000 BMC", callback_data: "join_channel" }],
             [{ text: "◀️ Quay lại", callback_data: "back" }]
           ]
         }
       });
+    }
+
+    if (data === "join_channel") {
+      if (userData[uid].joinedChannel) {
+        return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: "Bạn đã hoàn thành nhiệm vụ này và nhận 1000 BMC trước đó rồi!"
+        });
+      }
+      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `Hãy tham gia kênh: ${CHANNEL_ID}, sau đó ấn nút dưới để xác nhận.`,
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "➡️ Vào kênh", url: `https://t.me/bmassk3_channel` }],
+            [{ text: "✅ Tôi đã tham gia", callback_data: "check_joined" }]
+          ]
+        }
+      });
+    }
+
+    if (data === "check_joined") {
+      if (userData[uid].joinedChannel) {
+        return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: "Bạn đã nhận 1000 BMC trước đó rồi."
+        });
+      }
+
+      const joined = await isMember(uid);
+      if (joined) {
+        userData[uid].bmc += 1000;
+        userData[uid].joinedChannel = true;
+        return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: "✅ Bạn đã tham gia kênh thành công!\n+1000 BMC vào tài khoản."
+        });
+      } else {
+        return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: "❌ Bạn chưa tham gia kênh. Hãy tham gia trước khi xác nhận!"
+        });
+      }
     }
 
     if (data === "get_uid") {
@@ -210,20 +268,6 @@ app.post('/webhook', async (req, res) => {
         caption: `Tính năng đang phát triển. Vui lòng liên hệ @BmassK3 để mua VIP.`,
         reply_markup: {
           inline_keyboard: [[{ text: "◀️ Quay lại", callback_data: "utils" }]]
-        }
-      });
-    }
-
-    if (data === "ref") {
-      return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
-        chat_id: chatId,
-        photo: IMAGE_URL,
-        caption: `Link giới thiệu của bạn:\nhttps://t.me/bmassk3_bot/?startapp=${uid}`,
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "🔗 Share", url: `https://t.me/share/url?url=https://t.me/bmassk3_bot/?startapp=${uid}` }],
-            [{ text: "◀️ Quay lại", callback_data: "utils" }]
-          ]
         }
       });
     }
