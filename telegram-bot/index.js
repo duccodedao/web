@@ -261,6 +261,35 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
+    if (data === "withdraw") {
+      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: "Hãy gửi địa chỉ ví TON bạn muốn rút BMC về.\n*Lưu ý*: Bạn cần ít nhất 1000 BMC để rút.",
+        parse_mode: "Markdown"
+      });
+    }
+
+    if (data === "confirm_withdraw") {
+      if (userData[uid].pendingWithdraw) {
+        const amount = userData[uid].bmc;
+        const address = userData[uid].pendingWithdraw.address;
+        userData[uid].bmc = 0;
+        userData[uid].pendingWithdraw = null;
+        return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: `🎉 Rút thành công ${amount} BMC về địa chỉ:\n${address}`
+        });
+      }
+    }
+
+    if (data === "cancel_withdraw") {
+      userData[uid].pendingWithdraw = null;
+      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: "❌ Đã hủy yêu cầu rút BMC."
+      });
+    }
+
     if (data === "buy_vip") {
       return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
         chat_id: chatId,
@@ -271,57 +300,11 @@ app.post('/webhook', async (req, res) => {
         }
       });
     }
-
-    if (data === "withdraw") {
-      if (userData[uid].bmc < 1000) {
-        return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
-          chat_id: chatId,
-          photo: IMAGE_URL,
-          caption: `Bạn cần ít nhất *1000 BMC* để rút.\nHãy thử *Swap BMP → BMC* nếu đủ.`,
-          parse_mode: "Markdown",
-          reply_markup: {
-            inline_keyboard: [[{ text: "◀️ Quay lại", callback_data: "utils" }]]
-          }
-        });
-      }
-
-      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id: chatId,
-        text: `Vui lòng nhập địa chỉ ví TON của bạn để rút BMC.`
-      });
-    }
-
-    if (data === "confirm_withdraw") {
-      const { pendingWithdraw, bmc } = userData[uid];
-      if (!pendingWithdraw) return;
-
-      await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id: CHANNEL_ID,
-        text: `🔔 Rút BMC mới:\nUID: ${uid}\nAddress: ${pendingWithdraw.address}\nSố lượng: ${bmc} BMC`
-      });
-
-      userData[uid].bmc = 0;
-      userData[uid].pendingWithdraw = null;
-
-      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id: chatId,
-        text: `✅ Rút thành công ${bmc} BMC.\nBạn sẽ nhận được coin trong thời gian sớm nhất!`
-      });
-    }
-
-    if (data === "cancel_withdraw") {
-      userData[uid].pendingWithdraw = null;
-      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id: chatId,
-        text: `❌ Hủy yêu cầu rút thành công.`
-      });
-    }
   }
 
-  res.sendStatus(200);
+  res.sendStatus(200); // Đảm bảo trả về OK cho Telegram
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Bot running on port ${PORT}`);
+app.listen(3000, () => {
+  console.log('Bot đang chạy ở cổng 3000');
 });
