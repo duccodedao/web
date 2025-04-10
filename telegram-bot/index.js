@@ -3,19 +3,9 @@ const axios = require('axios');
 const app = express();
 app.use(express.json());
 
-const TELEGRAM_API = "https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs";
+const TELEGRAM_API = 'https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs';
 const CHANNEL_ID = "@bmassk3_channel";
 const IMAGE_URL = "https://duccodedao.github.io/web/logo-coin/IMG_1613.png";
-
-let userData = {};
-
-function initUser(uid) {
-  if (!userData[uid]) {
-    userData[uid] = {
-      joinedChannel: false
-    };
-  }
-}
 
 async function sendPhoto(chatId, caption, keyboard = []) {
   return axios.post(`${TELEGRAM_API}/sendPhoto`, {
@@ -55,10 +45,8 @@ app.post('/webhook', async (req, res) => {
   if (body.message) {
     const msg = body.message;
     const chatId = msg.chat.id;
-    const uid = msg.from.id.toString();
     const fullName = `${msg.from.first_name || ''} ${msg.from.last_name || ''}`.trim();
 
-    initUser(uid);
     return sendMenu(chatId, fullName);
   }
 
@@ -68,13 +56,11 @@ app.post('/webhook', async (req, res) => {
     const uid = query.from.id.toString();
     const data = query.data;
 
-    initUser(uid);
-
     if (data === "utils") {
       return sendPhoto(chatId, "Chọn tiện ích bạn muốn sử dụng", [
         [
           { text: "⚡ Mua VIP", callback_data: "buy_vip" },
-          { text: "💸 Mua coin", url: "https://t.me/aliniex_bot/amp?startapp=tel_8xb3PN6dKJEXBWd" }
+          { text: "💸 Mua Coin", url: "https://t.me/aliniex_bot/amp?startapp=tel_8xb3PN6dKJEXBWd" }
         ],
         [
           { text: "🔑 Lấy UID", callback_data: "get_uid" }
@@ -85,16 +71,24 @@ app.post('/webhook', async (req, res) => {
       ]);
     }
 
+    if (data === "back") {
+      return sendMenu(chatId, `${query.from.first_name || ''} ${query.from.last_name || ''}`.trim());
+    }
+
     if (data === "get_uid") {
-      return sendPhoto(chatId, `UID của bạn là: \`${uid}\`\nẤn để sao chép`, [
+      return sendMessage(chatId, `🔑 UID của bạn là: \`${uid}\``, [
         [{ text: "◀️ Quay lại", callback_data: "utils" }]
       ]);
     }
 
-    if (data === "back") {
-      return sendMenu(chatId, `${query.from.first_name || ''} ${query.from.last_name || ''}`);
+    if (data === "buy_vip") {
+      return sendMessage(chatId, "⚡ Để mua VIP, vui lòng liên hệ Admin hoặc truy cập website chính thức.", [
+        [{ text: "◀️ Quay lại", callback_data: "utils" }]
+      ]);
     }
   }
 
   res.sendStatus(200);
 });
+
+app.listen(3000, () => console.log('Bot is running on port 3000'));
