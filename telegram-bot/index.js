@@ -7,7 +7,7 @@ const TELEGRAM_API = `https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I
 const CHANNEL_ID = "@bmassk3_channel";
 const IMAGE_URL = "https://duccodedao.github.io/web/logo-coin/IMG_1613.png";
 
-let userData = {}; // Lưu dữ liệu UID, BMP, BMC, lastCheckin, address
+let userData = {}; // Lưu UID, BMP, BMC, lastCheckin, address, pendingWithdraw
 
 function getToday7AM() {
   const now = new Date();
@@ -37,37 +37,64 @@ async function sendMenu(chatId, fullName) {
 app.post('/webhook', async (req, res) => {
   const body = req.body;
 
-  // Khi nhận tin nhắn
   if (body.message) {
     const chatId = body.message.chat.id;
+    const uid = body.message.from.id.toString();
     const fullName = `${body.message.from.first_name || ''} ${body.message.from.last_name || ''}`.trim();
-    await sendMenu(chatId, fullName);
-  }
+    const text = body.message.text;
 
-  // Khi bấm nút
-  if (body.callback_query) {
-    const query = body.callback_query;
-    const chatId = query.from.id;
-    const uid = query.from.id.toString();
-
-    // Khởi tạo nếu chưa có dữ liệu người dùng
     if (!userData[uid]) {
       userData[uid] = {
         bmp: 0,
         bmc: 0,
         lastCheckin: 0,
-        address: null
+        address: null,
+        pendingWithdraw: null
       };
     }
 
+    // Nếu người dùng vừa nhập địa chỉ ví để rút
+    if (text && userData[uid].bmc >= 1000 && !userData[uid].pendingWithdraw) {
+      userData[uid].pendingWithdraw = { address: text };
+
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `Bạn có xác nhận rút *${userData[uid].bmc} BMC* qua địa chỉ:\n\n*${text}* không?`,
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "✅ Xác nhận", callback_data: "confirm_withdraw" },
+              { text: "❌ Hủy", callback_data: "cancel_withdraw" }
+            ]
+          ]
+        }
+      });
+    } else {
+      await sendMenu(chatId, fullName);
+    }
+  }
+
+  if (body.callback_query) {
+    const query = body.callback_query;
+    const chatId = query.from.id;
+    const uid = query.from.id.toString();
     const data = query.data;
 
-    // Quay lại menu chính
+    if (!userData[uid]) {
+      userData[uid] = {
+        bmp: 0,
+        bmc: 0,
+        lastCheckin: 0,
+        address: null,
+        pendingWithdraw: null
+      };
+    }
+
     if (data === "back") {
       return await sendMenu(chatId, `${query.from.first_name || ''} ${query.from.last_name || ''}`);
     }
 
-    // Hiện tiện ích
     if (data === "utils") {
       return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
         chat_id: chatId,
@@ -94,7 +121,6 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
-    // Lấy UID
     if (data === "get_uid") {
       return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
         chat_id: chatId,
@@ -107,7 +133,6 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
-    // Check-in
     if (data === "checkin") {
       const last = userData[uid].lastCheckin;
       const now = Date.now();
@@ -137,7 +162,6 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
-    // Xem số dư
     if (data === "balance") {
       const bmp = userData[uid].bmp;
       const bmc = userData[uid].bmc;
@@ -152,7 +176,6 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
-    // Swap
     if (data === "swap") {
       const bmp = userData[uid].bmp;
       if (bmp < 10) {
@@ -180,7 +203,6 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
-    // Mua VIP
     if (data === "buy_vip") {
       return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
         chat_id: chatId,
@@ -192,7 +214,6 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
-    // Referral
     if (data === "ref") {
       return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
         chat_id: chatId,
@@ -207,7 +228,6 @@ app.post('/webhook', async (req, res) => {
       });
     }
 
-    // Rút BMC
     if (data === "withdraw") {
       if (userData[uid].bmc < 1000) {
         return await axios.post(`${TELEGRAM_API}/sendPhoto`, {
@@ -215,18 +235,43 @@ app.post('/webhook', async (req, res) => {
           photo: IMAGE_URL,
           caption: `Bạn cần ít nhất *1000 BMC* để rút.\nHãy thử *Swap BMP → BMC* nếu đủ.`,
           parse_mode: "Markdown",
-          reply_markup: [[{ text: "◀️ Quay lại", callback_data: "utils" }]]
+          reply_markup: {
+            inline_keyboard: [[{ text: "◀️ Quay lại", callback_data: "utils" }]]
+          }
         });
       }
 
       return await axios.post(`${TELEGRAM_API}/sendMessage`, {
         chat_id: chatId,
-        text: `Vui lòng nhập địa chỉ ví TON của bạn để rút BMC.`,
+        text: `Vui lòng nhập địa chỉ ví TON của bạn để rút BMC.`
       });
     }
 
-    // (Bạn có thể bổ sung tiếp phần xác nhận, nhập địa chỉ, gửi về channel nếu muốn)
+    if (data === "confirm_withdraw") {
+      const { pendingWithdraw, bmc } = userData[uid];
+      if (!pendingWithdraw) return;
 
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: CHANNEL_ID,
+        text: `🔔 Rút BMC mới:\nUID: ${uid}\nAddress: ${pendingWithdraw.address}\nSố lượng: ${bmc} BMC`
+      });
+
+      userData[uid].bmc = 0;
+      userData[uid].pendingWithdraw = null;
+
+      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `✅ Rút thành công ${bmc} BMC.\nBạn sẽ nhận được coin trong thời gian sớm nhất!`
+      });
+    }
+
+    if (data === "cancel_withdraw") {
+      userData[uid].pendingWithdraw = null;
+      return await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `❌ Hủy yêu cầu rút thành công.`
+      });
+    }
   }
 
   res.sendStatus(200);
