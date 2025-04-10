@@ -12,15 +12,18 @@ app.post(`/webhook`, async (req, res) => {
 
   if (message) {
     const chatId = message.chat.id;
-    const text = "Chào bạn! Nhấn vào nút bên dưới để tham gia kênh nhé 👇";
+    const fullName = `${message.from.first_name || ''} ${message.from.last_name || ''}`.trim();
+    const text = `*Chào mừng ${fullName} đến với Mini App của BmassHD*`;
 
     await axios.post(`${TELEGRAM_API}/sendMessage`, {
       chat_id: chatId,
       text: text,
+      parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "🔥 Tham gia kênh", url: "https://t.me/your_channel_here" }
+            { text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" },
+            { text: "📢 Channel", url: "https://t.me/bmassk3_channel" }
           ]
         ]
       }
