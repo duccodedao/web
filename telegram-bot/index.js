@@ -54,3 +54,20 @@ app.post(`/webhook`, async (req, res) => {
 
   res.sendStatus(200);
 });
+const fs = require('fs');
+const path = require('path');
+
+function loadReferrals() {
+  const filePath = path.join(__dirname, 'referrals.json');
+  try {
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data || '{}');
+  } catch (err) {
+    return {};
+  }
+}
+
+function saveReferrals(data) {
+  const filePath = path.join(__dirname, 'referrals.json');
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+}
