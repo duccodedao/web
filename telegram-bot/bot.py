@@ -2,7 +2,7 @@ import telebot
 from telebot.types import LabeledPrice
 
 # Bot Token
-bot = telebot.TeleBot('6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs')
+bot = telebot.TeleBot('7545800115:AAHiyoeL2SkxXGaecK0VdgBovlNfQxTJmBA')
 
 # Provider token nếu bạn dùng thanh toán thật (hiện để trống)
 PROVIDER_TOKEN = ""  # Thêm token thanh toán nếu có
