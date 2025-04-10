@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 
-const TELEGRAM_API = `https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs`;  // Thay bằng token thật của bạn
+const TELEGRAM_API = `https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs`;
 app.use(express.json());
 
 app.post('/webhook', async (req, res) => {
@@ -28,28 +28,35 @@ app.post('/webhook', async (req, res) => {
             { text: "📢 Channel", url: "https://t.me/bmassk3_channel" }
           ],
           [
-            { text: "⚡ Mua VIP", callback_data: "buy_vip" }
+            { text: "⚡ Mua VIP", callback_data: "buy_vip" },
+            { text: "📩 Lấy UID", callback_data: "get_uid" }
           ]
         ]
       }
     });
   }
 
-  // Khi người dùng bấm nút "Mua VIP"
+  // Xử lý các callback từ inline button
   if (body.callback_query) {
     const query = body.callback_query;
     const chatId = query.from.id;
+    const callbackData = query.data;
 
-    await axios.post(`${TELEGRAM_API}/sendMessage`, {
-      chat_id: chatId,
-      text: `Đang mở giao diện thanh toán...`,
-    });
+    if (callbackData === 'buy_vip') {
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `⚠️ Tính năng *Mua VIP* hiện đang phát triển.\n\nVui lòng liên hệ @BmassK3 để được hỗ trợ.`,
+        parse_mode: "Markdown"
+      });
+    }
 
-    // Gửi lệnh /buy để bot.py xử lý
-    await axios.post(`${TELEGRAM_API}/sendMessage`, {
-      chat_id: chatId,
-      text: `/buy`
-    });
+    if (callbackData === 'get_uid') {
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `🆔 UID của bạn là: \`${chatId}\`\n\nẤn vào để sao chép và sử dụng.`,
+        parse_mode: "Markdown"
+      });
+    }
   }
 
   res.sendStatus(200);
