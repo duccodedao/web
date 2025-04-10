@@ -33,8 +33,7 @@ async function sendMenu(chatId, fullName) {
       { text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" }
     ],
     [
-      { text: "📢 Channel", url: "https://t.me/bmassk3_channel" },
-      { text: "⚙️ Tiện ích", callback_data: "utils" }
+      { text: "📢 Channel", url: "https://t.me/bmassk3_channel" }
     ]
   ]);
 }
@@ -56,36 +55,8 @@ app.post('/webhook', async (req, res) => {
     const uid = query.from.id.toString();
     const data = query.data;
 
-    if (data === "utils") {
-      return sendPhoto(chatId, "Chọn tiện ích bạn muốn sử dụng", [
-        [
-          { text: "⚡ Mua VIP", callback_data: "buy_vip" },
-          { text: "💸 Mua Coin", url: "https://t.me/aliniex_bot/amp?startapp=tel_8xb3PN6dKJEXBWd" }
-        ],
-        [
-          { text: "🔑 Lấy UID", callback_data: "get_uid" }
-        ],
-        [
-          { text: "◀️ Quay lại", callback_data: "back" }
-        ]
-      ]);
-    }
-
-    if (data === "back") {
-      return sendMenu(chatId, `${query.from.first_name || ''} ${query.from.last_name || ''}`.trim());
-    }
-
-    if (data === "get_uid") {
-      return sendMessage(chatId, `🔑 UID của bạn là: \`${uid}\``, [
-        [{ text: "◀️ Quay lại", callback_data: "utils" }]
-      ]);
-    }
-
-    if (data === "buy_vip") {
-      return sendMessage(chatId, "⚡ Để mua VIP, vui lòng liên hệ Admin hoặc truy cập website chính thức.", [
-        [{ text: "◀️ Quay lại", callback_data: "utils" }]
-      ]);
-    }
+    // Các nút tiện ích đã bị xoá nên không cần xử lý callback_query nữa
+    // Nhưng nếu sau này bạn muốn xử lý nút khác thì có thể thêm vào đây
   }
 
   res.sendStatus(200);
