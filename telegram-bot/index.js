@@ -1,62 +1,56 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
-
-const TELEGRAM_API = `https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs`;
 app.use(express.json());
 
-const userBalances = {}; // Dùng để lưu điểm BMC trong bộ nhớ RAM (local server)
+const TELEGRAM_API = 'https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs';
+const CHANNEL_ID = '@bmassk3_channel';
 
-const mainMenuKeyboard = [
-  [
-    { text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" },
-    { text: "📢 Channel", url: "https://t.me/bmassk3_channel" }
-  ],
-  [
-    { text: "🧰 Tiện ích", callback_data: "utility_menu" }
+const userData = {}; // Lưu BMP, checkin, address tạm thời trong RAM (render restart sẽ mất)
+
+const createMainMenu = (chatId) => ({
+  chat_id: chatId,
+  photo: 'http://duccodedao.github.io/web/logo-coin/IMG_1613.png',
+  caption: 'Chào mừng *bạn* đến với Mini App của BmassHD',
+  parse_mode: "Markdown",
+  reply_markup: {
+    inline_keyboard: [
+      [
+        { text: "🧩 Apps", url: `https://t.me/bmassk3_bot/?startapp=` },
+        { text: "📢 Channel", url: "https://t.me/bmassk3_channel" }
+      ],
+      [{ text: "⚙️ Tiện ích", callback_data: "show_tools" }]
+    ]
+  }
+});
+
+const toolsMenu = {
+  inline_keyboard: [
+    [
+      { text: "⚡ Mua VIP", callback_data: "buy_vip" },
+      { text: "🆔 Lấy UID", callback_data: "get_uid" }
+    ],
+    [
+      { text: "🎁 Check-in", callback_data: "check_in" },
+      { text: "💰 Số dư", callback_data: "view_balance" }
+    ],
+    [
+      { text: "🔁 Swap BMP → BMC", callback_data: "swap" },
+      { text: "📤 Rút BMC", callback_data: "withdraw_bmc" }
+    ],
+    [
+      { text: "🔗 Refer", callback_data: "ref" },
+      { text: "↩️ Quay lại", callback_data: "back" }
+    ]
   ]
-];
-
-const utilityKeyboard = [
-  [
-    { text: '⚡ Mua VIP', callback_data: 'buy_vip' },
-    { text: '🆔 Lấy UID', callback_data: 'get_uid' }
-  ],
-  [
-    { text: '🎯 Check in', callback_data: 'check_in' },
-    { text: '💰 Số dư BMC', callback_data: 'get_balance' }
-  ],
-  [
-    { text: '👥 Referral', callback_data: 'referral' }
-  ],
-  [
-    { text: '⬅️ Quay lại', callback_data: 'back' }
-  ]
-];
-
-// Gửi ảnh + caption + nút
-async function sendPhotoWithText(chatId, text, buttons) {
-  await axios.post(`${TELEGRAM_API}/sendPhoto`, {
-    chat_id: chatId,
-    photo: 'http://duccodedao.github.io/web/logo-coin/IMG_1613.png',
-    caption: text,
-    parse_mode: "Markdown",
-    reply_markup: {
-      inline_keyboard: buttons
-    }
-  });
-}
+};
 
 app.post('/webhook', async (req, res) => {
   const body = req.body;
 
   if (body.message) {
-    const msg = body.message;
-    const chatId = msg.chat.id;
-    const fullName = `${msg.from.first_name || ''} ${msg.from.last_name || ''}`.trim();
-
-    const welcome = `Chào mừng *${fullName}* đến với Mini App của BmassHD`;
-    await sendPhotoWithText(chatId, welcome, mainMenuKeyboard);
+    const chatId = body.message.chat.id;
+    await axios.post(`${TELEGRAM_API}/sendPhoto`, createMainMenu(chatId));
   }
 
   if (body.callback_query) {
@@ -64,48 +58,133 @@ app.post('/webhook', async (req, res) => {
     const chatId = query.from.id;
     const data = query.data;
 
-    switch (data) {
-      case 'utility_menu':
-        await sendPhotoWithText(chatId, `🧰 Chọn tiện ích bạn muốn sử dụng:`, utilityKeyboard);
-        break;
+    if (!userData[chatId]) {
+      userData[chatId] = { bmp: 0, lastCheckIn: null, address: null };
+    }
 
-      case 'buy_vip':
-        await sendPhotoWithText(chatId, `⚡ Tính năng đang phát triển.\nLiên hệ @BmassK3 để được hỗ trợ!`, utilityKeyboard);
-        break;
+    if (data === 'show_tools') {
+      await axios.post(`${TELEGRAM_API}/sendPhoto`, {
+        chat_id: chatId,
+        photo: 'http://duccodedao.github.io/web/logo-coin/IMG_1613.png',
+        caption: '*Tiện ích bạn cần là gì?*',
+        parse_mode: "Markdown",
+        reply_markup: toolsMenu
+      });
+    }
 
-      case 'get_uid':
-        await sendPhotoWithText(chatId, `🆔 UID của bạn là: \`${chatId}\`\n\nẤn để sao chép!`, utilityKeyboard);
-        break;
+    if (data === 'back') {
+      await axios.post(`${TELEGRAM_API}/sendPhoto`, createMainMenu(chatId));
+    }
 
-      case 'check_in':
-        if (!userBalances[chatId]) userBalances[chatId] = 0;
-        userBalances[chatId] += 100;
-        await sendPhotoWithText(chatId, `🎯 Check-in thành công!\n+100 BMC vào tài khoản.`, utilityKeyboard);
-        break;
+    if (data === 'buy_vip') {
+      await axios.post(`${TELEGRAM_API}/sendPhoto`, {
+        chat_id: chatId,
+        photo: 'http://duccodedao.github.io/web/logo-coin/IMG_1613.png',
+        caption: 'Tính năng đang phát triển, vui lòng liên hệ @BmassK3 để được hỗ trợ!',
+        parse_mode: "Markdown",
+        reply_markup: toolsMenu
+      });
+    }
 
-      case 'get_balance':
-        const balance = userBalances[chatId] || 0;
-        await sendPhotoWithText(chatId, `💰 Số dư hiện tại của bạn là *${balance} BMC*`, utilityKeyboard);
-        break;
+    if (data === 'get_uid') {
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `UID của bạn là: \`${chatId}\``,
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [[{ text: "↩️ Quay lại", callback_data: "back" }]]
+        }
+      });
+    }
 
-      case 'referral':
-        const ref = `https://t.me/bmassk3_bot/?startapp=${chatId}`;
-        const share = `https://t.me/share/url?url=${encodeURIComponent(ref)}&text=Tham gia MiniApp BmassHD ngay!`;
+    if (data === 'ref') {
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `Link giới thiệu của bạn là:\nhttps://t.me/bmassk3_bot/?startapp=${chatId}`,
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🔗 Share", url: `https://t.me/share/url?url=https://t.me/bmassk3_bot/?startapp=${chatId}` }],
+            [{ text: "↩️ Quay lại", callback_data: "back" }]
+          ]
+        }
+      });
+    }
 
+    if (data === 'check_in') {
+      const today = new Date().toDateString();
+      if (userData[chatId].lastCheckIn === today) {
         await axios.post(`${TELEGRAM_API}/sendMessage`, {
           chat_id: chatId,
-          text: `👥 Đây là link giới thiệu của bạn:\n${ref}\n\nChia sẻ ngay: [Bấm để chia sẻ](${share})`,
-          parse_mode: "Markdown",
-          reply_markup: {
-            inline_keyboard: [[{ text: "⬅️ Quay lại", callback_data: "back" }]]
-          }
+          text: `Bạn đã check-in hôm nay rồi. Hãy quay lại sau 7h sáng mai.`,
+          reply_markup: { inline_keyboard: [[{ text: "↩️ Quay lại", callback_data: "back" }]] }
         });
-        break;
-
-      case 'back':
-        await sendPhotoWithText(chatId, `Chọn tính năng bên dưới để tiếp tục`, mainMenuKeyboard);
-        break;
+      } else {
+        userData[chatId].lastCheckIn = today;
+        userData[chatId].bmp += 100;
+        await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: `Bạn đã nhận được +100 BMP thành công!`,
+          reply_markup: { inline_keyboard: [[{ text: "↩️ Quay lại", callback_data: "back" }]] }
+        });
+      }
     }
+
+    if (data === 'view_balance') {
+      const bmp = userData[chatId].bmp;
+      const bmc = Math.floor(bmp / 10);
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `Số dư BMP: ${bmp} BMP\nTương đương: ${bmc} BMC`,
+        reply_markup: { inline_keyboard: [[{ text: "↩️ Quay lại", callback_data: "back" }]] }
+      });
+    }
+
+    if (data === 'swap') {
+      const bmp = userData[chatId].bmp;
+      const bmc = Math.floor(bmp / 10);
+      if (bmc > 0) {
+        userData[chatId].bmp -= bmc * 10;
+        await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: `Đã chuyển thành công ${bmc} BMC!`,
+          reply_markup: { inline_keyboard: [[{ text: "↩️ Quay lại", callback_data: "back" }]] }
+        });
+      } else {
+        await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: `Bạn cần ít nhất 10 BMP để swap.`,
+          reply_markup: { inline_keyboard: [[{ text: "↩️ Quay lại", callback_data: "back" }]] }
+        });
+      }
+    }
+
+    if (data === 'withdraw_bmc') {
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: `Vui lòng gửi địa chỉ ví TON của bạn:`,
+      });
+      userData[chatId].awaitingAddress = true;
+    }
+  }
+
+  if (body.message && body.message.text && userData[body.message.chat.id]?.awaitingAddress) {
+    const chatId = body.message.chat.id;
+    const address = body.message.text;
+    userData[chatId].awaitingAddress = false;
+    userData[chatId].address = address;
+
+    const bmc = Math.floor(userData[chatId].bmp / 10);
+
+    await axios.post(`${TELEGRAM_API}/sendMessage`, {
+      chat_id: chatId,
+      text: `Xác nhận rút:\nAddress: ${address}\nSố lượng: ${bmc} BMC`,
+      reply_markup: { inline_keyboard: [[{ text: "↩️ Quay lại", callback_data: "back" }]] }
+    });
+
+    await axios.post(`${TELEGRAM_API}/sendMessage`, {
+      chat_id: CHANNEL_ID,
+      text: `Yêu cầu rút BMC:\nAddress: ${address}\nSố lượng: ${bmc} BMC`
+    });
   }
 
   res.sendStatus(200);
