@@ -6,7 +6,7 @@ app.use(express.json());
 const TELEGRAM_API = 'https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs';
 const IMAGE_URL = "https://duccodedao.github.io/web/logo-coin/IMG_1613.png";
 
-// Lưu ngôn ngữ người dùng: { userId: 'vi' | 'en' }
+// Lưu ngôn ngữ người dùng
 const userLangMap = new Map();
 
 function getLangText(lang, type, fullName = '', userMessage = '') {
@@ -14,6 +14,8 @@ function getLangText(lang, type, fullName = '', userMessage = '') {
     vi: {
       caption: `Xin chào *${fullName}*.\nChào mừng đến với Mini App của BmassHD.\n\nBạn vừa gửi: *${userMessage}*\n\nBạn thắc mắc điều gì, chat với support nhé [@BmassK3](https://t.me/BmassK3)`,
       language_select: "Chọn ngôn ngữ:",
+      slogan: "Trường Sa, Hoàng Sa là của Việt Nam.",
+      selected: "Bạn đã chọn ngôn ngữ *Tiếng Việt*.",
       buttons: [
         [{ text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" }],
         [{ text: "📢 Channel", url: "https://t.me/bmassk3_channel" }]
@@ -22,6 +24,8 @@ function getLangText(lang, type, fullName = '', userMessage = '') {
     en: {
       caption: `Hello *${fullName}*.\nWelcome to BmassHD's Mini App.\n\nYou just sent: *${userMessage}*\n\nIf you have any questions, chat with support [@BmassK3](https://t.me/BmassK3)`,
       language_select: "Choose your language:",
+      slogan: "The Spratly and Paracel Islands belong to Vietnam.",
+      selected: "You selected *English*.",
       buttons: [
         [{ text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" }],
         [{ text: "📢 Channel", url: "https://t.me/bmassk3_channel" }]
@@ -39,6 +43,14 @@ async function sendPhoto(chatId, caption, keyboard = []) {
     caption,
     parse_mode: "Markdown",
     reply_markup: { inline_keyboard: keyboard }
+  });
+}
+
+async function sendMessage(chatId, text) {
+  return axios.post(`${TELEGRAM_API}/sendMessage`, {
+    chat_id: chatId,
+    text,
+    parse_mode: "Markdown"
   });
 }
 
@@ -69,15 +81,11 @@ app.post('/webhook', async (req, res) => {
     const fullName = `${msg.from.first_name || ''} ${msg.from.last_name || ''}`.trim();
     const text = msg.text || '';
 
-    if (text.toLowerCase().includes('/start')) {
-      // Gửi menu chọn ngôn ngữ nếu chưa có
-      if (!userLangMap.has(chatId)) {
-        await sendLanguageMenu(chatId);
-        return res.sendStatus(200);
-      }
+    if (!userLangMap.has(chatId)) {
+      await sendLanguageMenu(chatId);
+    } else {
+      await sendMenu(chatId, fullName, text);
     }
-
-    await sendMenu(chatId, fullName, text);
   }
 
   if (body.callback_query) {
@@ -86,16 +94,13 @@ app.post('/webhook', async (req, res) => {
     const fullName = `${query.from.first_name || ''} ${query.from.last_name || ''}`.trim();
     const data = query.data;
 
-    if (data === 'lang_vi') {
-      userLangMap.set(chatId, 'vi');
-      await sendMessage(chatId, "Bạn đã chọn ngôn ngữ *Tiếng Việt*.");
+    if (data === 'lang_vi' || data === 'lang_en') {
+      const lang = data.split('_')[1];
+      userLangMap.set(chatId, lang);
+
+      await sendMessage(chatId, getLangText(lang, 'selected'));
+      await sendMessage(chatId, getLangText(lang, 'slogan'));
       await sendMenu(chatId, fullName);
-    } else if (data === 'lang_en') {
-      userLangMap.set(chatId, 'en');
-      await sendMessage(chatId, "You selected *English*.");
-      await sendMenu(chatId, fullName);
-    } else {
-      await sendMenu(chatId, fullName, `Bạn vừa bấm: ${data}`);
     }
   }
 
