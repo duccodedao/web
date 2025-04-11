@@ -24,7 +24,7 @@ function getLangText(lang, type, fullName = '', userMessage = '') {
     en: {
       caption: `Hello *${fullName}*.\nWelcome to BmassHD's Mini App.\n\nYou just sent: *${userMessage}*\n\nIf you have any questions, chat with support [@BmassK3](https://t.me/BmassK3)`,
       language_select: "Choose your language:",
-      slogan: "The Spratly and Paracel Islands belong to Vietnam.",
+      slogan: "Truong Sa and Hoang Sa belong to Vietnam.",
       selected: "You selected *English*.",
       buttons: [
         [{ text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" }],
