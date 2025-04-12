@@ -1,77 +1,39 @@
-const dotenv = require("dotenv");
-const { Telegraf } = require("telegraf");
-const axios = require("axios");
+require("dotenv").config();
+const fetchData = require("./getTransactions");
+const getAccount = require("./getAccount");
 
-dotenv.config();
+const vipAccounts = {};
 
-const defaultDescription = process.env.DESCRIPTION.replace(/\\n/g, "\n");
+async function findVipAccounts() {
+  const transactions = await fetchData();
+  transactions.reverse();
 
-const channelId = process.env.CHANNEL_ID;
-
-const USDTAddress = "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA";
-const PTONAddress = "EQCM3B12QK1e4yZSf8GtBRT0aLMNyEsBc_DhVfRRtOEffLez";
-const AEAddress = "EQCHwHSBnJYmyefutCuvKJMjFh9dCoCF4SDHVr2wEDmOwJzp";
-
-const bot = new Telegraf(process.env.BOT_TOKEN);
-
-async function main() {
-  setInterval(async () => {
-    updateDescription();
-  }, 120000);
-  updateDescription();
-}
-main();
-
-async function updateDescription() {
-  try {
-    const { data: tonAe } = await axios.post(
-      `https://api.ston.fi/v1/swap/simulate`,
-      {},
-      {
-        params: {
-          offer_address: AEAddress,
-          ask_address: PTONAddress,
-          units: 1000000000,
-          slippage_tolerance: 0.1,
-        },
-      }
-    );
-    const { data: tonUsdt } = await axios.post(
-      `https://api.ston.fi/v1/swap/simulate`,
-      {},
-      {
-        params: {
-          offer_address: USDTAddress,
-          ask_address: PTONAddress,
-          units: 1000000000,
-          slippage_tolerance: 0.1,
-        },
-      }
+  for (const key of transactions) {
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+    const address = key.attributes.tx_from_address;
+    const account = await getAccount(
+      key.attributes.tx_from_address,
+      key.attributes.price_from_in_usd
     );
 
-    const aeTonPrice = tonAe.swap_rate;
-    const usdTonPrice = tonUsdt.swap_rate;
-
-    const aeUsdPrice = (1 / parseFloat(usdTonPrice)) * parseFloat(aeTonPrice);
-
-    const newDescription = `AE Jetton ≈ ${formatNumber(
-      aeTonPrice
-    )}💎 (${formatNumber(aeUsdPrice, 2)}$)
-\n${defaultDescription}`;
-    await bot.telegram.setChatDescription(channelId, newDescription);
-    console.log("updated description", new Date());
-  } catch (e) {
-    if (e?.message?.includes("Bad Request: chat description is not modified")) {
-      return;
+    if (account) {
+      account.map((key) => {
+        if (
+          (key.jetton.name === "TON FISH MEMECOIN" && key.balance > 80000000) ||
+          (key.jetton.name === "Tether USD" && key.balance > 100) ||
+          (key.jetton.name === "Not Notcoin" && key.balance > 100) ||
+          (key.jetton.name === "BabyRedo" && key.balance > 100)
+        ) {
+          console.log(key.balance);
+          console.log(key.jetton.name);
+          console.log(address);
+          return;
+        }
+      });
     }
-
-    console.error(e);
   }
+
+  return;
 }
 
-function formatNumber(n, digits = 2) {
-  const num = parseFloat(n);
-  const digitsCount = Math.abs(Math.floor(Math.log10(n))); // 0.02 -> -2
-
-  return num.toFixed(digitsCount + digits);
-}
+findVipAccounts();
