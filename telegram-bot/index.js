@@ -6,31 +6,34 @@ app.use(express.json());
 const TELEGRAM_API = 'https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs';
 const IMAGE_URL = "https://duccodedao.github.io/web/logo-coin/IMG_1613.png";
 
-// Lưu ngôn ngữ và trạng thái thêm nút Apps
 const userLangMap = new Map();
-const userAppsMap = new Map();
 
-function getTexts(lang, fullName, userMessage, withApps = false) {
-  const appsButton = [{ text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" }];
-  const channelButton = [{ text: "📢 Channel", url: "https://t.me/bmassk3_channel" }];
-  const baseButtons = withApps ? [appsButton, channelButton] : [channelButton];
-
+function getLangText(lang, type, fullName = '', userMessage = '') {
   const texts = {
     vi: {
       caption: `Xin chào *${fullName}*.\nChào mừng đến với Mini App của BmassHD.\n\nBạn vừa gửi: *${userMessage}*\n\nBạn thắc mắc điều gì, chat với support nhé [@BmassK3](https://t.me/BmassK3)`,
-      selected: "Bạn đã chọn ngôn ngữ *Tiếng Việt*.",
+      language_select: "Chọn ngôn ngữ:",
       slogan: "Trường Sa, Hoàng Sa là của Việt Nam.",
-      keyboard: baseButtons
+      selected: "Bạn đã chọn ngôn ngữ *Tiếng Việt*.",
+      buttons: [
+        [{ text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" }],
+        [{ text: "📢 Channel", url: "https://t.me/bmassk3_channel" }],
+        [{ text: "🌐 Kích hoạt hệ thống tiếng Việt", url: "https://t.me/setlanguage/abcxyz" }]
+      ]
     },
     en: {
       caption: `Hello *${fullName}*.\nWelcome to BmassHD's Mini App.\n\nYou just sent: *${userMessage}*\n\nIf you have any questions, chat with support [@BmassK3](https://t.me/BmassK3)`,
-      selected: "You selected *English*.",
+      language_select: "Choose your language:",
       slogan: "Truong Sa and Hoang Sa belong to Vietnam.",
-      keyboard: baseButtons
+      selected: "You selected *English*.",
+      buttons: [
+        [{ text: "🧩 Apps", url: "https://t.me/bmassk3_bot/?startapp=" }],
+        [{ text: "📢 Channel", url: "https://t.me/bmassk3_channel" }]
+      ]
     }
   };
 
-  return texts[lang] || texts.vi;
+  return texts[lang || 'vi'][type];
 }
 
 async function sendPhoto(chatId, caption, keyboard = []) {
@@ -43,14 +46,27 @@ async function sendPhoto(chatId, caption, keyboard = []) {
   });
 }
 
-async function sendMessage(chatId, text, keyboard = null) {
-  const payload = {
+async function sendMessage(chatId, text) {
+  return axios.post(`${TELEGRAM_API}/sendMessage`, {
     chat_id: chatId,
     text,
     parse_mode: "Markdown"
-  };
-  if (keyboard) payload.reply_markup = { inline_keyboard: keyboard };
-  return axios.post(`${TELEGRAM_API}/sendMessage`, payload);
+  });
+}
+
+async function sendKeyboardButtons(chatId, text) {
+  return axios.post(`${TELEGRAM_API}/sendMessage`, {
+    chat_id: chatId,
+    text,
+    parse_mode: "Markdown",
+    reply_markup: {
+      keyboard: [
+        [{ text: "🧩 Apps" }]
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: false
+    }
+  });
 }
 
 async function sendLanguageMenu(chatId) {
@@ -63,28 +79,12 @@ async function sendLanguageMenu(chatId) {
   await sendPhoto(chatId, "Chọn ngôn ngữ / Choose your language:", keyboard);
 }
 
-async function sendVietnameseActivation(chatId) {
-  const keyboard = [
-    [{ text: "Kích hoạt toàn bộ hệ thống Tiếng Việt", url: "https://t.me/setlanguage/abcxyz" }]
-  ];
-  await sendMessage(chatId, "Chúc mừng! Bạn đã kích hoạt thành công Tiếng Việt.", keyboard);
-}
-
-async function askAddApps(chatId) {
-  const keyboard = [
-    [
-      { text: "✅ Có", callback_data: "add_apps_yes" },
-      { text: "❌ Không", callback_data: "add_apps_no" }
-    ]
-  ];
-  await sendMessage(chatId, "Bạn có muốn thêm nút *Apps* vào menu không?", keyboard);
-}
-
-async function sendMainMenu(chatId, fullName, userMessage = '') {
+async function sendMenu(chatId, fullName, userMessage = '') {
   const lang = userLangMap.get(chatId) || 'vi';
-  const withApps = userAppsMap.get(chatId) === true;
-  const texts = getTexts(lang, fullName, userMessage, withApps);
-  await sendPhoto(chatId, texts.caption, texts.keyboard);
+  const caption = getLangText(lang, 'caption', fullName, userMessage);
+  const buttons = getLangText(lang, 'buttons');
+
+  await sendPhoto(chatId, caption, buttons);
 }
 
 app.post('/webhook', async (req, res) => {
@@ -99,7 +99,7 @@ app.post('/webhook', async (req, res) => {
     if (!userLangMap.has(chatId)) {
       await sendLanguageMenu(chatId);
     } else {
-      await sendMainMenu(chatId, fullName, text);
+      await sendMenu(chatId, fullName, text);
     }
   }
 
@@ -113,27 +113,29 @@ app.post('/webhook', async (req, res) => {
       const lang = data.split('_')[1];
       userLangMap.set(chatId, lang);
 
-      const texts = getTexts(lang, fullName, '');
-      await sendMessage(chatId, texts.selected);
-      await sendMessage(chatId, texts.slogan);
+      await sendMessage(chatId, getLangText(lang, 'selected'));
+      await sendMessage(chatId, getLangText(lang, 'slogan'));
+      await sendMenu(chatId, fullName);
 
-      if (lang === 'vi') {
-        await sendVietnameseActivation(chatId);
-      }
-
-      await askAddApps(chatId);
+      // Sau khi chọn ngôn ngữ xong thì hỏi người dùng có muốn hiển thị bàn phím apps không
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: "Bạn có muốn hiển thị nút Apps ngay trên bàn phím không?",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "Có", callback_data: "show_apps_keyboard" }],
+            [{ text: "Không", callback_data: "hide_apps_keyboard" }]
+          ]
+        }
+      });
     }
 
-    if (data === 'add_apps_yes') {
-      userAppsMap.set(chatId, true);
-      await sendMessage(chatId, "Đã thêm nút *Apps* vào menu!");
-      await sendMainMenu(chatId, fullName);
+    if (data === "show_apps_keyboard") {
+      await sendKeyboardButtons(chatId, "Đã bật bàn phím chứa nút Apps!");
     }
 
-    if (data === 'add_apps_no') {
-      userAppsMap.set(chatId, false);
-      await sendMessage(chatId, "Bạn đã chọn không thêm nút *Apps*.");
-      await sendMainMenu(chatId, fullName);
+    if (data === "hide_apps_keyboard") {
+      await sendMessage(chatId, "Bạn đã chọn không hiển thị bàn phím Apps.");
     }
   }
 
