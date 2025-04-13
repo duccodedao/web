@@ -3,7 +3,7 @@ const axios = require('axios');
 const app = express();
 app.use(express.json());
 
-const TELEGRAM_API = 'https://api.telegram.org/bot<YOUR_BOT_TOKEN>';
+const TELEGRAM_API = 'https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs';
 const IMAGE_URL = "https://duccodedao.github.io/web/logo-coin/IMG_1613.png";
 
 // Lưu ngôn ngữ và cài đặt người dùng
