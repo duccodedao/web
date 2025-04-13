@@ -6,31 +6,7 @@ app.use(express.json());
 const TELEGRAM_API = 'https://api.telegram.org/bot6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs';
 const IMAGE_URL = "https://duccodedao.github.io/web/logo-coin/IMG_1613.png";
 
-// Lưu ngôn ngữ và cài đặt người dùng
 const userLangMap = new Map();
-const userSettings = new Map();
-const priceIntervals = new Map();
-
-// Lấy giá TON từ CoinGecko
-async function getTonPrice() {
-  try {
-    const response = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
-      params: {
-        ids: "toncoin",
-        vs_currencies: "usd"
-      }
-    });
-    return response.data.toncoin.usd;
-  } catch (error) {
-    console.error("Lỗi khi lấy giá TON:", error);
-    return null;
-  }
-}
-
-// Tính phần trăm thay đổi giá
-function calculatePercentageChange(oldPrice, newPrice) {
-  return ((newPrice - oldPrice) / oldPrice) * 100;
-}
 
 function getLangText(lang, type, fullName = '', userMessage = '') {
   const texts = {
@@ -70,16 +46,12 @@ async function sendPhoto(chatId, caption, keyboard = []) {
   });
 }
 
-async function sendMessage(chatId, text, replyMarkup = null) {
-  const payload = {
+async function sendMessage(chatId, text) {
+  return axios.post(`${TELEGRAM_API}/sendMessage`, {
     chat_id: chatId,
     text,
     parse_mode: "Markdown"
-  };
-  if (replyMarkup) {
-    payload.reply_markup = replyMarkup;
-  }
-  return axios.post(`${TELEGRAM_API}/sendMessage`, payload);
+  });
 }
 
 async function sendKeyboardButtons(chatId, text) {
@@ -89,7 +61,7 @@ async function sendKeyboardButtons(chatId, text) {
     parse_mode: "Markdown",
     reply_markup: {
       keyboard: [
-        [{ text: "🧩 Apps", web_app: { url: "https://t.me/bmassk3_bot/?startapp=" } }]
+        [{ text: "🧩 Apps" }]
       ],
       resize_keyboard: true,
       one_time_keyboard: false
@@ -137,13 +109,38 @@ app.post('/webhook', async (req, res) => {
     const fullName = `${query.from.first_name || ''} ${query.from.last_name || ''}`.trim();
     const data = query.data;
 
-    if (data.startsWith("lang_")) {
-      const lang = data.split("_")[1];
+    if (data === 'lang_vi' || data === 'lang_en') {
+      const lang = data.split('_')[1];
       userLangMap.set(chatId, lang);
+
       await sendMessage(chatId, getLangText(lang, 'selected'));
+      await sendMessage(chatId, getLangText(lang, 'slogan'));
       await sendMenu(chatId, fullName);
+
+      // Sau khi chọn ngôn ngữ xong thì hỏi người dùng có muốn hiển thị bàn phím apps không
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: "Bạn có muốn hiển thị nút Apps ngay trên bàn phím không?",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "Có", callback_data: "show_apps_keyboard" }],
+            [{ text: "Không", callback_data: "hide_apps_keyboard" }]
+          ]
+        }
+      });
+    }
+
+    if (data === "show_apps_keyboard") {
+      await sendKeyboardButtons(chatId, "Đã bật bàn phím chứa nút Apps!");
+    }
+
+    if (data === "hide_apps_keyboard") {
+      await sendMessage(chatId, "Bạn đã chọn không hiển thị bàn phím Apps.");
     }
   }
 
   res.sendStatus(200);
- 
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Bot is running on port ${PORT}`));
