@@ -1,123 +1,181 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Connect + Toncenter</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #eef2f3;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 500px;
-            background: white;
-            padding: 20px;
-            margin: 50px auto;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-        }
-        h1 {
-            color: #0056b3;
-        }
-        p {
-            font-size: 16px;
-            margin: 5px 0;
-        }
-        .hidden {
-            display: none;
-        }
-        #ton-connect {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #ton-connect:hover {
-            background: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Telegram Tabs UI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
+<style>
+   body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding-top: 100px;
+    text-align: center;
+  }
+  
+  .top-bar {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+  }
+  
+  .left-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .tab-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .tab-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f2f2f2;
+    border-radius: 30px;
+    padding: 5px;
+    position: relative;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+    min-width: 280px;
+  }
+  
+  .tab-button {
+    position: relative;
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s ease;
+  }
+  
+  .tab-button i {
+    font-size: 14px;
+  }
+  
+  .tab-button.disabled {
+    color: #aaa;
+    cursor: not-allowed;
+  }
+  
+  .active-indicator {
+    position: absolute;
+    height: 90%;
+    background: white;
+    border-radius: 20px;
+    top: 5%;
+    left: 0;
+    width: 0;
+    z-index: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tab-button.active {
+    color: #000;
+  }
+   
+</style>
 <body>
-    <div class="container">
-        <h1>Kết nối TON Wallet</h1>
-        <button id="ton-connect">Kết nối Wallet</button>
-        <div id="wallet-info" class="hidden">
-            <h2>Địa chỉ ví:</h2>
-            <p id="wallet-address"></p>
-            <h2>Account Address (Toncenter):</h2>
-            <p id="account-address"></p>
-        </div>
+
+  <div class="top-bar">
+    <div class="left-avatar">
+      <img src="default-avatar.png" alt="Avatar" id="avatar">
     </div>
 
-    <script>
-        // Kiểm tra xem TON Connect UI đã được tải chưa
-        if (typeof TON_CONNECT_UI === "undefined" || !TON_CONNECT_UI.TonConnectUI) {
-            console.error("TON Connect UI chưa được tải đúng cách. Vui lòng kiểm tra lại kết nối.");
-        } else {
-            const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
-                buttonRootId: 'ton-connect'
-            });
+    <div class="tab-center">
+      <div class="tab-container" id="tabContainer">
+        <div class="active-indicator" id="indicator"></div>
 
-            // Hàm kết nối ví và lấy địa chỉ ví
-            async function connectToWallet() {
-                try {
-                    const connectedWallet = await tonConnectUI.connectWallet();
-                    console.log(connectedWallet); // Xem toàn bộ thông tin ví trong console
+        <button class="tab-button" onclick="switchTab(this, 'main.html')">
+          <i class="fas fa-th-large"></i> Apps
+        </button>
+        <button class="tab-button" onclick="switchTab(this, 'wallet_new.html')">
+          <i class="fas fa-wallet"></i> Wallet
+        </button>
+        <button class="tab-button" onclick="switchTab(this, 'shop.html')">
+          <i class="fas fa-store"></i> Shop
+        </button>
+      </div>
+    </div>
+  </div>
 
-                    // Hiển thị địa chỉ ví trong giao diện
-                    const walletAddress = connectedWallet.account.address;
-                    document.getElementById('wallet-address').textContent = walletAddress;
+  <div class="container">
+    <div class="profile">
+      <h2 id="name">Tên Người Dùng</h2>
+    </div>
+  </div>
+<script>
+   const indicator = document.getElementById('indicator');
+const buttons = document.querySelectorAll('.tab-button:not(.disabled)');
+const currentPath = window.location.pathname.split('/').pop();
+const avatarEl = document.getElementById("avatar");
 
-                    // Gọi API Toncenter để lấy thông tin Extended Address
-                    fetchExtendedAddressInfo(walletAddress);
+function moveIndicatorTo(button) {
+  const rect = button.getBoundingClientRect();
+  const parentRect = button.parentElement.getBoundingClientRect();
+  indicator.style.width = rect.width + "px";
+  indicator.style.left = (rect.left - parentRect.left) + "px";
+}
 
-                    // Hiển thị phần thông tin ví
-                    document.getElementById('wallet-info').classList.remove('hidden');
-                } catch (error) {
-                    console.error("Error connecting to wallet:", error);
-                }
-            }
+function switchTab(button, url) {
+  if (!button.classList.contains('active')) {
+    buttons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    moveIndicatorTo(button);
+    setTimeout(() => window.location.href = url, 150);
+  }
+}
 
-            // Lấy thông tin Extended Address từ Toncenter API
-            async function fetchExtendedAddressInfo(address) {
-                const API_KEY = '7ca49f3a2594045069f2613f51acdcd2c5c303c0c2ec4134137ea31b7afa4b6d'; // API Key của bạn từ Toncenter
-                const url = `https://toncenter.com/api/v2/getExtendedAddressInformation?address=${address}&api_key=${API_KEY}`;
+window.onload = () => {
+  // Gán tab đang active
+  let matchedButton = buttons[0];
+  buttons.forEach(btn => {
+    if (btn.getAttribute('onclick')?.includes(currentPath)) {
+      matchedButton = btn;
+    }
+  });
+  matchedButton.classList.add('active');
+  moveIndicatorTo(matchedButton);
 
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
+  // Lấy dữ liệu Telegram
+  const tg = window.Telegram.WebApp;
+  const user = tg.initDataUnsafe?.user;
 
-                    if (data.ok) {
-                        // Hiển thị thông tin account_address từ Toncenter
-                        document.getElementById('account-address').textContent = data.result.account_address || "Không có dữ liệu";
-                    } else {
-                        console.error("Lỗi lấy dữ liệu từ Toncenter:", data.error);
-                        document.getElementById('account-address').textContent = "Lỗi lấy dữ liệu";
-                    }
-                } catch (error) {
-                    console.error("Lỗi kết nối API Toncenter:", error);
-                    document.getElementById('account-address').textContent = "Lỗi kết nối API";
-                }
-            }
+  if (user && user.photo_url) {
+    avatarEl.src = user.photo_url;
+  }
+};
 
-            // Gắn sự kiện click vào nút để kết nối ví
-            document.getElementById("ton-connect").addEventListener("click", connectToWallet);
+window.onresize = () => {
+  const activeBtn = document.querySelector('.tab-button.active');
+  if (activeBtn) moveIndicatorTo(activeBtn);
+};
+ 
+</script>
 
-            // Cấu hình tùy chọn giao diện (UI options)
-            tonConnectUI.uiOptions = {
-                twaReturnUrl: 'https://t.me/bmassk3_bot/?startapp='
-            };
-        }
-    </script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
-
