@@ -1,47 +1,498 @@
-
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập Telegram</title>
-    <link rel="stylesheet" href="/css/wallet.css">
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark/dark.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>TON Wallet</title>
+    <link rel="stylesheet" href="/css/footer.css">
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-
-
+   
 </head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #eeeeee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.wallet {
+    width: 420px; /* Mở rộng giao diện */
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.wallet-card {
+    background: linear-gradient(135deg, #007bff, #00c3ff);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+}
+
+.wallet-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 16px;
+
+}
+
+.wallet-address {
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px; /* Giới hạn độ dài địa chỉ */
+
+}
+
+.wallet-balance {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.wallet-usdt-value {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.wallet-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.wallet-actions button {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    margin: 5px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.receive {
+    background: #4caf50;
+    color: white;
+}
+
+.send {
+    background: #ff5722;
+    color: white;
+}
+
+.tokens {
+    margin-top: 15px;
+}
+
+.token {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.token img {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+    border-radius: 25px;
+}
+
+.token-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.token span {
+    font-size: 16px;
+}
+
+.token-info i {
+    margin-left: 5px;
+    color: red;
+    cursor: pointer;
+}
+
+.token-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+
+
+/* Đảm bảo hình ảnh ví được hiển thị trong thẻ a */
+#wallet-link {
+    display: inline-block; /* Giữ cho thẻ a không bị chiếm toàn bộ không gian */
+    width: 40px; /* Đặt kích thước hình ảnh ví */
+    height: 40px; /* Đặt chiều cao hình ảnh ví */
+    overflow: hidden; /* Ẩn phần hình ảnh vượt ngoài giới hạn */
+    border-radius: 50%; /* Tạo hình tròn cho ảnh */
+}
+
+/* Căn chỉnh hình ảnh bên trong thẻ a */
+#wallet-link img {
+    width: 100%; /* Đảm bảo hình ảnh chiếm hết diện tích của thẻ a */
+    height: 100%; /* Đảm bảo hình ảnh không bị méo */
+    object-fit: cover; /* Giữ tỷ lệ hình ảnh đúng mà không bị kéo dãn */
+}
+
+
+
+
+
+
+
+/* Toast container */
+#toast {
+    visibility: hidden; /* Ẩn toast mặc định */
+    max-width: 50%;
+    margin: 0 auto;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 16px;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 17px;
+    z-index: 9999;
+    transition: opacity 0.5s ease, bottom 0.5s ease;
+}
+
+/* Khi toast hiển thị */
+#toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;  /* Đưa toast lên một chút */
+}
+
+/* Nội dung trong toast */
+#toast-message {
+    font-weight: bold;
+    line-height: 1.5;
+}
+
+/* Hiệu ứng chuyển động khi toast xuất hiện */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Hiệu ứng chuyển động khi toast ẩn */
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Thiết lập kiểu dáng của thông báo */
+.notification {
+    position: fixed;
+    top: -100px;  /* Bắt đầu bên ngoài màn hình */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    z-index: 9999;
+    transition: top 0.5s ease-in-out;
+}
+
+/* Cấu hình cho nút Swap */
+button.swap {
+    background-color: #4caf50;  /* Màu nền xanh lá */
+    color: white;  /* Màu chữ trắng */
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Thay đổi màu sắc khi di chuột qua nút Swap */
+button.swap:hover {
+    background-color: #45a049;  /* Màu nền khi hover */
+}
+
+
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    color:#333;
+}
+
+.modal-content input {
+    width: 90%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.modal-content button {
+    background: #0084ff;
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.slider-labels span {
+    cursor: pointer;
+    font-size: 14px;
+    color: #007bff;
+}
+.slider-labels span:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Cấu trúc container */
+.task-container {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Giao diện cho task */
+.task {
+    display: grid;
+    grid-template-columns: 60px 1fr 120px; /* 3 cột: ảnh, thông tin nhiệm vụ, hành động */
+    align-items: center;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Cột ảnh */
+.task-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.task-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* Cột thông tin nhiệm vụ */
+.task-info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 10px;
+}
+
+.task-info-container h3 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+}
+
+.task-info-container p {
+    font-size: 14px;
+    color: #888;
+    margin: 5px 0;
+}
+
+/* Cột hành động */
+.task-actions-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+/* Nút Check-in / Claim */
+button {
+    padding: 8px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Đặt chiều rộng của nút */
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Hiệu ứng hover cho button */
+button:hover {
+    background-color: #45a049;
+}
+
+/* Đồng hồ đếm ngược */
+.countdown {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+</style>
 <body>
-    <a href="/index/main.html" class="back-icon">
-        <i class="fas fa-arrow-left"></i>
-    </a>
-    
-    
-    
-    <div id="wallet-info">
-        <div id="wallet-header">
-            <b>Address:</b> <span id="wallet-address">abcd****1234</span>
+    <div class="wallet">
+        <div class="wallet-card">
+            <div class="wallet-header">
+                <span>TON Wallet</span>
+                <div id="ton-connect"></div>
+                <!-- Thay thế địa chỉ ví bằng hình ảnh -->
+                <a id="wallet-link" class="wallet-address" href="#" target="_blank">
+                    <img src="/logo-coin/wallet.png" alt="Wallet" id="wallet-image" />
+                </a>
+            </div>
+            <div id="wallet-balance" class="wallet-balance">$0.00</div>
+            <div id="wallet-usdt-value" class="wallet-usdt-value">≈ 0 USDT</div>
+            <div class="wallet-actions">
+                <button class="receive" onclick="showComingSoon()">Receive</button>
+                <button class="send" onclick="sendTransaction()">Buy</button>
+                <button class="mint-bmc" id="mint-bmc" onclick="mintBMC()">Mint</button>
+                <button class="withdraw" onclick="showWithdrawForm()">Withdraw</button>
+            </div>
+            
+<!-- Form nhập địa chỉ và số lượng rút -->
+<div id="withdraw-form" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeWithdrawForm()">&times;</span>
+        <h2>Withdraw BMC</h2>
+        <p>Available: <span id="available-bmc">0</span> BMC</p>
+        <input type="text" id="withdraw-address" placeholder="Enter wallet address">
+        
+        <input type="number" id="withdraw-amount" min="1" placeholder="Enter amount">
+        
+        <!-- Thanh kéo chọn số lượng -->
+        <input type="range" id="withdraw-slider" min="0" max="100" step="25" value="0" onchange="updateWithdrawAmount()">
+        <div class="slider-labels">
+            <span onclick="setSliderValue(0)">0%</span>
+            <span onclick="setSliderValue(25)">25%</span>
+            <span onclick="setSliderValue(50)">50%</span>
+            <span onclick="setSliderValue(100)">100%</span>
+            <span onclick="setSliderValue('max')">MAX</span>
         </div>
-        <div id="wallet-details">
-            <img src="/logo-coin/ton.jpg" class="wallet-image">
-            <b></b>
-            <span id="wallet-balance">Not connected</span>
-            <p> <strong> </strong> <span id="wallet-usdt-value"></span></p>
+
+        <button onclick="withdrawBMC()">Confirm Withdraw</button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="task-container">
+    <div class="task">
+        <div class="task-image-container">
+            <img src="/logo-coin/task.png" alt="Task Image" class="task-image">
+        </div>
+        <div class="task-info-container">
+            <h3 id="task-name">Check-in</h3>
+            <p id="task-bmc">+100 BMC</p>
+        </div>
+        <div class="task-actions-container">
+            <button id="check-in-btn" onclick="checkIn()">Check-in</button>
+            <div class="countdown" id="countdown-timer">Reset 00:00 UTC</div>
         </div>
     </div>
-
-
-    <div class="container">
-        <div class="user-info">
-<div class="avatar-container">
-    <div class="skeleton-loader"></div>
-    <img id="avatar" class="avatar" src="/logo-coin/bmlogo.jpg" alt="Avatar">
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -49,120 +500,474 @@
 
 
             
-            <div class="button-container">
-             <button id="send-now" class="btn">Verify 
-                 <i class="fa fa-check-circle tick-icon" aria-hidden="true"></i>
-            </button>
-<div id="ton-connect"></div>
+            
+            <div id="notification" class="notification" style="display: none;">
+                🚀 Coming Soon! Tính năng này đang được phát triển.
             </div>
-
-
-
-
-            <div class="user-details">
-  
-                <div class="label">ID</div>        <div class="value" id="id" onclick="copyToClipboard(this.textContent)">Loading...</div>
-                <div class="label">Name</div>       <div class="value" id="name" onclick="copyToClipboard(this.textContent)">Loading...</div>
-                <div class="label">User</div>      <div class="value" id="username" onclick="copyToClipboard(this.textContent)">Loading...</div>
-                <div class="label">Verify</div>   <div class="value" id="verify">Loading...</div>
-                <div class="label">Bot</div>      <div class="value" id="premium">Loading...</div>
+        </div>
+        <div class="tokens">
+            <div class="token">
+                <img src="/logo-coin/ton.jpg" alt="TON">
+                <div class="token-info">
+                    <span>TON</span>
+                    <span id="ton-balance">0 TON</span>
+                </div>
+                <div class="token-value" id="ton-value">$0.00</div>
             </div>
+            <div class="token">
+                <img src="/logo-coin/bmlogo.jpg" alt="BMC">
+                <div class="token-info">
+                    <span>BMC</span>
+                    <span id="token-balance">Loading...</span> <!-- Trạng thái Loading ban đầu -->
+                </div>
+                <div class="token-value" id="bmc-value">$0.00</div> <!-- Cập nhật giá trị BMC -->
+            </div>
+            
+            
+        </div>
 
-          
-<div id="tg-login-container">
-<script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="bmassk3_bot" data-size="large" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
-<script type="text/javascript">
-  function onTelegramAuth(user) {
-    alert('Logged in as ' + user.first_name + ' ' + user.last_name + ' (' + user.id + (user.username ? ', @' + user.username : '') + ')');
+    </div>
+
+    <!-- Toast notification -->
+<div id="toast" class="toast">
+    <span id="toast-message"></span>
+</div>
+
+
+
+
+
+
+<!-- LINK FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<footer>
+  <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+    <i class="fas fa-wallet"></i>
+    <span>Wallet</span>
+  </a>
+  <a href="/swap/index.html" class="footer-item" data-page="index.html">
+    <i class="fas fa-right-left"></i>
+    <span>Swap</span>
+  </a>
+
+  <!-- HOME NỔI BẬT KHÔNG ACTIVE -->
+  <a href="/index/index.html" class="footer-item home">
+    <div class="home-circle">
+      <i class="fas fa-house"></i>
+    </div>
+    <span>Home</span>
+  </a>
+
+  <a href="/index/main.html" class="footer-item" data-page="main.html">
+    <i class="fas fa-th"></i>
+    <span>App</span>
+  </a>
+  <a href="/index/shop.html" class="footer-item" data-page="shop.html">
+    <i class="fas fa-store"></i>
+    <span>Shop</span>
+  </a>
+</footer>
+    <script>
+        // Tự động active tab đang mở
+const currentPage = location.pathname.split("/").pop();
+const items = document.querySelectorAll(".footer-item");
+
+items.forEach(item => {
+  const page = item.getAttribute("data-page");
+  if (page === currentPage) {
+    item.classList.add("active");
   }
-</script>
-</div>
-
-<!-- Nút Đăng Xuất -->
-<button id="logout-btn" onclick="logout()" style="display: none;">Log out</button>
-
-
-
-
-
-
-
-
-    <div class="footer">
-        <a href="/index/main.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/nha.png" alt="Home">
-            <span class="new-badge">Hot</span>
-        </div>
-        <span>Home</span>
-    </a>
-
-    
-    <a href="/index/noti.html" class="footer-itemm" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/chuong.gif" alt="MuaCoin">
-        </div>
-        <span></span>
-    </a>
-
-    <a href="/history/history.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/history.png" alt="MuaCoin">
-        </div>
-        <span>History</span>
-    </a>
-
-    <a href="/index/wallet_new.html" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <img src="/logo-coin/wallet0.jpg" alt="MuaCoin">
-        </div>
-        <span>Wallet</span>
-    </a>  
-        
-    <a href="#" class="footer-item" onclick="setActive(this)">
-        <div class="img-wrapper">
-            <div id="wallet-avatar-container">
-                <div class="skeleton-avatar"></div>
-                <span class="new-badge">Login</span>
-            </div>
-        </div>
-        <span>Profile</span>
-    </a>   
-</div>
-
+});
+    </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const walletContainer = document.getElementById("wallet-avatar-container");
-
-    // Kiểm tra xem có dữ liệu lưu trữ không
-    function updateWalletAvatar() {
-        const savedUser = localStorage.getItem("telegram_user");
-
-        if (savedUser) {
-            const user = JSON.parse(savedUser);
-
-            // Lấy ảnh gần đây nhất (trong dữ liệu hiện tại)
-            const latestPhoto = user.photo_url || "https://via.placeholder.com/80";
-
-            // Hiển thị ảnh đại diện
-            walletContainer.innerHTML = `<img src="${latestPhoto}" alt="Wallet" style="width:30px; height:30px; border-radius:50%;">`;
-        }
-    }
-
-    // Cập nhật avatar ngay khi tải trang
-    updateWalletAvatar();
-
-    // Theo dõi sự kiện lưu thông tin đăng nhập mới
-    window.addEventListener("storage", function (event) {
-        if (event.key === "telegram_user") {
-            updateWalletAvatar(); // Cập nhật ảnh nếu có thay đổi
-        }
-    });
+   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect'
 });
 
+async function fetchWalletData(wallet) {
+    if (!wallet) return;
+
+    const walletAddress = wallet.account.address.toString();
+    let displayName = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4); // Mặc định rút gọn
+
+    try {
+        // Chuyển đổi địa chỉ thành kiểu IntMsg
+        const intMsgAddress = convertToIntMsg(walletAddress); // Hàm chuyển đổi địa chỉ nếu cần thiết
+
+        // Hiển thị tên account hoặc địa chỉ IntMsg + link tonviewer
+        const walletLink = document.getElementById('wallet-link');
+        walletLink.href = `https://tonviewer.com/${intMsgAddress}`; // Chuyển hướng đến trang địa chỉ IntMsg
+
+        // Cập nhật hình ảnh ví
+        const walletImage = document.getElementById('wallet-image');
+        walletImage.src = '/logo-coin/wallet.png'; // Đảm bảo hình ảnh ví là /logo-coin/wallet.png
+
+        // Lấy số dư TON
+        const accountResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}`);
+        const accountData = await accountResponse.json();
+
+        const tonBalance = (accountData.balance / 1e9).toFixed(9);
+        document.getElementById('wallet-balance').textContent = `${tonBalance} TON`;
+
+        // Lấy giá TON từ CoinGecko
+        const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        const priceData = await priceResponse.json();
+        const tonPrice = priceData['the-open-network'].usd;
+
+        // Quy đổi sang USDT
+        const usdtValue = (tonBalance * tonPrice).toFixed(2);
+        document.getElementById('wallet-usdt-value').textContent = `≈ ${usdtValue} USDT`;
+
+        document.getElementById('ton-balance').textContent = `${tonBalance} TON`;
+        document.getElementById('ton-value').textContent = `$${usdtValue}`;
+
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+}
+
+// Hàm chuyển đổi địa chỉ ví thành dạng IntMsg
+function convertToIntMsg(walletAddress) {
+    // Logic chuyển đổi địa chỉ sang dạng IntMsg nếu cần thiết
+    // Ví dụ: mã hóa hoặc chuyển đổi địa chỉ ví theo cách nào đó
+    return walletAddress; // Thay thế bằng logic thực tế nếu cần
+}
+
+// Khi trạng thái ví thay đổi, cập nhật dữ liệu
+tonConnectUI.onStatusChange(async (wallet) => {
+    if (wallet) {
+        fetchWalletData(wallet);
+    }
+});
+
+
+
+// Hàm chuyển hướng người dùng đến đường link gửi giao dịch khi nhấn nút "Send"
+function sendTransaction() {
+    const assetCurrency = "TON";  // Mã tài sản (TON)
+    const assetAddress = "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD";  // Địa chỉ ví của bạn, thay thế bằng địa chỉ ví thực tế
+
+    const url = `https://t.me/aliniex_bot/amp?startapp=tel_8xb3PN6dKJEXBWd`;
+    window.location.href = url;  // Chuyển hướng người dùng đến URL
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Lấy số dư BMC từ localStorage, tránh mất dữ liệu khi số dư lớn
+let bmcBalance = Number(localStorage.getItem('bmcBalance')) || 0;  
+const TON_VALUE_IN_USDT = 1;  // 1 TON = 1 USDT
+
+// Hàm cập nhật số dư BMC và giá trị hiển thị
+function getBMCBalance() {
+    const balanceElement = document.getElementById("token-balance");
+    const valueElement = document.getElementById("bmc-value");
+
+    if (balanceElement) {
+        balanceElement.innerText = `${bmcBalance.toLocaleString()} BMC`;
+    }
+    if (valueElement) {
+        valueElement.innerText = `$${(bmcBalance * TON_VALUE_IN_USDT).toFixed(2)}`;
+    }
+
+    localStorage.setItem('bmcBalance', bmcBalance);
+}
+
+// Hàm hiển thị thông báo toast
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    const toastMessage = document.getElementById('toast-message');
+    toastMessage.innerText = message;
+
+    toast.classList.add('show');
+
+    // Xóa timeout cũ nếu có
+    clearTimeout(toast.timeout);
+    toast.timeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Hàm Mint BMC (Nhận BMC sau khi giao dịch thành công)
+async function mintBMC() {
+    try {
+        const payload = "te6ccgEBAQEAAgAAAA==";  // Payload hợp đồng
+
+        const txParams = {
+            validUntil: Math.floor(Date.now() / 1000) + 600,  // Hạn giao dịch
+            messages: [{
+                address: "UQDu8vyZSZbAYvRRQ_jW4_0EiBGibAGq72wSZjYWRmNAGhRD",  
+                amount: "1000000000",  // 1 TON (nanoTON)
+                payload: payload
+            }]
+        };
+
+        console.log("Gửi giao dịch:", txParams);
+        await tonConnectUI.sendTransaction(txParams);  
+
+        // Sau khi giao dịch thành công, nhận 100 BMC
+        bmcBalance += 100;
+        localStorage.setItem('bmcBalance', bmcBalance);
+        getBMCBalance();
+        showToast("Thành công!");
+    } catch (error) {
+        console.error("Lỗi khi gửi:", error);
+        showToast("Thất bại");
+    }
+}
+// Lấy số dư BMC khi trang được tải
+document.addEventListener("DOMContentLoaded", getBMCBalance);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Hàm hiển thị thông báo "Coming Soon" với hiệu ứng Slide In
+function showComingSoon() {
+    var notification = document.getElementById('notification');
+    
+    // Hiển thị thông báo và di chuyển vào vị trí
+    notification.style.display = 'block';
+    setTimeout(function() {
+        notification.style.top = '20px'; // Hiển thị ở vị trí trên cùng
+    }, 100);
+
+    // Ẩn thông báo sau 5 giây
+    setTimeout(function() {
+        notification.style.top = '-100px';  // Di chuyển ra ngoài màn hình
+        setTimeout(function() {
+            notification.style.display = 'none';  // Ẩn thông báo
+        }, 500);
+    }, 5000);  // Thời gian hiển thị 5 giây
+}
+
+
+
+
+
+// Hiển thị form rút và cập nhật số dư khả dụng
+function showWithdrawForm() {
+    document.getElementById("available-bmc").innerText = bmcBalance;
+    document.getElementById("withdraw-form").style.display = "block";
+}
+
+// Đóng form rút
+function closeWithdrawForm() {
+    document.getElementById("withdraw-form").style.display = "none";
+}
+
+// Cập nhật số lượng rút theo thanh kéo
+function updateWithdrawAmount() {
+    const sliderValue = parseInt(document.getElementById("withdraw-slider").value);
+    const withdrawAmount = Math.floor((sliderValue / 100) * bmcBalance);
+    document.getElementById("withdraw-amount").value = withdrawAmount;
+}
+
+// Khi click vào các mức % trên thanh kéo
+function setSliderValue(value) {
+    let amount;
+    if (value === "max") {
+        amount = bmcBalance;
+        document.getElementById("withdraw-slider").value = 100;
+    } else {
+        amount = Math.floor((value / 100) * bmcBalance);
+        document.getElementById("withdraw-slider").value = value;
+    }
+    document.getElementById("withdraw-amount").value = amount;
+}
+
+// Xử lý rút BMC
+async function withdrawBMC() {
+    const address = document.getElementById("withdraw-address").value.trim();
+    const amount = parseInt(document.getElementById("withdraw-amount").value);
+
+    if (!address) {
+        showToast("Please enter a valid wallet address!");
+        return;
+    }
+    
+    if (!amount || amount <= 0) {
+        showToast("Please enter a valid amount!");
+        return;
+    }
+
+    if (amount > bmcBalance) {
+        showToast("Insufficient BMC balance!");
+        return;
+    }
+
+    try {
+        // Trừ số lượng đã rút
+        bmcBalance -= amount;
+        localStorage.setItem("bmcBalance", bmcBalance);
+        getBMCBalance();
+
+        showToast(`Successfully withdrawn ${amount} BMC!`);
+        closeWithdrawForm();
+    } catch (error) {
+        console.error("Withdraw error:", error);
+        showToast("Withdraw failed! Try again.");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+let nextCheckInTime = new Date(localStorage.getItem('nextCheckInTime')) || getNextCheckInTime();
+let hasCheckedIn = localStorage.getItem('hasCheckedIn') === 'true';
+let hasClaimed = localStorage.getItem('hasClaimed') === 'true';
+
+updateButtonState();
+startCountdown();
+
+document.getElementById('check-in-btn').addEventListener('click', () => {
+  const now = new Date();
+
+  if (now >= new Date(nextCheckInTime)) {
+    resetDailyState();
+  }
+
+  if (!hasCheckedIn) {
+    checkIn();
+  } else if (!hasClaimed) {
+    claimReward();
+  }
+});
+
+function checkIn() {
+  hasCheckedIn = true;
+  localStorage.setItem('hasCheckedIn', 'true');
+  document.getElementById('check-in-btn').textContent = 'Claim';
+}
+
+function claimReward() {
+  hasClaimed = true;
+  localStorage.setItem('hasClaimed', 'true');
+
+  bmcBalance += 100;
+  localStorage.setItem('bmcBalance', bmcBalance);
+  // Đã bỏ dòng cập nhật giao diện số dư BMC vì đã xử lý chỗ khác
+
+  document.getElementById('check-in-btn').textContent = 'Claimed';
+  document.getElementById('check-in-btn').disabled = true;
+}
+
+function updateButtonState() {
+  const now = new Date();
+  if (now >= new Date(nextCheckInTime)) {
+    resetDailyState();
+  }
+
+  const btn = document.getElementById('check-in-btn');
+  if (!hasCheckedIn) {
+    btn.textContent = 'Check-in';
+    btn.disabled = false;
+  } else if (hasCheckedIn && !hasClaimed) {
+    btn.textContent = 'Claim';
+    btn.disabled = false;
+  } else {
+    btn.textContent = 'Claimed';
+    btn.disabled = true;
+  }
+}
+
+function resetDailyState() {
+  hasCheckedIn = false;
+  hasClaimed = false;
+  localStorage.setItem('hasCheckedIn', 'false');
+  localStorage.setItem('hasClaimed', 'false');
+
+  nextCheckInTime = getNextCheckInTime();
+  localStorage.setItem('nextCheckInTime', nextCheckInTime);
+}
+
+function startCountdown() {
+  const countdownElement = document.getElementById('countdown-timer');
+
+  const interval = setInterval(() => {
+    const now = new Date();
+    const remaining = Math.floor((new Date(nextCheckInTime) - now) / 1000);
+
+    if (remaining <= 0) {
+      countdownElement.textContent = 'Đã đến giờ check-in mới!';
+      updateButtonState();
+    } else {
+      const hours = Math.floor(remaining / 3600);
+      const minutes = Math.floor((remaining % 3600) / 60);
+      const seconds = remaining % 60;
+
+      countdownElement.textContent =
+        `Thời gian tiếp theo: ${hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+    }
+  }, 1000);
+}
+
+function getNextCheckInTime() {
+  const now = new Date();
+  const next = new Date();
+  next.setHours(7, 0, 0, 0);
+  if (now >= next) next.setDate(next.getDate() + 1);
+  return next;
+}
 </script>
-<script src="/js/wallet.js"></script>
-<script src="/js/w.js"></script>
-<script src="/js/ton-connect.js"></script>
 </body>
 </html>
