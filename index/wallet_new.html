@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>TON</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -22,6 +23,9 @@ body {
   align-items: center;
   min-height: 100vh;
   color: #333;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 #connect-only {
@@ -37,8 +41,8 @@ body {
   border-radius: 20px;
   box-shadow: 10px 10px 25px #bec4d0, -10px -10px 25px #ffffff;
   padding: 30px;
-  max-width: 480px;
-  width: 100%;
+  max-width: 100%; /* Đảm bảo chiều rộng container có thể co giãn */
+  width: 100%; /* Đảm bảo chiều rộng luôn là 100% của màn hình */
   text-align: center;
   overflow-y: auto;
   max-height: 90vh;
