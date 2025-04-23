@@ -7,6 +7,7 @@
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="/css/footer.css">
   <style>
 * {
@@ -66,7 +67,7 @@ h2 {
   font-size: 18px;
   color: #009688;
   font-weight: 700;
-  margin-bottom: 14px;
+  margin-bottom: 4px;
 }
 
 #wallet-address {
@@ -160,7 +161,7 @@ a:hover {
 
 #disconnect {
   font-size: 16px;
-  margin-left: 10px;
+  margin-left: 3px;
   cursor: pointer;
   color: #d32f2f;
   display: none;
@@ -229,15 +230,15 @@ a:hover {
 
 
     .form-send {
-  margin-top: 30px;
+  margin-top: 10px;
   text-align: left;
 }
 
 .form-send input,
 .form-send button {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+  padding: 10px;
+  margin: 1px 0;
   border-radius: 12px;
   border: none;
   font-size: 16px;
@@ -263,6 +264,27 @@ a:hover {
   cursor: not-allowed;
 }
 
+
+
+.input-icon {
+  position: relative;
+  margin: 10px 0;
+}
+
+.input-icon .icon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: #555;
+}
+
+.input-icon input {
+  padding-left: 45px !important; /* Để chừa khoảng cho icon */
+}
+
   </style>
 </head>
 <body>
@@ -271,21 +293,34 @@ a:hover {
     <div id="connect-wallet"></div>
   </div>
 
+
+
   <div class="container" id="main-content">
     <p class="info">
       <span id="wallet-address">Loading...</span>
       <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
     </p>
     <p id="wallet-balance" class="balance">Loading...</p>
-
-<div class="form-send">
-  <h2>Gửi TON</h2>
-  <input type="text" id="to-address" placeholder="Địa chỉ người nhận">
-  <input type="number" id="ton-amount" placeholder="Số lượng TON">
-  <input type="text" id="memo-text" placeholder="Ghi chú / Memo (tuỳ chọn)" disabled>
-  <button id="send-ton-btn">Gửi TON</button>
-</div>
-
+    <div class="form-send">
+      <h2>Gửi TON</h2>
+    
+      <div class="input-icon">
+        <span class="icon">📬</span>
+        <input type="text" id="to-address" placeholder="Address">
+      </div>
+    
+      <div class="input-icon">
+        <span class="icon">💎</span>
+        <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
+      </div>
+    
+      <div class="input-icon">
+        <span class="icon">📝</span>
+        <input type="text" id="memo-text" placeholder="Memo" disabled>
+      </div>
+    
+      <button id="send-ton-btn">Sent Transaction</button>
+    </div>
     
     <ul id="transactions-list"></ul>
   </div>
@@ -301,33 +336,11 @@ a:hover {
 
 
 
-  <footer>
-    <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
-      <i class="fas fa-wallet"></i>
-      <span>Wallet</span>
-    </a>
-    <a href="/swap/index.html" class="footer-item" data-page="index.html">
-      <i class="fas fa-right-left"></i>
-      <span>Swap</span>
-    </a>
-  
-    <!-- HOME NỔI BẬT KHÔNG ACTIVE -->
-    <a href="/index/index.html" class="footer-item home">
-      <div class="home-circle">
-        <i class="fas fa-house"></i>
-      </div>
-      <span>Home</span>
-    </a>
-  
-    <a href="/index/main.html" class="footer-item" data-page="main.html">
-      <i class="fas fa-th"></i>
-      <span>App</span>
-    </a>
-    <a href="/index/shop.html" class="footer-item" data-page="shop.html">
-      <i class="fas fa-store"></i>
-      <span>Shop</span>
-    </a>
-  </footer>
+
+
+
+
+
 
 
   <script>
@@ -367,6 +380,8 @@ item.classList.add("active");
             const accountAddress = data.result.address.account_address;
             const balanceTon = parseFloat(data.result.balance) / 1e9;
             document.getElementById("wallet-balance").textContent = `Số dư: ${truncateDecimal(balanceTon)} TON`;
+            document.getElementById("ton-amount").setAttribute("max", balanceTon);
+
 
             const shortAddress = accountAddress.slice(0, 10) + "..." + accountAddress.slice(-10);
             document.getElementById("wallet-address").textContent = shortAddress;
@@ -474,37 +489,65 @@ function toggleMemo(element) {
 
 
 
-  <script>
-document.getElementById("send-ton-btn").addEventListener("click", async () => {
-  const toAddress = document.getElementById("to-address").value.trim();
-  const amountTON = parseFloat(document.getElementById("ton-amount").value);
-  const memo = document.getElementById("memo-text").value.trim();
+<script>
+  document.getElementById("send-ton-btn").addEventListener("click", async () => {
+    const toAddress = document.getElementById("to-address").value.trim();
+    const amountTON = parseFloat(document.getElementById("ton-amount").value);
+    const memo = document.getElementById("memo-text").value.trim();
+  
+    const maxAmount = parseFloat(document.getElementById("ton-amount").getAttribute("max"));
+  
+    if (!toAddress || isNaN(amountTON) || amountTON <= 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Input',
+        html: '<strong>Please enter a valid address and amount.</strong>',
+      });
+      return;
+    }
+  
+    if (amountTON > maxAmount) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Amount Exceeded',
+        html: `You can only send up to <strong>${truncateDecimal(maxAmount)}</strong> TON.`,
+      });
+      return;
+    }
+  
+    try {
+      const amountNanoTON = BigInt(amountTON * 1e9);
+  
+      const tx = {
+        validUntil: Math.floor(Date.now() / 1000) + 60,
+        messages: [{
+          address: toAddress,
+          amount: amountNanoTON.toString(),
+          payload: memo ? TON_CONNECT_UI.textToPayload(memo) : undefined
+        }]
+      };
+  
+      const result = await connector.sendTransaction(tx);
 
-  if (!toAddress || isNaN(amountTON) || amountTON <= 0) {
-    alert("Vui lòng nhập địa chỉ và số lượng hợp lệ.");
-    return;
-  }
+      Swal.fire({
+        icon: 'success',
+        title: 'Transaction Sent',
+        html: `You have successfully sent <strong>${truncateDecimal(amountTON)}</strong> TON<br>to address <strong>${toAddress}</strong>.`,
+      });
 
-  try {
-    const amountNanoTON = BigInt(amountTON * 1e9);
-
-    const tx = {
-      validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60s
-      messages: [{
-        address: toAddress,
-        amount: amountNanoTON.toString(),
-        payload: memo ? TON_CONNECT_UI.textToPayload(memo) : undefined
-      }]
-    };
-
-    const result = await connector.sendTransaction(tx);
-    alert("Giao dịch đang được xử lý trên mạng lưới TON.");
-    console.log("Kết quả:", result);
-  } catch (err) {
-    console.error("Lỗi khi gửi TON:", err);
-    alert("Gửi thất bại: " + err.message || "Không xác định");
-  }
-});
+      console.log("Result:", result);
+    } catch (err) {
+      console.error("Error while sending TON:", err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Transaction Failed',
+        html: `<strong>"Unknown error"</strong>`,
+      });
+    }
+  });
 </script>
+
+
+  
 </body>
 </html>
