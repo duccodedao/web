@@ -16,12 +16,12 @@
 
 body {
   font-family: 'Segoe UI', 'Roboto', sans-serif;
-  background: #1e1e2f;
+  background: #e0e5ec;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  color: #f1f1f1;
+  color: #333;
 }
 
 #connect-only {
@@ -33,44 +33,40 @@ body {
 
 .container {
   display: none;
-  background: #2a2a40;
+  background: #e0e5ec;
   border-radius: 20px;
-  box-shadow:
-    inset 2px 2px 5px rgba(0, 0, 0, 0.3),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.03),
-    0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 10px 10px 25px #bec4d0, -10px -10px 25px #ffffff;
   padding: 30px;
   max-width: 480px;
   width: 100%;
   text-align: center;
   overflow-y: auto;
   max-height: 90vh;
-  transition: all 0.3s ease;
 }
 
 h2 {
   font-size: 22px;
   margin-bottom: 18px;
-  color: #e0e0ff;
+  color: #2e3a59;
 }
 
 .info {
   font-size: 15px;
-  color: #aaa;
+  color: #555;
   margin-bottom: 6px;
 }
 
 .balance {
-  font-size: 17px;
-  color: #00ffae;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 18px;
+  color: #009688;
+  font-weight: 700;
+  margin-bottom: 14px;
 }
 
 #wallet-address {
   font-weight: 600;
-  color: #67b5ff;
-  font-size: 15px;
+  color: #0077cc;
+  font-size: 14px;
   word-break: break-word;
 }
 
@@ -81,19 +77,17 @@ ul#transactions-list {
 }
 
 .transaction-item {
-  background: #313144;
-  border-radius: 16px;
-  padding: 18px;
+  background: #e0e5ec;
+  border-radius: 14px;
+  padding: 16px;
   margin-bottom: 14px;
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.3),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.02);
-  transition: all 0.2s ease;
+  box-shadow: inset 2px 2px 6px #c3c8d3, inset -2px -2px 6px #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .transaction-item:hover {
-  background-color: #38385c;
   transform: translateY(-2px);
+  box-shadow: inset 2px 2px 8px #b5bbc6, inset -2px -2px 8px #ffffff;
 }
 
 .row {
@@ -101,7 +95,7 @@ ul#transactions-list {
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
-  color: #d1d1e0;
+  color: #2f3d59;
   margin-bottom: 6px;
 }
 
@@ -110,23 +104,22 @@ ul#transactions-list {
   align-items: center;
   gap: 6px;
   font-weight: 600;
-  color: #8cbaff;
+  color: #004c99;
 }
 
 .icon img {
   width: 20px;
   height: 20px;
-  filter: brightness(1.2);
 }
 
 .amount {
   font-weight: 600;
-  color: #00e676;
+  color: #00796b;
 }
 
 .address {
   font-size: 13px;
-  color: #bbb;
+  color: #444;
   word-break: break-word;
 }
 
@@ -137,7 +130,7 @@ ul#transactions-list {
 }
 
 a {
-  color: #4fc3f7;
+  color: #0056b3;
   text-decoration: none;
   font-weight: 500;
 }
@@ -151,33 +144,32 @@ a:hover {
 }
 
 .container::-webkit-scrollbar-thumb {
-  background: #444;
+  background: #ccc;
   border-radius: 4px;
 }
 
 .container::-webkit-scrollbar-thumb:hover {
-  background: #666;
+  background: #999;
 }
 
 #disconnect {
   font-size: 16px;
-  margin-left: 3px;
+  margin-left: 10px;
   cursor: pointer;
-  color: #ff6b6b;
+  color: #d32f2f;
   display: none;
   transition: transform 0.2s ease;
 }
 
 #disconnect:hover {
   transform: scale(1.1);
-  color: #ff3b3b;
+  color: #b71c1c;
 }
 
-/* Responsive điện thoại */
 @media (max-width: 600px) {
   .container {
     padding: 20px;
-    max-width: 90%;
+    max-width: 92%;
   }
 
   h2 {
