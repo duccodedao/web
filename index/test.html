@@ -282,7 +282,10 @@ a:hover {
 <div class="form-send">
   <h2>Gửi TON</h2>
   <input type="text" id="to-address" placeholder="Địa chỉ người nhận">
-  <input type="number" id="ton-amount" placeholder="Số lượng TON">
+  <div style="display: flex; gap: 10px;">
+    <input type="number" id="ton-amount" placeholder="Số lượng TON" style="flex:1;">
+    <button id="btn-max" style="padding: 0 10px;">Max</button>
+  </div>
   <input type="text" id="memo-text" placeholder="Ghi chú / Memo (tuỳ chọn)">
   <button id="send-ton-btn">Gửi TON</button>
 </div>
@@ -439,6 +442,17 @@ function toggleMemo(element) {
 
 
   <script>
+document.getElementById("btn-max").addEventListener("click", () => {
+  const balanceText = document.getElementById("wallet-balance").innerText;
+  const match = balanceText.match(/([\d.]+)/);
+  if (match) {
+    const balance = parseFloat(match[1]);
+    document.getElementById("ton-amount").value = balance.toFixed(6);
+  } else {
+    alert("Không lấy được số dư ví!");
+  }
+});
+
 document.getElementById("send-ton-btn").addEventListener("click", async () => {
   const toAddress = document.getElementById("to-address").value.trim();
   const amountTON = parseFloat(document.getElementById("ton-amount").value);
@@ -453,7 +467,7 @@ document.getElementById("send-ton-btn").addEventListener("click", async () => {
     const amountNanoTON = BigInt(amountTON * 1e9);
 
     const tx = {
-      validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60s
+      validUntil: Math.floor(Date.now() / 1000) + 60,
       messages: [{
         address: toAddress,
         amount: amountNanoTON.toString(),
@@ -462,11 +476,11 @@ document.getElementById("send-ton-btn").addEventListener("click", async () => {
     };
 
     const result = await connector.sendTransaction(tx);
-    alert("Giao dịch đang được xử lý trên mạng lưới TON.");
-    console.log("Kết quả:", result);
+    alert("Giao dịch đang được xử lý!");
+    console.log("Tx result:", result);
   } catch (err) {
     console.error("Lỗi khi gửi TON:", err);
-    alert("Gửi thất bại: " + err.message || "Không xác định");
+    alert("Lỗi: " + (err.message || "Không xác định"));
   }
 });
 </script>
