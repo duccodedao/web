@@ -2,173 +2,204 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Kết nối Tonkeeper</title>
+  <title>TON</title>
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="/css/footer.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: 'Segoe UI', 'Roboto', sans-serif;
-      background: linear-gradient(145deg, #e3eaf4, #f5f7fa);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #333;
-    }
+body {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(145deg, #e3eaf4, #f5f7fa);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #333;
+}
 
-    #connect-only {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
+#connect-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
 
-    .container {
-      display: none;
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
-      padding: 28px;
-      max-width: 480px;
-      width: 100%;
-      text-align: center;
-      overflow-y: auto;
-      max-height: 90vh;
-    }
+.container {
+  display: none;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  padding: 28px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  overflow-y: auto;
+  max-height: 90vh;
+}
 
-    h2 {
-      font-size: 22px;
-      margin-bottom: 18px;
-      color: #1e293b;
-    }
+h2 {
+  font-size: 22px;
+  margin-bottom: 18px;
+  color: #1e293b;
+}
 
-    .info {
-      font-size: 15px;
-      color: #555;
-      margin-bottom: 6px;
-    }
+.info {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 6px;
+}
 
-    .balance {
-      font-size: 17px;
-      color: #059669;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
+.balance {
+  font-size: 18px;
+  color: #1a9e74;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
 
-    #wallet-address {
-      font-weight: 600;
-      color: #0d47a1;
-      font-size: 15px;
-      word-break: break-word;
-    }
+#wallet-address {
+  font-weight: 600;
+  color: #0d47a1;
+  font-size: 15px;
+  word-break: break-word;
+}
 
-    ul#transactions-list {
-      list-style: none;
-      margin-top: 20px;
-      padding: 0;
-    }
+ul#transactions-list {
+  list-style: none;
+  margin-top: 20px;
+  padding: 0;
+}
 
-    .transaction-item {
-      background: #f8fafc;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease, background-color 0.2s ease;
-    }
+.transaction-item {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
 
-    .transaction-item:hover {
-      background-color: #eef2f7;
-      transform: translateY(-2px);
-    }
+.transaction-item:hover {
+  background-color: #eef2f7;
+  transform: translateY(-2px);
+}
 
-    .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      color: #374151;
-      margin-bottom: 6px;
-    }
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 6px;
+}
 
-    .icon-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-      color: #1e3a8a;
-    }
+.icon-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
 
-    .icon img {
-      width: 20px;
-      height: 20px;
-    }
+.icon img {
+  width: 20px;
+  height: 20px;
+}
 
-    .amount {
-      font-weight: 600;
-      color: #15803d;
-    }
+.amount {
+  font-weight: 600;
+  color: #15803d;
+}
 
-    .address {
-      font-size: 13px;
-      color: #555;
-      word-break: break-word;
-    }
+.address {
+  font-size: 13px;
+  color: #555;
+  word-break: break-word;
+}
 
-    .time {
-      font-size: 12px;
-      color: #999;
-      text-align: right;
-    }
+.time {
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+}
 
-    a {
-      color: #1d4ed8;
-      text-decoration: none;
-      font-weight: 500;
-    }
+a {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 500;
+}
 
-    a:hover {
-      text-decoration: underline;
-    }
+a:hover {
+  text-decoration: underline;
+}
 
-    .container::-webkit-scrollbar {
-      width: 6px;
-    }
+.container::-webkit-scrollbar {
+  width: 6px;
+}
 
-    .container::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 4px;
-    }
+.container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
 
-    .container::-webkit-scrollbar-thumb:hover {
-      background: #999;
-    }
+.container::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
 
-    #disconnect {
-      font-size: 16px;
-      margin-left: 10px;
-      cursor: pointer;
-      color: #d32f2f;
-      display: none;
-      transition: transform 0.2s ease;
-    }
+#disconnect {
+  font-size: 16px;
+  margin-left: 3px;
+  cursor: pointer;
+  color: #d32f2f;
+  display: none;
+  transition: transform 0.2s ease;
+}
 
-    #disconnect:hover {
-      transform: scale(1.1);
-      color: #b71c1c;
-    }
+#disconnect:hover {
+  transform: scale(1.1);
+  color: #b71c1c;
+}
 
+/* Responsive cho điện thoại */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+    max-width: 90%;
+    max-height: 90vh;
+  }
 
+  h2 {
+    font-size: 20px;
+  }
 
+  .info,
+  .balance,
+  #wallet-address,
+  .row,
+  .address,
+  .time {
+    font-size: 14px;
+  }
 
+  .transaction-item {
+    padding: 12px;
+  }
+
+  .icon img {
+    width: 18px;
+    height: 18px;
+  }
+
+  #disconnect {
+    font-size: 14px;
+  }
+}
 
 
   </style>
@@ -181,15 +212,19 @@
 
   <div class="container" id="main-content">
     <p class="info">
-      Địa chỉ ví:
-      <span id="wallet-address">...</span>
-      <span id="disconnect" title="Ngắt kết nối">🔌</span>
+      <span id="wallet-address">Loading...</span>
+      <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
     </p>
-
-    <p id="wallet-balance" class="balance">Số dư: ... TON</p>
-    <h2>Lịch sử giao dịch</h2>
+    <p id="wallet-balance" class="balance">Loading...</p>
     <ul id="transactions-list"></ul>
   </div>
+
+
+
+
+
+
+
 
 
 
@@ -222,6 +257,8 @@
       <span>Shop</span>
     </a>
   </footer>
+
+
   <script>
     // Tự động active tab đang mở
 const currentPage = location.pathname.split("/").pop();
@@ -260,7 +297,7 @@ item.classList.add("active");
             const balanceTon = parseFloat(data.result.balance) / 1e9;
             document.getElementById("wallet-balance").textContent = `Số dư: ${truncateDecimal(balanceTon)} TON`;
 
-            const shortAddress = accountAddress.slice(0, 4) + "..." + accountAddress.slice(-4);
+            const shortAddress = accountAddress.slice(0, 10) + "..." + accountAddress.slice(-10);
             document.getElementById("wallet-address").textContent = shortAddress;
 
             document.getElementById("disconnect").style.display = 'inline-block';
@@ -308,18 +345,18 @@ item.classList.add("active");
             const isSent = tx.out_msgs && tx.out_msgs.length > 0 && tx.out_msgs[0].value > 0;
 
             const address = isReceived
-              ? tx.in_msg?.source?.address || 'Không rõ'
+              ? tx.in_msg?.source?.address || 'No'
               : (isSent
-                ? tx.out_msgs[0]?.destination?.address || 'Không rõ'
-                : 'Không rõ');
+                ? tx.out_msgs[0]?.destination?.address || 'No'
+                : 'No');
 
             const amountRaw = isReceived ? tx.in_msg.value : (isSent ? tx.out_msgs[0].value : 0);
             const amountTon = amountRaw / 1e9;
             const time = new Date(tx.utime * 1000).toLocaleString();
-            const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Địa chỉ');
+            const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Error');
             const sign = isReceived ? '+ ' : (isSent ? '- ' : ' ');
 
-            const iconPath = isReceived ? '/logo-coin/IMG_1924.png' : (isSent ? '/logo-coin/IMG_1923.png' : '/logo-coin/.png');
+            const iconPath = isReceived ? '/logo-coin/gui.png' : (isSent ? '/logo-coin/nhan.png' : '/logo-coin/loi.png');
 
             const li = document.createElement("li");
             li.className = "transaction-item";
@@ -336,7 +373,7 @@ item.classList.add("active");
               </div>
               <div class="row">
                 <div class="address" title="${base64Addr}">
-                  <a href="https://tonviewer.com/transaction/${tx.hash}" target="_blank">Chi tiết</a>
+                  <a href="https://tonviewer.com/transaction/${tx.hash}" target="_blank">Transaction</a>
                 </div>
                 <div class="time">${time}</div>
               </div>
