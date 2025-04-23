@@ -228,6 +228,41 @@ a:hover {
   max-height: 200px; /* Chiều cao tối đa khi mở rộng (có thể thay đổi tùy ý) */
 }
 
+
+
+
+
+
+
+
+  .form-send {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.form-send input,
+.form-send button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  box-shadow: inset 2px 2px 5px #c3c8d3, inset -2px -2px 5px #ffffff;
+}
+
+.form-send button {
+  background: #00796b;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 3px 3px 8px #a1a1a1;
+  transition: background 0.2s ease;
+}
+
+.form-send button:hover {
+  background: #004d40;
+}
 </style>
 <body>
 
@@ -241,6 +276,20 @@ a:hover {
       <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
     </p>
     <p id="wallet-balance" class="balance">Loading...</p>
+
+
+
+<div class="form-send">
+  <h2>Gửi TON</h2>
+  <input type="text" id="to-address" placeholder="Địa chỉ người nhận">
+  <input type="number" id="ton-amount" placeholder="Số lượng TON">
+  <input type="text" id="memo-text" placeholder="Ghi chú / Memo (tuỳ chọn)">
+  <button id="send-ton-btn">Gửi TON</button>
+</div>
+
+
+
+    
     <ul id="transactions-list"></ul>
   </div>
 
@@ -387,6 +436,40 @@ function toggleMemo(element) {
 
 
   </script>
+
+
+  <script>
+document.getElementById("send-ton-btn").addEventListener("click", async () => {
+  const toAddress = document.getElementById("to-address").value.trim();
+  const amountTON = parseFloat(document.getElementById("ton-amount").value);
+  const memo = document.getElementById("memo-text").value.trim();
+
+  if (!toAddress || isNaN(amountTON) || amountTON <= 0) {
+    alert("Vui lòng nhập địa chỉ và số lượng hợp lệ.");
+    return;
+  }
+
+  try {
+    const amountNanoTON = BigInt(amountTON * 1e9);
+
+    const tx = {
+      validUntil: Math.floor(Date.now() / 1000) + 60, // Hết hạn sau 60s
+      messages: [{
+        address: toAddress,
+        amount: amountNanoTON.toString(),
+        payload: memo ? TON_CONNECT_UI.textToPayload(memo) : undefined
+      }]
+    };
+
+    const result = await connector.sendTransaction(tx);
+    alert("Giao dịch đang được xử lý trên mạng lưới TON.");
+    console.log("Kết quả:", result);
+  } catch (err) {
+    console.error("Lỗi khi gửi TON:", err);
+    alert("Gửi thất bại: " + err.message || "Không xác định");
+  }
+});
+</script>
 </body>
 </html>
 
