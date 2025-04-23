@@ -371,7 +371,7 @@ item.classList.add("active");
         const time = new Date(tx.utime * 1000).toLocaleString();
         const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Error');
         const sign = isReceived ? '+ ' : (isSent ? '- ' : ' ');
-        const iconPath = isReceived ? 'nhan.png' : (isSent ? 'gui.png' : 'loi.png');
+        const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
         // 👉 Lấy memo/comment nếu có
         const memo = isReceived
