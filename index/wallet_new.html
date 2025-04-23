@@ -284,6 +284,16 @@ a:hover {
 .input-icon input {
   padding-left: 45px !important; /* Để chừa khoảng cho icon */
 }
+.input-logo {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
 
   </style>
 </head>
@@ -310,9 +320,12 @@ a:hover {
       </div>
     
       <div class="input-icon">
-        <span class="icon">💎</span>
+        <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
+
         <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
       </div>
+      
+      
     
       <div class="input-icon">
         <span class="icon">📝</span>
@@ -333,7 +346,33 @@ a:hover {
 
 
 
-
+  <footer>
+    <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+      <i class="fas fa-wallet"></i>
+      <span>Wallet</span>
+    </a>
+    <a href="/swap/index.html" class="footer-item" data-page="index.html">
+      <i class="fas fa-right-left"></i>
+      <span>Swap</span>
+    </a>
+  
+    <!-- HOME NỔI BẬT KHÔNG ACTIVE -->
+    <a href="/index/index.html" class="footer-item home">
+      <div class="home-circle">
+        <i class="fas fa-house"></i>
+      </div>
+      <span>Home</span>
+    </a>
+  
+    <a href="/index/main.html" class="footer-item" data-page="main.html">
+      <i class="fas fa-th"></i>
+      <span>App</span>
+    </a>
+    <a href="/index/shop.html" class="footer-item" data-page="shop.html">
+      <i class="fas fa-store"></i>
+      <span>Shop</span>
+    </a>
+  </footer>
 
 
 
