@@ -1,104 +1,174 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập & Gửi dữ liệu</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        form { margin-top: 20px; display: none; }
-        input, button, textarea { margin: 10px; padding: 10px; width: 80%; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jettons Withdrawal</title>
+  <script type="module">
+    import TonWeb from "https://cdn.jsdelivr.net/npm/tonweb@0.0.72/dist/tonweb.js";
+    import TonWebMnemonic from "https://cdn.jsdelivr.net/npm/tonweb-mnemonic@0.0.7/dist/tonweb-mnemonic.js";
+
+    const BN = TonWeb.utils.BN;
+    const isMainnet = true;
+
+    const tonweb = isMainnet
+      ? new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', {
+          apiKey: '0e65b6f34afà79câ44827d03b05a063020fffc794ec3f4c78df60db92570e288'  // mainnet key
+        }))
+      : new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {
+          apiKey: '0db75c5e929b1d6238fde0b8ebaff89381b437290f523a3e960a86aed6441019'  // testnet key
+        }));
+
+    const JETTONS_INFO = {
+      'jUSDC': { address: 'EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728', decimals: 6 },
+      'KOTE': { address: 'EQBlU_tKISgpepeMFT9t3xTDeiVmo25dW_4vUOl6jId_BNIj', decimals: 9 }
+    };
+
+    let hotWalletAddress;
+    let hotWalletAddressString;
+    const jettons = {};
+
+    const prepare = async (wallet) => {
+      hotWalletAddress = await wallet.getAddress();
+      hotWalletAddressString = hotWalletAddress.toString(true, true, false);
+      console.log('My HOT wallet is', hotWalletAddressString);
+
+      for (const name in JETTONS_INFO) {
+        const info = JETTONS_INFO[name];
+        const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, { address: info.address });
+        const jettonWalletAddress = await jettonMinter.getJettonWalletAddress(hotWalletAddress);
+        console.log('My jetton wallet for', name, 'is', jettonWalletAddress.toString(true, true, true));
+        const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: jettonWalletAddress });
+        jettons[name] = {
+          jettonMinter,
+          jettonWalletAddress,
+          jettonWallet
+        };
+      }
+    };
+
+    const checkJettonTransfer = async (jettonName, transferQueryId) => {
+      const jettonWalletAddress = jettons[jettonName].jettonWalletAddress.toString(false);
+      const transactions = await tonweb.provider.getTransactions(jettonWalletAddress);
+
+      for (const tx of transactions) {
+        const sourceAddress = tx.in_msg.source;
+        if (!sourceAddress) continue;
+
+        if (new TonWeb.utils.Address(sourceAddress).toString(false) !== hotWalletAddress.toString(false)) continue;
+
+        if (!tx.in_msg.msg_data || tx.in_msg.msg_data['@type'] !== 'msg.dataRaw' || !tx.in_msg.msg_data.body) continue;
+
+        const msgBody = TonWeb.utils.base64ToBytes(tx.in_msg.msg_data.body);
+        const cell = TonWeb.boc.Cell.oneFromBoc(msgBody);
+        const slice = cell.beginParse();
+        const op = slice.loadUint(32);
+        if (!op.eq(new TonWeb.utils.BN(0x0f8a7ea5))) continue;
+        const queryId = slice.loadUint(64);
+
+        if (queryId.eq(new TonWeb.utils.BN(transferQueryId))) {
+          if (tx.out_msgs.length === 0) return false;
+          if (tx.out_msgs.length === 1 && new TonWeb.utils.Address(tx.out_msgs[0].destination).toString(false) === hotWalletAddress.toString(false)) return false;
+          console.log(`request ${queryId} completed`);
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    const doWithdraw = async (wallet, keyPair, withdrawalRequest) => {
+      const seqno = await wallet.methods.seqno().call();
+
+      if (seqno > withdrawalRequest.seqno) {
+        if (await checkJettonTransfer(withdrawalRequest.jettonName, withdrawalRequest.seqno)) {
+          return true;
+        } else return false;
+      }
+
+      const toncoinAmount = TonWeb.utils.toNano('0.05');
+      const toncoinBalance = new BN(await tonweb.provider.getBalance(hotWalletAddressString));
+      if (toncoinAmount.gte(toncoinBalance)) {
+        console.log('Not enough TON to withdraw');
+        return false;
+      }
+
+      const jettonWallet = jettons[withdrawalRequest.jettonName].jettonWallet;
+      const jettonBalance = (await jettonWallet.getData()).balance;
+      if (new BN(withdrawalRequest.amount).gt(jettonBalance)) {
+        console.log('Not enough Jetton to withdraw');
+        return false;
+      }
+
+      const jettonWalletAddress = jettons[withdrawalRequest.jettonName].jettonWalletAddress.toString(true, true, true);
+
+      const transfer = await wallet.methods.transfer({
+        secretKey: keyPair.secretKey,
+        toAddress: jettonWalletAddress,
+        amount: toncoinAmount,
+        seqno: seqno,
+        payload: await jettonWallet.createTransferBody({
+          queryId: seqno,
+          jettonAmount: withdrawalRequest.amount,
+          toAddress: new TonWeb.utils.Address(withdrawalRequest.toAddress),
+          responseAddress: hotWalletAddress
+        })
+      });
+
+      await transfer.send();
+      console.log(`request ${withdrawalRequest.seqno} sent`);
+      return false;
+    };
+
+    const init = async () => {
+      const seed = await TonWebMnemonic.mnemonicToSeed('your twelve mnemonic words here'.split(' '));
+      const keyPair = TonWeb.utils.keyPairFromSeed(seed);
+      const WalletClass = tonweb.wallet.all['v3R2'];
+      const wallet = new WalletClass(tonweb.provider, { publicKey: keyPair.publicKey });
+
+      await prepare(wallet);
+
+      const withdrawalRequests = [
+        {
+          jettonName: 'jUSDC',
+          amount: '1000',
+          toAddress: 'UQAn_rlLlk_MwdfHcspLfpl3iEaQC1WZPFDD7KSbXNbXJ8wM',
+        }
+      ];
+
+      let isProcessing = false;
+
+      const tick = async () => {
+        if (!withdrawalRequests.length) return;
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const withdrawalRequest = withdrawalRequests[0];
+
+        if (!withdrawalRequest.seqno) {
+          withdrawalRequest.seqno = await wallet.methods.seqno().call();
+        }
+
+        try {
+          if (await doWithdraw(wallet, keyPair, withdrawalRequest)) {
+            withdrawalRequests.shift();
+          }
+        } catch (e) {
+          console.error(e);
+        }
+
+        isProcessing = false;
+      };
+
+      setInterval(tick, 10 * 1000);
+      tick();
+    };
+
+    init();
+  </script>
 </head>
 <body>
-    <h2>Đăng nhập bằng Telegram</h2>
-    <script async src="https://telegram.org/js/telegram-widget.js?7"
-        data-telegram-login="BmassK3_bot" 
-        data-size="large"
-        data-userpic="false"
-        data-auth-url=""
-        data-request-access="write"
-        onload="getTelegramUser()"></script>
-    
-    <div id="user-info" style="display: none;">
-        <h3>Xin chào, <span id="username"></span>!</h3>
-        <p><strong>ID:</strong> <span id="user-id"></span></p>
-        <p><strong>Username:</strong> @<span id="user-username"></span></p>
-        <p><strong>Họ và tên:</strong> <span id="user-fullname"></span></p>
-    </div>
-    
-    <form id="messageForm" style="display: none;">
-        <textarea id="message" placeholder="Nhập nội dung gửi" required></textarea><br>
-        <button type="submit">Gửi đến nhóm</button>
-    </form>
-    
-    <script>
-        function setCookie(name, value, hours) {
-            let expires = "";
-            if (hours) {
-                let date = new Date();
-                date.setTime(date.getTime() + (hours * 60 * 60 * 1000));
-                expires = "; expires=" + date.toUTCString();
-            }
-            document.cookie = name + "=" + value + expires + "; path=/";
-        }
-
-        function getCookie(name) {
-            let nameEQ = name + "=";
-            let ca = document.cookie.split(';');
-            for(let i = 0; i < ca.length; i++) {
-                let c = ca[i].trim();
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
-
-        function getTelegramUser() {
-            let storedUser = getCookie("telegramUser");
-            if (storedUser) {
-                let telegramUser = JSON.parse(storedUser);
-                displayUserInfo(telegramUser);
-                return;
-            }
-
-            window.TelegramLoginWidget = {
-                onAuth: function(user) {
-                    setCookie("telegramUser", JSON.stringify(user), 1);
-                    displayUserInfo(user);
-                }
-            };
-        }
-
-        function displayUserInfo(user) {
-            document.getElementById("username").textContent = user.first_name;
-            document.getElementById("user-id").textContent = user.id;
-            document.getElementById("user-username").textContent = user.username || "Không có";
-            document.getElementById("user-fullname").textContent = user.first_name + " " + (user.last_name || "");
-            document.getElementById("user-info").style.display = "block";
-            document.getElementById("messageForm").style.display = "block";
-        }
-
-        document.getElementById("messageForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            let storedUser = getCookie("telegramUser");
-            if (!storedUser) {
-                alert("Vui lòng đăng nhập Telegram trước!");
-                return;
-            }
-            let telegramUser = JSON.parse(storedUser);
-            let message = document.getElementById("message").value;
-            let botToken = "6789490938:AAFkhwkeeqrsyBTzE0I6uKAiKCSz0qjMWWs"; 
-            let chatId = "@bmassk3_channel"; 
-            let text = `📝 Tin nhắn từ ${telegramUser.first_name} (@${telegramUser.username || 'Không có'}):\n${message}`;
-            
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.ok) alert("Gửi thành công!");
-                    else alert("Lỗi gửi tin nhắn!");
-                })
-                .catch(error => alert("Lỗi kết nối!"));
-        });
-    </script>
+  <h1>Jettons Withdrawal</h1>
+  <p>Kiểm tra console để theo dõi tiến trình.</p>
 </body>
 </html>
