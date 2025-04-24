@@ -53,7 +53,8 @@
 
     #jettons-list {
       width: 100%;
-      max-width: 600px;
+      max-width: 600px;    
+
     }
 
     .jetton-item {
@@ -139,6 +140,7 @@
   width: 100%;
   max-width: 600px;
   margin-top: 10px;
+  margin-bottom: 85px;
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -204,22 +206,38 @@
 
 
 
+  #disconnect-wallet {
+  display: none;
+  padding: 8px 14px;
+  background-color: #ff4c4c;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+
+
   </style>
 </head>
 <body>
   <div id="connect-only">
     <div id="connect-wallet"></div>
   </div>
+  <div id="header-container" style="display:none; display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; margin-bottom: 20px; margin-top: 65px;">
+    <h2 id="token-header" style="margin: 0;">Jettons</h2>
+    <button id="disconnect-wallet">Disconnect</button>
+  </div>
   
-  <h2 id="token-header" style="display:none;">Danh sách Token</h2>
-
   <div id="loading-spinner" style="display:none;" class="loader"></div>
   <div id="jettons-list"></div>
   <div id="zero-balance-list" style="display: none;"></div>
   <div id="see-all-btn">------- See all -------</div>
 
   
-  <div id="disconnect-wallet">Disconnect</div>
+
 
    <footer>
     <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
@@ -366,6 +384,14 @@ item.classList.add("active");
         document.getElementById('see-all-btn').style.display = 'none';
       }
     });
+
+
+
+
+
+
+
+
   </script>
 </body>
 </html>
