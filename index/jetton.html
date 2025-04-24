@@ -2,9 +2,10 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Danh sách Jettons</title>
+  <title>Jettons</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -128,6 +129,36 @@
   <div id="jettons-list"></div>
   <div id="disconnect-wallet">Disconnect</div>
 
+
+
+
+   <footer>
+    <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+      <i class="fas fa-wallet"></i>
+      <span>Wallet</span>
+    </a>
+    <a href="/index/jetton.html" class="footer-item" data-page="index.html">
+      <i class="fas fa-coins"></i> <!-- Biểu tượng Coins cho Jetton -->
+      <span>Jetton</span>
+    </a>
+
+    <!-- HOME NỔI BẬT KHÔNG ACTIVE -->
+    <a href="/index/index.html" class="footer-item home">
+      <div class="home-circle">
+        <i class="fas fa-house"></i>
+      </div>
+      <span>Home</span>
+    </a>
+
+    <a href="/index/main.html" class="footer-item" data-page="main.html">
+      <i class="fas fa-th"></i>
+      <span>App</span>
+    </a>
+    <a href="/index/shop.html" class="footer-item" data-page="shop.html">
+      <i class="fas fa-store"></i>
+      <span>Shop</span>
+    </a>
+  </footer>
   <script>
     const connectUI = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
