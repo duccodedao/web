@@ -220,6 +220,16 @@
 
 
 
+
+
+#token-header {
+  display: none;
+}
+
+#see-all-btn {
+  display: none;
+}
+
   </style>
 </head>
 <body>
@@ -355,35 +365,39 @@ item.classList.add("active");
     }
   
     connectUI.onStatusChange(async (wallet) => {
-      const disconnectButton = document.getElementById('disconnect-wallet');
-      const connectOnlyDiv = document.getElementById('connect-only');
-      const tokenHeader = document.getElementById('token-header');
+  const disconnectButton = document.getElementById('disconnect-wallet');
+  const connectOnlyDiv = document.getElementById('connect-only');
+  const tokenHeader = document.getElementById('token-header');
+  const seeAllBtn = document.getElementById('see-all-btn');
   
-      if (wallet && wallet.account) {
-        connectOnlyDiv.style.display = 'none';
-        disconnectButton.style.display = 'block';
-        tokenHeader.style.display = 'block';
-  
-        fetchJettons(wallet.account.address);
-  
-        disconnectButton.addEventListener('click', () => {
-          connectUI.disconnect();
-          connectOnlyDiv.style.display = 'flex';
-          disconnectButton.style.display = 'none';
-          tokenHeader.style.display = 'none';
-          document.getElementById('jettons-list').innerHTML = '';
-          document.getElementById('zero-balance-list').innerHTML = '';
-          document.getElementById('see-all-btn').style.display = 'none';
-        });
-      } else {
-        connectOnlyDiv.style.display = 'flex';
-        disconnectButton.style.display = 'none';
-        tokenHeader.style.display = 'none';
-        document.getElementById('jettons-list').innerHTML = '';
-        document.getElementById('zero-balance-list').innerHTML = '';
-        document.getElementById('see-all-btn').style.display = 'none';
-      }
+  if (wallet && wallet.account) {
+    // Ví đã kết nối
+    connectOnlyDiv.style.display = 'none';
+    disconnectButton.style.display = 'block';
+    tokenHeader.style.display = 'block'; // Hiển thị Jettons
+    seeAllBtn.style.display = 'block'; // Hiển thị "See all"
+    
+    fetchJettons(wallet.account.address);
+
+    disconnectButton.addEventListener('click', () => {
+      connectUI.disconnect();
+      connectOnlyDiv.style.display = 'flex';
+      disconnectButton.style.display = 'none';
+      tokenHeader.style.display = 'none'; // Ẩn Jettons khi ngắt kết nối
+      seeAllBtn.style.display = 'none'; // Ẩn "See all" khi ngắt kết nối
+      document.getElementById('jettons-list').innerHTML = '';
+      document.getElementById('zero-balance-list').innerHTML = '';
     });
+  } else {
+    // Ví chưa kết nối
+    connectOnlyDiv.style.display = 'flex';
+    disconnectButton.style.display = 'none';
+    tokenHeader.style.display = 'none'; // Ẩn Jettons khi chưa kết nối ví
+    seeAllBtn.style.display = 'none'; // Ẩn "See all" khi chưa kết nối ví
+    document.getElementById('jettons-list').innerHTML = '';
+    document.getElementById('zero-balance-list').innerHTML = '';
+  }
+});
 
 
 
