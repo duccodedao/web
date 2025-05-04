@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Thêm thẻ meta này -->
   <title>Mini App + Referral</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -96,9 +97,20 @@
     // Copy link giới thiệu
     function copyReferral() {
       const refLink = `https://t.me/${tg.initDataUnsafe.bot.username}?startapp=${user.id}`;
-      navigator.clipboard.writeText(refLink).then(() => {
-        alert("Đã copy link giới thiệu:\n" + refLink);
-      });
+      
+      // Tạo một input tạm thời để copy
+      const input = document.createElement('input');
+      input.value = refLink;
+      document.body.appendChild(input);
+      
+      // Chọn và sao chép nội dung của input
+      input.select();
+      document.execCommand('copy');
+      
+      // Xóa input tạm thời sau khi sao chép
+      document.body.removeChild(input);
+      
+      alert("Đã copy link giới thiệu:\n" + refLink);
     }
   </script>
 
