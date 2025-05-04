@@ -1,5 +1,11 @@
-/* Footer Style */
+/* Đảm bảo rằng margin và padding của body không ảnh hưởng đến footer */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Đảm bảo các thuộc tính padding, margin được tính đúng */
+}
 
+/* Footer Style */
 footer {
   position: fixed;
   bottom: 0;
@@ -13,6 +19,8 @@ footer {
   border-top-right-radius: 20px;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
   z-index: 100;
+  margin: 0; /* Đảm bảo không có margin ảnh hưởng */
+  padding: 0; /* Đảm bảo không có padding ảnh hưởng */
 }
 
 .footer-item {
