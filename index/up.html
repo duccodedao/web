@@ -2,131 +2,105 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Toàn bộ tính năng Telegram WebApp</title>
+  <title>Mini App + Referral</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      background: #f9f9f9;
-      color: #222;
-      transition: background 0.3s, color 0.3s;
+      background: #f4f4f4;
+      color: #333;
     }
     .dark-mode {
-      background: #1e1e1e;
-      color: #fff;
+      background: #222;
+      color: white;
     }
-    .info { margin-bottom: 20px; }
     button {
-      padding: 10px 15px;
-      margin: 5px;
-      font-size: 14px;
-      cursor: pointer;
+      padding: 10px 20px;
+      margin: 5px 0;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
 
-<h2>Thông tin người dùng Telegram</h2>
-<div class="info" id="user-info"></div>
+  <h2>Telegram Mini App</h2>
+  <div id="user-info"></div>
+  <div id="ref-info"></div>
+  <div id="token-info"></div>
+  <button onclick="checkIn()">Điểm danh nhận token</button>
+  <button onclick="copyReferral()">Copy link giới thiệu</button>
 
-<h3>Chức năng</h3>
-<button onclick="sendDataToBot()">Gửi dữ liệu về bot</button>
-<button onclick="openLink()">Mở link ngoài Telegram</button>
-<button onclick="vibrate()">Rung (Haptic Feedback)</button>
-<button onclick="showAlert()">Hiển thị cảnh báo</button>
-<button onclick="showConfirm()">Hiển thị xác nhận</button>
-<button onclick="requestWriteAccess()">Yêu cầu quyền nhắn riêng</button>
-<button onclick="Telegram.WebApp.close()">Đóng WebApp</button>
+  <script>
+    const tg = Telegram.WebApp;
+    tg.ready();
 
-<script>
-  const tg = Telegram.WebApp;
-  const user = tg.initDataUnsafe.user;
-  const userInfoDiv = document.getElementById("user-info");
+    const user = tg.initDataUnsafe.user;
+    const ref = tg.initDataUnsafe.start_param || null;
 
-  tg.ready(); // báo cho Telegram biết WebApp đã sẵn sàng
-  tg.expand(); // mở rộng giao diện
+    // Tự động mở rộng giao diện
+    tg.expand();
 
-  // Hiển thị info user
-  userInfoDiv.innerHTML = `
-    <b>ID:</b> ${user?.id}<br>
-    <b>Tên:</b> ${user?.first_name || ''} ${user?.last_name || ''}<br>
-    <b>Username:</b> @${user?.username || 'Không có'}<br>
-    <b>Ngôn ngữ:</b> ${user?.language_code || 'Không rõ'}<br>
-    <b>Cho phép nhắn riêng:</b> ${user?.allows_write_to_pm ? 'Có' : 'Không'}<br>
-    <b>Platform:</b> ${tg.platform}<br>
-    <b>Phiên bản:</b> ${tg.version}<br>
-    <b>Giao diện:</b> ${tg.colorScheme}<br>
-    <b>Chiều cao:</b> ${tg.viewportHeight}px<br>
-    <b>Receiver:</b> ${tg.initDataUnsafe.receiver ? JSON.stringify(tg.initDataUnsafe.receiver) : 'Không có'}<br>
-    <b>InitData:</b> ${tg.initData}<br>
-  `;
-
-  // Dark mode
-  if (tg.colorScheme === "dark") {
-    document.body.classList.add("dark-mode");
-  }
-
-  // MainButton
-  tg.MainButton.setText("Gửi về bot");
-  tg.MainButton.setBackgroundColor("#10b981");
-  tg.MainButton.show();
-
-  tg.MainButton.onClick(() => {
-    tg.sendData("Dữ liệu từ MainButton");
-  });
-
-  // Gửi dữ liệu bằng nút HTML
-  function sendDataToBot() {
-    tg.sendData("Gửi từ nút HTML");
-  }
-
-  // Mở link ngoài
-  function openLink() {
-    tg.openLink("https://google.com", { try_instant_view: true });
-  }
-
-  // Rung phản hồi (chỉ hoạt động trên Telegram mobile)
-  function vibrate() {
-    if (tg.HapticFeedback) {
-      tg.HapticFeedback.impactOccurred("medium");
-    } else {
-      alert("Không hỗ trợ trên nền tảng này.");
+    // Giao diện tối nếu Telegram đặt vậy
+    if (tg.colorScheme === 'dark') {
+      document.body.classList.add('dark-mode');
     }
-  }
 
-  // Popup alert
-  function showAlert() {
-    tg.showAlert("Đây là thông báo cảnh báo!");
-  }
+    // Hiển thị thông tin người dùng
+    document.getElementById('user-info').innerHTML = `
+      <b>ID:</b> ${user?.id}<br>
+      <b>Tên:</b> ${user?.first_name || ''} ${user?.last_name || ''}<br>
+      <b>Username:</b> @${user?.username || 'Không có'}<br><br>
+    `;
 
-  // Popup xác nhận
-  function showConfirm() {
-    tg.showConfirm("Bạn có chắc không?", (ok) => {
-      if (ok) tg.showAlert("Bạn đã xác nhận!");
-      else tg.showAlert("Bạn đã hủy.");
-    });
-  }
+    // Lưu ref chỉ lần đầu
+    if (ref && !localStorage.getItem('ref_used')) {
+      localStorage.setItem('ref_used', '1');
+      localStorage.setItem('ref_from', ref);
+      // Tặng 20 token nếu nhập qua ref
+      const current = parseInt(localStorage.getItem('token') || '0');
+      localStorage.setItem('token', current + 20);
+    }
 
-  // Yêu cầu quyền nhắn riêng (nếu user chưa cho phép)
-  function requestWriteAccess() {
-    tg.requestWriteAccess().then(result => {
-      if (result) {
-        alert("Đã được cấp quyền nhắn riêng.");
-      } else {
-        alert("Người dùng từ chối.");
+    // Hiển thị ref đã dùng
+    const refFrom = localStorage.getItem('ref_from');
+    if (refFrom) {
+      document.getElementById('ref-info').innerHTML = `
+        <b>Được mời bởi ID:</b> ${refFrom} <br>Nhận thêm 20 token!
+      `;
+    }
+
+    // Hiển thị số token hiện có
+    updateTokenUI();
+
+    function updateTokenUI() {
+      const tokens = parseInt(localStorage.getItem('token') || '0');
+      document.getElementById('token-info').innerHTML = `<b>Tổng token:</b> ${tokens}`;
+    }
+
+    // Điểm danh mỗi ngày
+    function checkIn() {
+      const today = new Date().toLocaleDateString();
+      const last = localStorage.getItem('last_checkin');
+      if (today === last) {
+        alert("Bạn đã điểm danh hôm nay.");
+        return;
       }
-    });
-  }
+      localStorage.setItem('last_checkin', today);
+      const current = parseInt(localStorage.getItem('token') || '0');
+      localStorage.setItem('token', current + 10);
+      alert("Điểm danh thành công! Nhận 10 token.");
+      updateTokenUI();
+    }
 
-  // Lắng nghe resize
-  tg.onEvent("viewportChanged", () => {
-    console.log("Kích thước đã thay đổi:", tg.viewportHeight);
-  });
-
-  // Log xác thực initData (dùng để gửi về server)
-  console.log("InitData:", tg.initData);
-</script>
+    // Copy link giới thiệu
+    function copyReferral() {
+      const refLink = `https://t.me/${tg.initDataUnsafe.bot.username}?startapp=${user.id}`;
+      navigator.clipboard.writeText(refLink).then(() => {
+        alert("Đã copy link giới thiệu:\n" + refLink);
+      });
+    }
+  </script>
 
 </body>
 </html>
