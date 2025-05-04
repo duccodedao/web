@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thông Tin Cá Nhân Telegram + TON Connect</title>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- CSS -->
   <link rel="stylesheet" href="styles.css">
 
@@ -15,8 +15,8 @@
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<style>
-   /* Reset */
+  <style>
+    /* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -40,8 +40,8 @@
   }
   
   #connect-wallet {
-    background-color: #4CAF50;
-    color: white;
+ 
+
     padding: 16px 30px;
     border-radius: 25px;
     cursor: pointer;
@@ -49,9 +49,7 @@
     transition: background-color 0.3s ease;
   }
   
-  #connect-wallet:hover {
-    background-color: #45a049;
-  }
+
   
   /* Container chính */
   .container {
@@ -194,14 +192,20 @@
     width: 40px;
     object-fit: cover;
   }
-   
-</style>
+  #short-address {
+    cursor: pointer;
+    color: #333;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+  </style>
 <body>
 
   <!-- Khi chưa kết nối ví -->
-  <div id="connect-only" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-    <div id="connect-wallet" style="padding: 20px; background-color: #4CAF50; color: white; border-radius: 10px; cursor: pointer;">
-      Kết nối Ví TON
+  <div id="connect-only">
+    <div id="connect-wallet">
+
     </div>
   </div>
 
@@ -217,7 +221,7 @@
         <i class="fas fa-wallet"></i> Wallet
       </a>
       <div class="btn" id="disconnect">
-        <i class="fas fa-sign-out-alt"></i> Ngắt kết
+        <i class="fas fa-sign-out-alt"></i> Disconnect
       </div>
     </div>
 
@@ -231,10 +235,36 @@
       </div>
     </div>
   </div>
-  <div class="info-item"><div class="row"><div>Username</div><div id="tg-username">Loading...</div></div></div>
-  <div class="info-item"><div class="row"><div>Tên</div><div id="tg-name">Loading...</div></div></div>
-  <div class="info-item"><div class="row"><div>ID</div><div id="tg-id">Loading...</div></div></div>
-
+  <div class="info-item">
+    <div class="row">
+      <div>Username</div>
+      <div class="wallet-address">
+        <span id="tg-username">Loading...</span>
+        <i class="fa-regular fa-copy" id="copy-username" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-item">
+    <div class="row">
+      <div>Name</div>
+      <div class="wallet-address">
+        <span id="tg-name">Loading...</span>
+        <i class="fa-regular fa-copy" id="copy-name" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-item">
+    <div class="row">
+      <div>ID</div>
+      <div class="wallet-address">
+        <span id="tg-id">Loading...</span>
+        <i class="fa-regular fa-copy" id="copy-id" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+      </div>
+    </div>
+  </div>
+  
 
 
 
@@ -244,7 +274,7 @@
       <!-- Địa chỉ ví với hiệu ứng nổi bật -->
       <div class="info-item highlight-address">
         <div class="row">
-          <div>Địa chỉ ví</div>
+          <div>Address</div>
           <div class="wallet-address">
             <span id="short-address">Loading...</span>
             <i class="fa-regular fa-copy" id="copy-icon" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
@@ -252,7 +282,7 @@
         </div>
       </div>
 
-      <div class="info-item"><div class="row"><div>Số dư</div><div id="ton-balance">Loading...</div></div></div>
+      <div class="info-item"><div class="row"><div>Balence</div><div id="ton-balance">Loading...</div></div></div>
     </div>
   </div>
 
@@ -262,26 +292,51 @@ tg.ready();
 
 const user = tg.initDataUnsafe.user;
 if (user) {
-  document.getElementById("tg-name").textContent = `${user.first_name || ''} ${user.last_name || ''}`;
-  document.getElementById("tg-username").textContent = `@${user.username || 'Không có'}`;
-  document.getElementById("tg-id").textContent = user.id;
+  const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+  const username = `@${user.username || 'Không có'}`;
+  const userId = user.id;
+
+  document.getElementById("tg-name").textContent = name;
+  document.getElementById("tg-username").textContent = username;
+  document.getElementById("tg-id").textContent = userId;
+
+  // Thêm sự kiện copy
+  const showCopySuccess = (text) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Đã sao chép!',
+      text: `${text} đã được sao chép vào clipboard.`,
+      timer: 1500,
+      showConfirmButton: false
+    });
+  };
+
+  const copyText = (text, label) => {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopySuccess(label);
+    }).catch(() => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Thất bại',
+        text: `Không thể sao chép ${label}.`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    });
+  };
+
+  document.getElementById("copy-name").onclick = () => copyText(name, "Tên");
+  document.getElementById("copy-username").onclick = () => copyText(username, "Username");
+  document.getElementById("copy-id").onclick = () => copyText(userId.toString(), "ID");
 
   const avatarElement = document.getElementById("tg-avatar");
-
-  // Nếu có ảnh từ Telegram thì dùng, không thì mặc định
   const photoURL = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
   avatarElement.src = photoURL;
-
-  // Nếu ảnh bị lỗi, gán lại ảnh mặc định
   avatarElement.onerror = function () {
     this.onerror = null;
     this.src = "/logo-coin/bmlogo.jpg";
   };
 }
-
-
-
-
 
 let base64Addr = "";
 
@@ -307,8 +362,23 @@ connector.onStatusChange(async (wallet) => {
         document.getElementById("short-address").textContent = shortAddress;
 
         const copyToClipboard = () => {
-          navigator.clipboard.writeText(base64Addr);
-          tg.showPopup({ message: "✅ Đã sao chép địa chỉ ví!", buttons: [{ type: "ok", text: "OK" }] });
+          navigator.clipboard.writeText(base64Addr).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Đã sao chép!',
+              text: 'Địa chỉ ví đã được sao chép vào clipboard.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }).catch(() => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Thất bại',
+              text: 'Không thể sao chép địa chỉ ví.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          });
         };
 
         document.getElementById("short-address").onclick = copyToClipboard;
@@ -325,7 +395,7 @@ connector.onStatusChange(async (wallet) => {
       const balanceRes = await fetch(`https://tonapi.io/v2/accounts/${rawAddress}`);
       const balanceData = await balanceRes.json();
       if (balanceData.balance) {
-        const ton = parseFloat(balanceData.balance / Math.pow(10, 9)).toFixed(3);
+        const ton = parseFloat(balanceData.balance / Math.pow(10, 9)).toFixed(9);
         document.getElementById("ton-balance").textContent = `${ton} TON`;
       }
     } catch (err) {
@@ -333,6 +403,29 @@ connector.onStatusChange(async (wallet) => {
     }
   }
 });
+
+// Sự kiện cho nút Disconnect
+document.getElementById("disconnect").onclick = async () => {
+  try {
+    await connector.disconnect(); // Ngắt kết nối ví TON
+    document.getElementById("main-content").style.display = "none";
+    document.getElementById("connect-only").style.display = "flex"; // Quay lại màn hình kết nối ví
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Đã ngắt kết nối',
+      text: 'Bạn đã ngắt kết nối ví TON.',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Lỗi',
+      text: 'Không thể ngắt kết nối ví.',
+    });
+  }
+};
 
   </script>
 
