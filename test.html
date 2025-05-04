@@ -3,186 +3,247 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang Cá Nhân Telegram + TON Connect</title>
+  <title>Thông Tin Cá Nhân Telegram + TON Connect</title>
+
+  <!-- CSS -->
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      padding: 20px;
+      color: #333;
+    }
+
+    /* Kết nối ví */
+    #connect-only {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #connect-wallet {
+      background-color: #4CAF50;
+      color: white;
+      padding: 16px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    #connect-wallet:hover {
+      background-color: #45a049;
+    }
+
+    /* Container chính */
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 25px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Nút container */
+    .btn-container {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    /* Định dạng chung cho các nút */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      text-decoration: none;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      text-transform: uppercase;
+      width: 100%;
+      gap: 8px; /* Khoảng cách giữa icon và text */
+    }
+
+    /* Nút Jetton */
+    .btn-jetton {
+      background-color: #4CAF50;
+    }
+
+    .btn-jetton:hover {
+      background-color: #45a049;
+      transform: translateY(-3px);
+    }
+
+    /* Nút Wallet */
+    .btn-wallet {
+      background-color: #008CBA;
+    }
+
+    .btn-wallet:hover {
+      background-color: #007B9A;
+      transform: translateY(-3px);
+    }
+
+    /* Nút Ngắt kết nối */
+    #disconnect {
+      background-color: #f44336;
+    }
+
+    #disconnect:hover {
+      background-color: #d32f2f;
+      transform: translateY(-3px);
+    }
+
+    /* Info container chia 2 cột */
+    .info-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    /* Mỗi ô info */
+    .info-item {
+      background: #e0e5ec;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: inset 2px 2px 6px #c3c8d3, inset -2px -2px 6px #ffffff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .info-item:hover {
+      transform: translateY(-2px);
+      box-shadow: inset 2px 2px 8px #b5bbc6, inset -2px -2px 8px #ffffff;
+    }
+
+    /* Nội dung trong mỗi item */
+    .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .row div:first-child {
+      font-weight: bold;
+      color: #555;
+    }
+
+    /* Địa chỉ ví có thể sao chép */
+    #short-address {
+      cursor: pointer;
+      color: blue;
+      text-decoration: underline;
+      word-break: break-all;
+    }
+
+    #copy-icon {
+      cursor: pointer;
+      color: #4CAF50;
+      margin-left: 8px;
+    }
+
+    #copy-icon:hover {
+      color: #388E3C;
+    }
+
+    /* Responsive: về 1 cột khi nhỏ */
+    @media (max-width: 600px) {
+      .info-container {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header .btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      #disconnect {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      /* Đảm bảo các nút cũng điều chỉnh kích thước khi màn hình nhỏ */
+      .btn-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+
+  <!-- Font Awesome for copy icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <!-- TON Connect & Telegram -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', 'Roboto', sans-serif;
-  background: #e0e5ec;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  color: #333;
-}
-
-#connect-only {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.container {
-  display: none;
-  background: #e0e5ec;
-  border-radius: 20px;
-  box-shadow: 10px 10px 25px #bec4d0, -10px -10px 25px #ffffff;
-  padding: 30px;
-  width: 100%;
-  max-width: 100%;
-  text-align: center;
-  overflow-y: auto;
-  max-height: 90vh;
-  margin-top: 65px;
-  margin-bottom: 90px;
-}
-
-h2 {
-  font-size: 22px;
-  margin-bottom: 18px;
-  color: #2e3a59;
-}
-
-.info {
-  font-size: 15px;
-  color: #555;
-  margin-bottom: 6px;
-}
-
-.balance {
-  font-size: 18px;
-  color: #009688;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-#wallet-address {
-  font-weight: 600;
-  color: #0077cc;
-  font-size: 14px;
-  word-break: break-word;
-}
-
-#disconnect {
-  font-size: 16px;
-  margin-left: 3px;
-  cursor: pointer;
-  color: #d32f2f;
-  display: none;
-  transition: transform 0.2s ease;
-}
-
-#disconnect:hover {
-  transform: scale(1.1);
-  color: #b71c1c;
-}
-
-.copy-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 25px;
-  background: #00796b;
-  color: #fff;
-  font-weight: 600;
-  margin-top: 10px;
-  cursor: pointer;
-  box-shadow: 3px 3px 8px #a1a1a1;
-  transition: background 0.2s ease;
-}
-
-.copy-button:hover {
-  background: #004d40;
-}
-
-#copy-success {
-  font-size: 13px;
-  color: #388e3c;
-  margin-top: 5px;
-  display: none;
-}
-
-.memo {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  width: 100%;
-  cursor: pointer;
-  text-align: left;
-  transition: max-height 0.5s ease-out;
-  max-height: 20px;
-}
-
-.memo.expanded {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  max-height: 200px;
-}
-
-hr {
-  margin: 20px 0;
-  border: none;
-  border-top: 1px solid #ccc;
-}
-
-@media (max-width: 600px) {
-  .container {
-    padding: 20px;
-    max-width: 92%;
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-
-  .info,
-  .balance,
-  #wallet-address {
-    font-size: 14px;
-  }
-
-  #disconnect {
-    font-size: 14px;
-  }
-
-  .copy-button {
-    font-size: 14px;
-    padding: 6px 14px;
-  }
-}
-
-  </style>
 </head>
 <body>
-  <div id="connect-only">
-    <div id="connect-wallet"></div>
+
+  <!-- Khi chưa kết nối ví -->
+  <div id="connect-only" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div id="connect-wallet" style="padding: 20px; background-color: #4CAF50; color: white; border-radius: 10px; cursor: pointer;">
+      Kết nối Ví TON
+    </div>
   </div>
 
-  <div id="main-content" class="container" style="display:none">
-    <h2>Thông Tin Cá Nhân Telegram</h2>
-    <div class="info" id="tg-name">Tên: ...</div>
-    <div class="info" id="tg-username">Username: ...</div>
-    <div class="info" id="tg-id">ID: ...</div>
-    <div class="info"><img id="tg-photo" src="" alt="Ảnh đại diện" style="width:80px;height:80px;border-radius:50%;margin-top:10px"></div>
+  <!-- Nội dung chính sau khi kết nối -->
+  <div id="main-content" class="container" style="display: none; margin: 16px;">
+    
+    <div class="btn-container">
+      <a href="/index/jetton.html" class="btn btn-jetton">
+          <i class="fas fa-coins"></i> Jetton
+      </a>
+      <a href="/index/wallet_new.html" class="btn btn-wallet">
+          <i class="fas fa-wallet"></i> Wallet
+      </a>
+      <div class="btn" id="disconnect">
+          <i class="fas fa-sign-out-alt"></i> Ngắt kết nối
+      </div>
+    </div>
+  
+    <!-- Thông tin người dùng -->
+    <div class="info-container">
+      <div class="info-item"><div class="row"><div>Username</div><div id="tg-username">Loading...</div></div></div>
+      <div class="info-item"><div class="row"><div>Tên</div><div id="tg-name">Loading...</div></div></div>
+      <div class="info-item"><div class="row"><div>ID</div><div id="tg-id">Loading...</div></div></div>
+      
+      <!-- Địa chỉ ví với hiệu ứng nổi bật -->
+      <div class="info-item highlight-address">
+        <div class="row">
+          <div>Địa chỉ ví</div>
+          <div class="wallet-address">
+            <span id="short-address">Loading...</span>
+            <i class="fa-regular fa-copy" id="copy-icon" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+          </div>
+        </div>
+      </div>
 
-    <hr style="margin:20px 0;">
-
-    <h2>Ví TON</h2>
-    <div id="wallet-address">...</div>
-    <button class="copy-button" id="copy-address">Sao chép địa chỉ</button>
-    <div id="copy-success">✅ Đã sao chép địa chỉ!</div>
-    <div style="font-size: 12px; color: #555; margin-top: 5px;">Mã hợp đồng dùng để tìm token, không dùng để rút hoặc nạp</div>
-    <div class="balance" id="ton-balance">Số dư: ...</div>
-    <div id="disconnect">Ngắt kết nối</div>
+      <div class="info-item"><div class="row"><div>Số dư</div><div id="ton-balance">Loading...</div></div></div>
+    </div>
   </div>
 
   <script>
@@ -191,14 +252,9 @@ hr {
 
     const user = tg.initDataUnsafe.user;
     if (user) {
-      document.getElementById("tg-name").textContent = `Tên: ${user.first_name || ''} ${user.last_name || ''}`;
-      document.getElementById("tg-username").textContent = `Username: @${user.username || 'Không có'}`;
-      document.getElementById("tg-id").textContent = `ID: ${user.id}`;
-      if (user.photo_url) {
-        document.getElementById("tg-photo").src = user.photo_url;
-      } else {
-        document.getElementById("tg-photo").style.display = 'none';
-      }
+      document.getElementById("tg-name").textContent = `${user.first_name || ''} ${user.last_name || ''}`;
+      document.getElementById("tg-username").textContent = `@${user.username || 'Không có'}`;
+      document.getElementById("tg-id").textContent = user.id;
     }
 
     let base64Addr = "";
@@ -221,13 +277,22 @@ hr {
 
           if (data.ok && data.result && data.result.address && data.result.address.account_address) {
             base64Addr = data.result.address.account_address;
-            const shortAddress = base64Addr.slice(0, 10) + "..." + base64Addr.slice(-10);
-            document.getElementById("wallet-address").textContent = `${shortAddress}\n(Base64: ${base64Addr})`;
+            const shortAddress = base64Addr.slice(0, 5) + "..." + base64Addr.slice(-5);
+            document.getElementById("short-address").textContent = shortAddress;
+
+            const copyToClipboard = () => {
+              navigator.clipboard.writeText(base64Addr);
+              tg.showPopup({ message: "✅ Đã sao chép địa chỉ ví!", buttons: [{ type: "ok", text: "OK" }] });
+            };
+
+            document.getElementById("short-address").onclick = copyToClipboard;
+            document.getElementById("copy-icon").onclick = copyToClipboard;
+
           } else {
-            document.getElementById("wallet-address").textContent = "Không thể lấy thông tin ví.";
+            document.getElementById("short-address").textContent = "Không thể lấy ví.";
           }
         } catch (err) {
-          document.getElementById("wallet-address").textContent = "Lỗi khi gọi API.";
+          document.getElementById("short-address").textContent = "Lỗi API.";
         }
 
         try {
@@ -235,9 +300,9 @@ hr {
           const balanceData = await balanceRes.json();
           if (balanceData.balance) {
             const ton = parseFloat(balanceData.balance) / 1e9;
-            document.getElementById("ton-balance").textContent = `Số dư: ${ton.toFixed(2)} TON`;
+            document.getElementById("ton-balance").textContent = `${ton.toFixed(2)} TON`;
           } else {
-            document.getElementById("ton-balance").textContent = "Số dư: Không xác định";
+            document.getElementById("ton-balance").textContent = "Không xác định";
           }
         } catch (err) {
           document.getElementById("ton-balance").textContent = "Lỗi khi lấy số dư.";
@@ -245,9 +310,6 @@ hr {
 
         document.getElementById("disconnect").style.display = 'inline-block';
       } else {
-        document.getElementById("wallet-address").textContent = "...";
-        document.getElementById("ton-balance").textContent = "Số dư: ...";
-        document.getElementById("disconnect").style.display = 'none';
         document.getElementById("main-content").style.display = "none";
         document.getElementById("connect-only").style.display = "flex";
       }
@@ -256,20 +318,7 @@ hr {
     document.getElementById("disconnect").addEventListener("click", () => {
       connector.disconnect();
     });
-
-    document.getElementById("copy-address").addEventListener("click", () => {
-      if (base64Addr) {
-        navigator.clipboard.writeText(base64Addr).then(() => {
-          document.getElementById("copy-success").style.display = 'block';
-          setTimeout(() => {
-            document.getElementById("copy-success").style.display = 'none';
-          }, 2000);
-        }).catch(() => {
-          alert("Không thể sao chép địa chỉ!");
-        });
-      }
-    });
   </script>
+
 </body>
 </html>
-
