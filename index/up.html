@@ -2,188 +2,584 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <title>TON</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Điểm danh nhận token và bảng xếp hạng</title>
-
-  <!-- Firebase SDK v11 -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBcR1F-Z0jnYlrl6S_e_RiEPgjhUjY2dx4",
-      authDomain: "bmasshd-8504d.firebaseapp.com",
-      projectId: "bmasshd-8504d",
-      storageBucket: "bmasshd-8504d.firebasestorage.app",
-      messagingSenderId: "643152935025",
-      appId: "1:643152935025:web:44f80150548da7512d43d0",
-      measurementId: "G-S1MS2VT2H9"
-    };
-
-    // Khởi tạo Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // Telegram Web App SDK
-    const tg = window.Telegram.WebApp;
-    const userId = tg.initDataUnsafe.user.id;
-    const username = tg.initDataUnsafe.user.first_name;
-
-    document.getElementById("username").innerText = username;
-
-    // Lưu thông tin người dùng vào Firebase
-    function saveUserData() {
-      const userRef = ref(db, 'users/' + userId);
-      set(userRef, {
-        username: username,
-        token: 0,
-        lastCheckInDate: "", // Khởi tạo trường ngày điểm danh
-      }).then(() => {
-        alert("Thông tin người dùng đã được lưu vào Firebase!");
-        updateLeaderboard();
-      }).catch((error) => {
-        console.error("Error writing document: ", error);
-      });
-    }
-
-    // Chức năng điểm danh và nhận token
-    function checkIn() {
-      const userRef = ref(db, 'users/' + userId);
-      get(userRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
-          const lastCheckInDate = userData.lastCheckInDate;
-          const currentDate = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại (YYYY-MM-DD)
-
-          if (lastCheckInDate !== currentDate) {
-            // Nếu người dùng chưa điểm danh hôm nay
-            set(userRef, {
-              username: username,
-              token: (userData.token || 0) + 10, // Tăng thêm 10 token
-              lastCheckInDate: currentDate
-            }).then(() => {
-              alert("Bạn đã điểm danh thành công và nhận được 10 token!");
-              updateLeaderboard();
-            });
-          } else {
-            alert("Bạn đã điểm danh hôm nay rồi!");
-          }
-        } else {
-          // Nếu người dùng chưa có dữ liệu trong Firebase, tạo mới
-          set(userRef, {
-            username: username,
-            token: 10, // Điểm danh lần đầu nhận 10 token
-            lastCheckInDate: new Date().toISOString().split('T')[0]
-          }).then(() => {
-            alert("Bạn đã điểm danh lần đầu và nhận được 10 token!");
-            updateLeaderboard();
-          });
-        }
-      });
-    }
-
-    // Cập nhật bảng xếp hạng
-    function updateLeaderboard() {
-      const leaderboardRef = ref(db, 'users');
-      get(leaderboardRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const users = snapshot.val();
-          const sortedUsers = Object.entries(users).sort((a, b) => b[1].token - a[1].token); // Sắp xếp theo số token giảm dần
-
-          // Hiển thị bảng xếp hạng
-          let leaderboardHTML = "<h3>Bảng Xếp Hạng</h3><ol>";
-          sortedUsers.forEach((user, index) => {
-            leaderboardHTML += `<li>${user[1].username}: ${user[1].token} token</li>`;
-          });
-          leaderboardHTML += "</ol>";
-          document.getElementById("leaderboard").innerHTML = leaderboardHTML;
-        }
-      });
-    }
-
-    // Hiển thị bảng xếp hạng khi trang tải
-    window.onload = updateLeaderboard;
-  </script>
-
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="/css/footer.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7fc;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    h2 {
-      color: #333;
-      margin-top: 50px;
-    }
+body {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  background: #e0e5ec;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    #username {
-      font-weight: bold;
-      color: #1e90ff;
-    }
+#connect-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
 
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 20px 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
+.container {
+  display: none;
+  background: #e0e5ec;
+  border-radius: 20px;
+  box-shadow: 10px 10px 25px #bec4d0, -10px -10px 25px #ffffff;
+  padding: 30px;
+  max-width: 100%; /* Đảm bảo chiều rộng container có thể co giãn */
+  width: 100%; /* Đảm bảo chiều rộng luôn là 100% của màn hình */
+  text-align: center;
+  overflow-y: auto;
+  max-height: 90vh;
+  margin-top: 85px;
+  margin-bottom: 90px;
+}
 
-    button:hover {
-      background-color: #45a049;
-    }
+h2 {
+  font-size: 22px;
+  margin-bottom: 18px;
+  color: #2e3a59;
+}
 
-    #leaderboard {
-      margin-top: 30px;
-      text-align: left;
-      padding: 20px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+.info {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 6px;
+}
 
-    #leaderboard h3 {
-      color: #333;
-    }
+.balance {
+  font-size: 18px;
+  color: #009688;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
 
-    #leaderboard ol {
-      list-style-type: decimal;
-      padding-left: 20px;
-      color: #333;
-    }
+#wallet-address {
+  font-weight: 600;
+  color: #0077cc;
+  font-size: 14px;
+  word-break: break-word;
+}
 
-    #leaderboard li {
-      padding: 8px 0;
-      font-size: 16px;
-    }
+ul#transactions-list {
+  list-style: none;
+  margin-top: 20px;
+  padding: 0;
+}
+
+.transaction-item {
+  background: #e0e5ec;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: inset 2px 2px 6px #c3c8d3, inset -2px -2px 6px #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.transaction-item:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 2px 2px 8px #b5bbc6, inset -2px -2px 8px #ffffff;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #2f3d59;
+  margin-bottom: 6px;
+}
+
+.icon-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #004c99;
+}
+
+.icon img {
+  width: 20px;
+  height: 20px;
+}
+
+.amount {
+  font-weight: 600;
+  color: #00796b;
+}
+
+.address {
+  font-size: 13px;
+  color: #444;
+  word-break: break-word;
+}
+
+.time {
+  font-size: 12px;
+  color: #888;
+  text-align: right;
+}
+
+a {
+  color: #0056b3;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+#disconnect {
+  font-size: 16px;
+  margin-left: 3px;
+  cursor: pointer;
+  color: #d32f2f;
+  display: none;
+  transition: transform 0.2s ease;
+}
+
+#disconnect:hover {
+  transform: scale(1.1);
+  color: #b71c1c;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+    max-width: 92%;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .info,
+  .balance,
+  #wallet-address,
+  .row,
+  .address,
+  .time {
+    font-size: 14px;
+  }
+
+  .transaction-item {
+    padding: 14px;
+  }
+
+  .icon img {
+    width: 18px;
+    height: 18px;
+  }
+
+  #disconnect {
+    font-size: 14px;
+  }
+}
+.memo {
+  white-space: nowrap; /* Ngăn không cho text xuống dòng */
+  overflow: hidden; /* Ẩn phần text bị tràn ra */
+  text-overflow: ellipsis; /* Hiển thị '...' khi quá dài */
+  display: inline-block;
+  width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+  cursor: pointer; /* Thêm dấu con trỏ khi hover vào phần ghi chú */
+  text-align: left; /* Đảm bảo ghi chú nằm lề trái */
+  transition: max-height 2s ease-out; /* Hiệu ứng nới rộng nhẹ nhàng */
+  max-height: 20px; /* Đặt chiều cao tối đa cho phần thu nhỏ */
+}
+
+.memo.expanded {
+  white-space: normal; /* Cho phép xuống dòng khi mở rộng */
+  overflow: visible; /* Hiển thị đầy đủ text */
+  text-overflow: unset; /* Xóa dấu '...' */
+  text-align: left; /* Đảm bảo ghi chú nằm lề trái khi mở rộng */
+  max-height: 200px; /* Chiều cao tối đa khi mở rộng (có thể thay đổi tùy ý) */
+}
+
+
+
+
+
+    .form-send {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.form-send input,
+.form-send button {
+  width: 100%;
+  padding: 10px;
+  margin: 1px 0;
+  border-radius: 25px;
+  border: none;
+  font-size: 16px;
+  box-shadow: inset 2px 2px 5px #c3c8d3, inset -2px -2px 5px #ffffff;
+}
+
+.form-send button {
+  background: #00796b;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 3px 3px 8px #a1a1a1;
+  transition: background 0.2s ease;
+}
+
+.form-send button:hover {
+  background: #004d40;
+}
+
+    #memo-text:disabled {
+  background-color: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+
+
+.input-icon {
+  position: relative;
+  margin: 10px 0;
+}
+
+.input-icon .icon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: #555;
+}
+
+.input-icon input {
+  padding-left: 45px !important; /* Để chừa khoảng cho icon */
+}
+.input-logo {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  border-radius: 25px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+
   </style>
 </head>
 <body>
 
-  <h2>Điểm danh nhận token</h2>
+  <div id="connect-only">
+    <div id="connect-wallet"></div>
+  </div>
 
-  <p>Chào mừng <span id="username"></span>!</p>
-  <button onclick="saveUserData()">Lưu thông tin người dùng</button>
-  <button onclick="checkIn()">Điểm danh và nhận token</button>
 
-  <div id="leaderboard"></div>
 
-  <!-- Telegram Web App SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <div class="container" id="main-content">
+    <p class="info">
+      <span id="wallet-address">Loading...</span>
+      <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
+    </p>
+    <p id="wallet-balance" class="balance">Loading...</p>
+    <div class="form-send">
+      <h2>Gửi TON</h2>
+    
+      <div class="input-icon">
+        <span class="icon">📬</span>
+        <input type="text" id="to-address" placeholder="Address">
+      </div>
+    
+      <div class="input-icon">
+        <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
 
+        <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
+      </div>
+      
+      
+    
+      <div class="input-icon">
+        <span class="icon">📝</span>
+        <input type="text" id="memo-text" placeholder="Memo" disabled>
+      </div>
+    
+      <button id="send-ton-btn">Sent Transaction</button>
+    </div>
+    
+    <ul id="transactions-list"></ul>
+  </div>
+
+
+
+
+
+
+
+
+
+  <footer>
+    <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+      <i class="fas fa-wallet"></i>
+      <span>Wallet</span>
+    </a>
+    <a href="/index/jetton.html" class="footer-item" data-page="jetton.html">
+      <i class="fas fa-coins"></i> <!-- Biểu tượng Coins cho Jetton -->
+      <span>Jetton</span>
+    </a>
+    <a href="/index/main.html" class="footer-item" data-page="main.html">
+      <i class="fas fa-th"></i>
+      <span>App</span>
+    </a>
+  
+    <!-- Thêm Profile thay vì Home và Shop -->
+    <a href="/index/profile.html" class="footer-item" data-page="profile.html">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  
+  </footer>
+
+
+
+
+
+
+
+
+  <script>
+    // Tự động active tab đang mở
+const currentPage = location.pathname.split("/").pop();
+const items = document.querySelectorAll(".footer-item");
+
+items.forEach(item => {
+const page = item.getAttribute("data-page");
+if (page === currentPage) {
+item.classList.add("active");
+}
+});
+</script>
+
+  <script>
+       const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    const connector = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
+      buttonRootId: "connect-wallet"
+    });
+
+    connector.onStatusChange(async (wallet) => {
+      if (wallet) {
+        const rawAddress = wallet.account.address;
+
+        document.getElementById("connect-only").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+
+        try {
+          const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
+          const data = await res.json();
+
+          if (data.ok && data.result) {
+            const accountAddress = data.result.address.account_address;
+            const balanceTon = parseFloat(data.result.balance) / 1e9;
+            document.getElementById("wallet-balance").textContent = `Số dư: ${truncateDecimal(balanceTon)} TON`;
+            document.getElementById("ton-amount").setAttribute("max", balanceTon);
+
+
+            const shortAddress = accountAddress.slice(0, 10) + "..." + accountAddress.slice(-10);
+            document.getElementById("wallet-address").textContent = shortAddress;
+
+            document.getElementById("disconnect").style.display = 'inline-block';
+
+            fetchTransactionHistory(rawAddress);
+          }
+        } catch (err) {
+          console.error("Lỗi khi tải thông tin:", err);
+        }
+      } else {
+        document.getElementById("wallet-address").textContent = "...";
+        document.getElementById("wallet-balance").textContent = "Số dư: ... TON";
+        document.getElementById("disconnect").style.display = 'none';
+        document.getElementById("main-content").style.display = "none";
+        document.getElementById("connect-only").style.display = "flex";
+      }
+    });
+
+    document.getElementById("disconnect").addEventListener("click", () => {
+      connector.disconnect();
+    });
+
+    function truncateDecimal(number) {
+      return number % 1 !== 0 ? number.toFixed(9).replace(/0+$/, '').replace(/\.$/, '') : number.toFixed(0);
+    }
+
+    async function encodeBase64(str) {
+      const encoder = new TextEncoder();
+      const bytes = encoder.encode(str);
+      let binary = '';
+      bytes.forEach((b) => binary += String.fromCharCode(b));
+      return btoa(binary);
+    }
+
+async function fetchTransactionHistory(walletAddress) {
+  try {
+    const response = await fetch(`https://tonapi.io/v2/blockchain/accounts/${walletAddress}/transactions`);
+    const data = await response.json();
+    const list = document.getElementById("transactions-list");
+    list.innerHTML = "";
+
+    if (data.transactions && data.transactions.length > 0) {
+      for (const tx of data.transactions) {
+        const isReceived = tx.in_msg && tx.in_msg.value > 0;
+        const isSent = tx.out_msgs && tx.out_msgs.length > 0 && tx.out_msgs[0].value > 0;
+
+        const fromAddress = isReceived
+          ? tx.in_msg?.source?.address || 'Unknown'
+          : (isSent ? walletAddress : 'Unknown');
+
+        const toAddress = isSent
+          ? tx.out_msgs[0]?.destination?.address || 'Unknown'
+          : (isReceived ? walletAddress : 'Unknown');
+
+        const amountRaw = isReceived ? tx.in_msg.value : (isSent ? tx.out_msgs[0].value : 0);
+        const amountTon = amountRaw / 1e9;
+        const time = new Date(tx.utime * 1000).toLocaleString();
+        const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Unknown');
+        const sign = isReceived ? '+ ' : (isSent ? '- ' : ' ');
+        const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
+
+        const memo = isReceived
+          ? tx.in_msg?.message || (tx.in_msg?.decoded_body?.text || '📝 No memo')
+          : (isSent ? tx.out_msgs[0]?.message || (tx.out_msgs[0]?.decoded_body?.text || '📝 No memo') : '📝 No memo');
+
+        const li = document.createElement("li");
+        li.className = "transaction-item";
+
+        li.innerHTML = `
+          <div class="row">
+            <div class="icon-label">
+              <span class="icon"><img src="${iconPath}" alt="icon"></span>
+              <span>${label}</span>
+            </div>
+            <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
+          </div>
+          <div class="row">
+            <div class="address">
+              <strong>From:</strong> ${fromAddress}<br>
+              <strong>To:</strong> ${toAddress}
+            </div>
+            <div class="time">${time}</div>
+          </div>
+          ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
+        `;
+
+        list.appendChild(li);
+      }
+    } else {
+      list.innerHTML = "<li>Không có giao dịch nào</li>";
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy lịch sử giao dịch:", error);
+  }
+}
+// Hàm mở rộng hoặc thu gọn memo
+function toggleMemo(element) {
+  element.classList.toggle("expanded");
+}
+  </script>
+
+
+
+
+<script>
+  document.getElementById("send-ton-btn").addEventListener("click", async () => {
+    const toAddress = document.getElementById("to-address").value.trim();
+    const amountTON = parseFloat(document.getElementById("ton-amount").value);
+    const memo = document.getElementById("memo-text").value.trim();
+  
+    const maxAmount = parseFloat(document.getElementById("ton-amount").getAttribute("max"));
+  
+    if (!toAddress || isNaN(amountTON) || amountTON <= 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Input',
+        html: '<strong>Please enter a valid address and amount.</strong>',
+      });
+      return;
+    }
+  
+    if (amountTON > maxAmount) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Amount Exceeded',
+        html: `You can only send up to <strong>${truncateDecimal(maxAmount)}</strong> TON.`,
+      });
+      return;
+    }
+  
+    try {
+      const amountNanoTON = BigInt(amountTON * 1e9);
+  
+      const tx = {
+        validUntil: Math.floor(Date.now() / 1000) + 60,
+        messages: [{
+          address: toAddress,
+          amount: amountNanoTON.toString(),
+          payload: memo ? TON_CONNECT_UI.textToPayload(memo) : undefined
+        }]
+      };
+  
+      const result = await connector.sendTransaction(tx);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Transaction Sent',
+        html: `You have successfully sent <strong>${truncateDecimal(amountTON)}</strong> TON<br>to address <strong>${toAddress}</strong>.`,
+      });
+
+      console.log("Result:", result);
+    } catch (err) {
+      console.error("Error while sending TON:", err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Transaction Failed',
+        html: `<strong>Unknown error</strong>`,
+      });
+    }
+  });
+</script>
+
+
+  
 </body>
 </html>
