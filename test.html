@@ -16,7 +16,7 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
   <style>
-    /* Reset */
+ /* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -112,11 +112,7 @@
     background-color: #007B9A;
     transform: translateY(-3px);
   }
-  
-  /* Nút Ngắt kết nối */
-  #disconnect {
-    background-color: #f44336;
-  }
+
   
   #disconnect:hover {
     background-color: #d32f2f;
@@ -199,6 +195,68 @@
     word-break: break-all;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+/* Khi có lớp 'loading' sẽ xoay ngay tại nút Disconnect */
+#disconnect {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 12px;
+    position: relative; /* Cần thiết để tạo hiệu ứng 'loading' */
+  }
+  
+  /* Thêm hiệu ứng spin cho nút Disconnect khi nó đang loading */
+  #disconnect.loading {
+    pointer-events: none; /* Ngừng click trong khi đang loading */
+    background-color: #d32f2f; /* Màu nền khi đang loading */
+  }
+  
+  #disconnect.loading:before {
+    content: "";
+    position: absolute;
+    border: 3px solid #fff;
+    border-top: 3px solid #4CAF50; /* Màu xoay */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Định nghĩa hiệu ứng xoay */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Khi nhấn nút, thay đổi màu nền */
+  #disconnect:active {
+    background-color: #d32f2f;
+  }
+  
+  
   </style>
 <body>
 
