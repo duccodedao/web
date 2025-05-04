@@ -16,7 +16,7 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <style>
-  /* Reset */
+   /* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -188,7 +188,13 @@
       align-items: flex-start;
     }
   }
-  
+  #tg-avatar {
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+  }
+   
 </style>
 <body>
 
@@ -221,29 +227,17 @@
     <div class="row">
       <div>Avatar</div>
       <div id="avatar">
-        <img id="tg-avatar" alt="User Avatar" />
-        <span id="avatar-status">Đang tải avatar...</span> <!-- Thông báo khi không có avatar -->
+        <img id="tg-avatar" alt="User Avatar" width="100" height="100" style="border-radius: 50%;" />
       </div>
     </div>
   </div>
-  <div class="info-item">
-    <div class="row">
-      <div>Username</div>
-      <div id="tg-username">Loading...</div>
-    </div>
-  </div>
-  <div class="info-item">
-    <div class="row">
-      <div>Tên</div>
-      <div id="tg-name">Loading...</div>
-    </div>
-  </div>
-  <div class="info-item">
-    <div class="row">
-      <div>ID</div>
-      <div id="tg-id">Loading...</div>
-    </div>
-  </div>
+  <div class="info-item"><div class="row"><div>Username</div><div id="tg-username">Loading...</div></div></div>
+  <div class="info-item"><div class="row"><div>Tên</div><div id="tg-name">Loading...</div></div></div>
+  <div class="info-item"><div class="row"><div>ID</div><div id="tg-id">Loading...</div></div></div>
+
+
+
+
 
 
 
@@ -268,23 +262,24 @@ tg.ready();
 
 const user = tg.initDataUnsafe.user;
 if (user) {
-  // Hiển thị tên người dùng
   document.getElementById("tg-name").textContent = `${user.first_name || ''} ${user.last_name || ''}`;
   document.getElementById("tg-username").textContent = `@${user.username || 'Không có'}`;
   document.getElementById("tg-id").textContent = user.id;
-  
-  // Kiểm tra và hiển thị avatar người dùng
+
   const avatarElement = document.getElementById("tg-avatar");
-  const avatarStatusElement = document.getElementById("avatar-status");
-  
-  if (user.photo_url) {
-    avatarElement.src = user.photo_url;
-    avatarStatusElement.style.display = 'none';  // Ẩn thông báo "Đang tải avatar..."
-  } else {
-    avatarElement.style.display = 'none';  // Ẩn ảnh nếu không có avatar
-    avatarStatusElement.style.display = 'inline';  // Hiển thị thông báo "Đang tải avatar..."
-  }
+
+  // Nếu có ảnh từ Telegram thì dùng, không thì mặc định
+  const photoURL = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
+  avatarElement.src = photoURL;
+
+  // Nếu ảnh bị lỗi, gán lại ảnh mặc định
+  avatarElement.onerror = function () {
+    this.onerror = null;
+    this.src = "/logo-coin/bmlogo.jpg";
+  };
 }
+
+
 
 
 
