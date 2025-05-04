@@ -7,39 +7,159 @@
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f0f2f5;
-      color: #333;
-    }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    .info {
-      margin-bottom: 10px;
-    }
-    #disconnect {
-      cursor: pointer;
-      color: red;
-      margin-top: 10px;
-      text-decoration: underline;
-    }
-    #connect-only {
-      text-align: center;
-      padding: 50px 0;
-    }
-    #wallet-address {
-      margin-top: 10px;
-      font-weight: bold;
-      word-break: break-word;
-    }
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  background: #e0e5ec;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #333;
+}
+
+#connect-only {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  display: none;
+  background: #e0e5ec;
+  border-radius: 20px;
+  box-shadow: 10px 10px 25px #bec4d0, -10px -10px 25px #ffffff;
+  padding: 30px;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  overflow-y: auto;
+  max-height: 90vh;
+  margin-top: 65px;
+  margin-bottom: 90px;
+}
+
+h2 {
+  font-size: 22px;
+  margin-bottom: 18px;
+  color: #2e3a59;
+}
+
+.info {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.balance {
+  font-size: 18px;
+  color: #009688;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+#wallet-address {
+  font-weight: 600;
+  color: #0077cc;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+#disconnect {
+  font-size: 16px;
+  margin-left: 3px;
+  cursor: pointer;
+  color: #d32f2f;
+  display: none;
+  transition: transform 0.2s ease;
+}
+
+#disconnect:hover {
+  transform: scale(1.1);
+  color: #b71c1c;
+}
+
+.copy-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 25px;
+  background: #00796b;
+  color: #fff;
+  font-weight: 600;
+  margin-top: 10px;
+  cursor: pointer;
+  box-shadow: 3px 3px 8px #a1a1a1;
+  transition: background 0.2s ease;
+}
+
+.copy-button:hover {
+  background: #004d40;
+}
+
+#copy-success {
+  font-size: 13px;
+  color: #388e3c;
+  margin-top: 5px;
+  display: none;
+}
+
+.memo {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  transition: max-height 0.5s ease-out;
+  max-height: 20px;
+}
+
+.memo.expanded {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  max-height: 200px;
+}
+
+hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+    max-width: 92%;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .info,
+  .balance,
+  #wallet-address {
+    font-size: 14px;
+  }
+
+  #disconnect {
+    font-size: 14px;
+  }
+
+  .copy-button {
+    font-size: 14px;
+    padding: 6px 14px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -58,6 +178,10 @@
 
     <h2>Ví TON</h2>
     <div id="wallet-address">...</div>
+    <button class="copy-button" id="copy-address">Sao chép địa chỉ</button>
+    <div id="copy-success">✅ Đã sao chép địa chỉ!</div>
+    <div style="font-size: 12px; color: #555; margin-top: 5px;">Mã hợp đồng dùng để tìm token, không dùng để rút hoặc nạp</div>
+    <div class="balance" id="ton-balance">Số dư: ...</div>
     <div id="disconnect">Ngắt kết nối</div>
   </div>
 
@@ -77,6 +201,8 @@
       }
     }
 
+    let base64Addr = "";
+
     const connector = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
       buttonRootId: "connect-wallet"
@@ -93,8 +219,8 @@
           const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
           const data = await res.json();
 
-          if (data.ok && data.result && data.result.address && data.result.address.b64) {
-            const base64Addr = data.result.address.b64;
+          if (data.ok && data.result && data.result.address && data.result.address.account_address) {
+            base64Addr = data.result.address.account_address;
             const shortAddress = base64Addr.slice(0, 10) + "..." + base64Addr.slice(-10);
             document.getElementById("wallet-address").textContent = `${shortAddress}\n(Base64: ${base64Addr})`;
           } else {
@@ -104,9 +230,23 @@
           document.getElementById("wallet-address").textContent = "Lỗi khi gọi API.";
         }
 
+        try {
+          const balanceRes = await fetch(`https://tonapi.io/v2/accounts/${rawAddress}`);
+          const balanceData = await balanceRes.json();
+          if (balanceData.balance) {
+            const ton = parseFloat(balanceData.balance) / 1e9;
+            document.getElementById("ton-balance").textContent = `Số dư: ${ton.toFixed(2)} TON`;
+          } else {
+            document.getElementById("ton-balance").textContent = "Số dư: Không xác định";
+          }
+        } catch (err) {
+          document.getElementById("ton-balance").textContent = "Lỗi khi lấy số dư.";
+        }
+
         document.getElementById("disconnect").style.display = 'inline-block';
       } else {
         document.getElementById("wallet-address").textContent = "...";
+        document.getElementById("ton-balance").textContent = "Số dư: ...";
         document.getElementById("disconnect").style.display = 'none';
         document.getElementById("main-content").style.display = "none";
         document.getElementById("connect-only").style.display = "flex";
@@ -116,6 +256,20 @@
     document.getElementById("disconnect").addEventListener("click", () => {
       connector.disconnect();
     });
+
+    document.getElementById("copy-address").addEventListener("click", () => {
+      if (base64Addr) {
+        navigator.clipboard.writeText(base64Addr).then(() => {
+          document.getElementById("copy-success").style.display = 'block';
+          setTimeout(() => {
+            document.getElementById("copy-success").style.display = 'none';
+          }, 2000);
+        }).catch(() => {
+          alert("Không thể sao chép địa chỉ!");
+        });
+      }
+    });
   </script>
 </body>
 </html>
+
