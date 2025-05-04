@@ -484,8 +484,8 @@ item.classList.add("active");
 
         // 👉 Lấy memo/comment nếu có
         const memo = isReceived
-          ? tx.in_msg?.message || (tx.in_msg?.decoded_body?.text || '')
-          : (isSent ? tx.out_msgs[0]?.message || (tx.out_msgs[0]?.decoded_body?.text || '') : '');
+          ? tx.in_msg?.message || (tx.in_msg?.decoded_body?.text || 'No memo')
+          : (isSent ? tx.out_msgs[0]?.message || (tx.out_msgs[0]?.decoded_body?.text || 'No memo') : 'No memo');
 
         const li = document.createElement("li");
         li.className = "transaction-item";
