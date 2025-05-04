@@ -1,91 +1,670 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngày Yêu Nhau - Sơn Lý Hồng Đức & Huỳnh Ngọc Hân</title>
-    <style>
-        /* Định dạng chung */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Arial", sans-serif;
-        }
-        body {
-            background: linear-gradient(135deg, #ff758c, #ff7eb3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            color: white;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 20px 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-        }
-        h1 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-        h2 {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        #countdown {
-            font-size: 40px;
-            font-weight: bold;
-            margin: 20px 0;
-            color: #ffe100;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-        }
-        .date {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        .heart {
-            font-size: 30px;
-            animation: heartbeat 1s infinite alternate;
-            display: block;
-            margin: 10px auto;
-        }
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.2); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thông Tin Cá Nhân Telegram + TON Connect</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
+<style>
+  /* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    padding: 20px;
+    color: #333;
+  }
+  
+  /* Kết nối ví */
+  #connect-only {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  #connect-wallet {
+ 
+
+    padding: 16px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+
+  
+  /* Container chính */
+  .container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Nút container */
+  .btn-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* 3 cột */
+    gap: 10px;  /* Khoảng cách giữa các nút */
+    justify-content: center;
+    margin: 10px 0;
+    width: 100%;
+  }
+  
+  /* Định dạng chung cho các nút */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px 0;  /* Giảm padding thêm */
+    border: none;
+    border-radius: 25px;  /* Góc nút mềm mại hơn */
+    font-size: 12px;  /* Giảm kích thước chữ để làm nhỏ nút */
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-transform: uppercase;
+    gap: 6px; /* Khoảng cách giữa icon và text */
+    height: 100%;  /* Đảm bảo chiều cao của nút bằng 100% */
+    width: 100%;   /* Đảm bảo chiều rộng của nút bằng nhau */
+    box-sizing: border-box;
+  }
+  
+  /* Nút Jetton */
+  .btn-jetton {
+    background-color: #4CAF50;
+  }
+  
+  .btn-jetton:hover {
+    background-color: #45a049;
+    transform: translateY(-3px);
+  }
+  
+  /* Nút Wallet */
+  .btn-wallet {
+    background-color: #008CBA;
+  }
+  
+  .btn-wallet:hover {
+    background-color: #007B9A;
+    transform: translateY(-3px);
+  }
+
+  
+  #disconnect:hover {
+    background-color: #d32f2f;
+    transform: translateY(-3px);
+  }
+  
+  /* Info container chia 2 cột */
+  .info-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  
+  /* Mỗi ô info */
+  .info-item {
+    background: #e0e5ec;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: inset 2px 2px 6px #c3c8d3, inset -2px -2px 6px #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 2px 2px 8px #b5bbc6, inset -2px -2px 8px #ffffff;
+  }
+  
+  /* Nội dung trong mỗi item */
+  .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    color: #333;
+  }
+  
+  .row div:first-child {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  /* Địa chỉ ví có thể sao chép */
+  #short-address {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+    word-break: break-all;
+  }
+  
+  #copy-icon {
+    cursor: pointer;
+    color: #4CAF50;
+    margin-left: 8px;
+  }
+  
+  #copy-icon:hover {
+    color: #388E3C;
+  }
+  
+  /* Responsive: về 1 cột khi nhỏ */
+  @media (max-width: 600px) {
+    .info-container {
+      grid-template-columns: 1fr;
+    }
+  
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  #tg-avatar {
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+  }
+  #short-address {
+    cursor: pointer;
+    color: #333;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* Khi có lớp 'loading' sẽ xoay ngay tại nút Disconnect */
+#disconnect {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 12px;
+    position: relative; /* Cần thiết để tạo hiệu ứng 'loading' */
+  }
+  
+  /* Thêm hiệu ứng spin cho nút Disconnect khi nó đang loading */
+  #disconnect.loading {
+    pointer-events: none; /* Ngừng click trong khi đang loading */
+    background-color: #d32f2f; /* Màu nền khi đang loading */
+  }
+  
+  #disconnect.loading:before {
+    content: "";
+    position: absolute;
+    border: 3px solid #fff;
+    border-top: 3px solid #4CAF50; /* Màu xoay */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Định nghĩa hiệu ứng xoay */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Khi nhấn nút, thay đổi màu nền */
+  #disconnect:active {
+    background-color: #d32f2f;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* Đảm bảo rằng margin và padding của body không ảnh hưởng đến footer */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Đảm bảo các thuộc tính padding, margin được tính đúng */
+}
+
+/* Footer Style */
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #1b1b1b;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 80px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  margin: 0; /* Đảm bảo không có margin ảnh hưởng */
+  padding: 0; /* Đảm bảo không có padding ảnh hưởng */
+}
+
+.footer-item {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  color: #aaa;
+  font-size: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.footer-item i {
+  font-size: 20px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.footer-item:hover {
+  color: #00e0ff;
+}
+
+.footer-item.active {
+  color: #00e0ff;
+}
+
+.footer-item.active::after {
+  content: '';
+  display: none;
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #00e0ff;
+  border-radius: 50%;
+}
+
+/* Home Nổi Bật */
+.footer-item.home {
+  position: relative;
+  top: -25px;
+  z-index: 101;
+}
+
+.footer-item.home .home-circle {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #00e0ff, #006eff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 224, 255, 0.4);
+  margin: 0 auto 5px auto;
+}
+
+.footer-item.home i {
+  font-size: 26px;
+  color: #fff;
+  margin: 0;
+}
+
+.footer-item.home span {
+  margin-top: 3px;
+  display: block;
+  color: #fff;
+  font-size: 12px;
+}
+  
+</style>
 <body>
 
-    <div class="container">
-        <h1>💖 Sơn Lý Hồng Đức ❤️ Huỳnh Ngọc Hân 💖</h1>
-        <h2>Chúng ta đã yêu nhau được:</h2>
-        <span class="heart">❤️</span>
-        <div id="countdown"></div>
-        <p class="date">Kể từ ngày: 01/07/2023</p>
+  <!-- Khi chưa kết nối ví -->
+  <div id="connect-only">
+    <div id="connect-wallet">
+
+    </div>
+  </div>
+
+  <!-- Nội dung chính sau khi kết nối -->
+  <div id="main-content" class="container" style="display: none; margin: 16px; margin-top: 85px;">
+    
+    <!-- Nút container -->
+    <div class="btn-container">
+      <a href="/index/jetton.html" class="btn btn-jetton">
+        <i class="fas fa-coins"></i> Jetton
+      </a>
+      <a href="/index/wallet_new.html" class="btn btn-wallet">
+        <i class="fas fa-wallet"></i> Wallet
+      </a>
+      <div class="btn" id="disconnect">
+        <i class="fas fa-sign-out-alt"></i> Disconnect
+      </div>
     </div>
 
-    <script>
-        // Ngày bắt đầu yêu nhau
-        const startDate = new Date("2023-07-01");
+<!-- Thông tin người dùng -->
+<div class="info-container">
+  <div class="info-item">
+    <div class="row">
+      <div>Avatar</div>
+      <div id="avatar">
+        <img id="tg-avatar" alt="User Avatar" width="100" height="100" style="border-radius: 50%;" />
+      </div>
+    </div>
+  </div>
+  <div class="info-item">
+    <div class="row">
+      <div>Username</div>
+      <div class="wallet-address">
+        <span id="tg-username">Loading...</span>
+        <i class="fa-regular fa-copy" id="copy-username" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-item">
+    <div class="row">
+      <div>Name</div>
+      <div class="wallet-address">
+        <span id="tg-name">Loading...</span>
+        <i class="fa-regular fa-copy" id="copy-name" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-item">
+    <div class="row">
+      <div>ID</div>
+      <div class="wallet-address">
+        <span id="tg-id">Loading...</span>
+        <i class="fa-regular fa-copy" id="copy-id" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+      </div>
+    </div>
+  </div>
+  
 
-        // Hàm cập nhật số ngày yêu nhau
-        function updateDaysTogether() {
-            const today = new Date();
-            const timeDifference = today - startDate;
-            const daysTogether = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+<div class="info-item">
+  <div class="row">
+    <div>Trạng thái Premium</div>
+    <div class="wallet-address">
+      <span id="tg-premium-status">Loading...</span>
+    </div>
+  </div>
+</div>
 
-            document.getElementById("countdown").textContent = daysTogether + " ngày";
-        }
 
-        // Cập nhật ngay khi trang load
-        updateDaysTogether();
-    </script>
+
+
+      <!-- Địa chỉ ví với hiệu ứng nổi bật -->
+      <div class="info-item highlight-address">
+        <div class="row">
+          <div>Address</div>
+          <div class="wallet-address">
+            <span id="short-address">Loading...</span>
+            <i class="fa-regular fa-copy" id="copy-icon" style="cursor: pointer; margin-left: 8px; color: #4CAF50;"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-item"><div class="row"><div>Balence</div><div id="ton-balance">Loading...</div></div></div>
+    </div>
+  </div>
+
+
+
+
+  <footer>
+    <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
+      <i class="fas fa-wallet"></i>
+      <span>Wallet</span>
+    </a>
+    <a href="/index/jetton.html" class="footer-item" data-page="jetton.html">
+      <i class="fas fa-coins"></i> <!-- Biểu tượng Coins cho Jetton -->
+      <span>Jetton</span>
+    </a>
+    <a href="/index/main.html" class="footer-item" data-page="main.html">
+      <i class="fas fa-th"></i>
+      <span>App</span>
+    </a>
+  
+    <!-- Thêm Profile thay vì Home và Shop -->
+    <a href="/index/profile.html" class="footer-item" data-page="profile.html">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  
+  </footer>
+  <script>
+    // Tự động active tab đang mở
+const currentPage = location.pathname.split("/").pop();
+const items = document.querySelectorAll(".footer-item");
+
+items.forEach(item => {
+const page = item.getAttribute("data-page");
+if (page === currentPage) {
+item.classList.add("active");
+}
+});
+</script>
+  
+
+  <script>
+  const tg = window.Telegram.WebApp;
+tg.ready();
+
+const user = tg.initDataUnsafe.user;
+if (user) {
+  const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+  const username = `@${user.username || 'Không có'}`;
+  const userId = user.id;
+
+  document.getElementById("tg-name").textContent = name;
+  document.getElementById("tg-username").textContent = username;
+  document.getElementById("tg-id").textContent = userId;
+
+  // Thêm sự kiện copy
+  const showCopySuccess = (text) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Đã sao chép!',
+      text: `${text} đã được sao chép vào clipboard.`,
+      timer: 1500,
+      showConfirmButton: false
+    });
+  };
+
+  const copyText = (text, label) => {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopySuccess(label);
+    }).catch(() => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Thất bại',
+        text: `Không thể sao chép ${label}.`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    });
+  };
+
+  document.getElementById("copy-name").onclick = () => copyText(name, "Tên");
+  document.getElementById("copy-username").onclick = () => copyText(username, "Username");
+  document.getElementById("copy-id").onclick = () => copyText(userId.toString(), "ID");
+
+  const avatarElement = document.getElementById("tg-avatar");
+  const photoURL = user.photo_url ? user.photo_url : "/logo-coin/bmlogo.jpg";
+  avatarElement.src = photoURL;
+  avatarElement.onerror = function () {
+    this.onerror = null;
+    this.src = "/logo-coin/bmlogo.jpg";
+  };
+}
+
+let base64Addr = "";
+
+const connector = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
+  buttonRootId: "connect-wallet"
+});
+
+connector.onStatusChange(async (wallet) => {
+  if (wallet) {
+    const rawAddress = wallet.account.address;
+
+    document.getElementById("connect-only").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
+
+    try {
+      const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
+      const data = await res.json();
+
+      if (data.ok && data.result && data.result.address && data.result.address.account_address) {
+        base64Addr = data.result.address.account_address;
+        const shortAddress = base64Addr.slice(0, 5) + "..." + base64Addr.slice(-5);
+        document.getElementById("short-address").textContent = shortAddress;
+
+        const copyToClipboard = () => {
+          navigator.clipboard.writeText(base64Addr).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Đã sao chép!',
+              text: 'Địa chỉ ví đã được sao chép vào clipboard.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }).catch(() => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Thất bại',
+              text: 'Không thể sao chép địa chỉ ví.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          });
+        };
+
+        document.getElementById("short-address").onclick = copyToClipboard;
+        document.getElementById("copy-icon").onclick = copyToClipboard;
+
+      } else {
+        document.getElementById("short-address").textContent = "Không thể lấy ví.";
+      }
+    } catch (err) {
+      document.getElementById("short-address").textContent = "Lỗi API.";
+    }
+
+    try {
+      const balanceRes = await fetch(`https://tonapi.io/v2/accounts/${rawAddress}`);
+      const balanceData = await balanceRes.json();
+      if (balanceData.balance) {
+        const ton = parseFloat(balanceData.balance / Math.pow(10, 9)).toFixed(9);
+        document.getElementById("ton-balance").textContent = `${ton} TON`;
+      }
+    } catch (err) {
+      document.getElementById("ton-balance").textContent = "Lỗi lấy số dư.";
+    }
+  }
+});
+
+// Thêm sự kiện cho nút Disconnect
+document.getElementById("disconnect").onclick = async () => {
+    const disconnectButton = document.getElementById("disconnect");
+  
+    // Thêm lớp 'spin' để tạo hiệu ứng xoay
+    disconnectButton.classList.add("spin");
+    
+    try {
+      await connector.disconnect(); // Ngắt kết nối ví TON
+      // Sau khi ngắt kết nối, ẩn nội dung chính và hiển thị lại nút kết nối ví
+      document.getElementById("main-content").style.display = "none";
+      document.getElementById("connect-only").style.display = "flex"; 
+  
+      // Thông báo thành công
+      Swal.fire({
+        icon: 'info',
+        title: 'Đã ngắt kết nối',
+        text: 'Bạn đã ngắt kết nối ví TON.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Không thể ngắt kết nối ví.',
+      });
+    } finally {
+      // Loại bỏ lớp 'spin' sau khi hoàn thành để dừng xoay
+      disconnectButton.classList.remove("spin");
+    }
+  };
+  
+
+
+
+
+
+
+
+      // Giả sử bạn có hàm để kiểm tra trạng thái premium (thực tế sẽ là một API call hoặc một giá trị cụ thể)
+function checkPremiumStatus() {
+  // Giả lập trạng thái premium (true hoặc false)
+  const isPremium = true;  // Thay đổi giá trị này tùy theo kết quả thực tế
+  
+  const premiumStatusElement = document.getElementById("tg-premium-status");
+  if (isPremium) {
+    premiumStatusElement.textContent = "Premium";
+    premiumStatusElement.style.color = "green";  // Tùy chỉnh màu sắc nếu cần
+  } else {
+    premiumStatusElement.textContent = "Không Premium";
+    premiumStatusElement.style.color = "red";  // Tùy chỉnh màu sắc nếu cần
+  }
+}
+
+// Gọi hàm kiểm tra trạng thái Premium sau khi tải trang hoặc khi cần thiết
+checkPremiumStatus();
+  </script>
 
 </body>
 </html>
