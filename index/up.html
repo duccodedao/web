@@ -2,117 +2,188 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Thêm thẻ meta này -->
-  <title>Mini App + Referral</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Điểm danh nhận token và bảng xếp hạng</title>
+
+  <!-- Firebase SDK v11 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcR1F-Z0jnYlrl6S_e_RiEPgjhUjY2dx4",
+      authDomain: "bmasshd-8504d.firebaseapp.com",
+      projectId: "bmasshd-8504d",
+      storageBucket: "bmasshd-8504d.firebasestorage.app",
+      messagingSenderId: "643152935025",
+      appId: "1:643152935025:web:44f80150548da7512d43d0",
+      measurementId: "G-S1MS2VT2H9"
+    };
+
+    // Khởi tạo Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Telegram Web App SDK
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe.user.id;
+    const username = tg.initDataUnsafe.user.first_name;
+
+    document.getElementById("username").innerText = username;
+
+    // Lưu thông tin người dùng vào Firebase
+    function saveUserData() {
+      const userRef = ref(db, 'users/' + userId);
+      set(userRef, {
+        username: username,
+        token: 0,
+        lastCheckInDate: "", // Khởi tạo trường ngày điểm danh
+      }).then(() => {
+        alert("Thông tin người dùng đã được lưu vào Firebase!");
+        updateLeaderboard();
+      }).catch((error) => {
+        console.error("Error writing document: ", error);
+      });
+    }
+
+    // Chức năng điểm danh và nhận token
+    function checkIn() {
+      const userRef = ref(db, 'users/' + userId);
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          const lastCheckInDate = userData.lastCheckInDate;
+          const currentDate = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại (YYYY-MM-DD)
+
+          if (lastCheckInDate !== currentDate) {
+            // Nếu người dùng chưa điểm danh hôm nay
+            set(userRef, {
+              username: username,
+              token: (userData.token || 0) + 10, // Tăng thêm 10 token
+              lastCheckInDate: currentDate
+            }).then(() => {
+              alert("Bạn đã điểm danh thành công và nhận được 10 token!");
+              updateLeaderboard();
+            });
+          } else {
+            alert("Bạn đã điểm danh hôm nay rồi!");
+          }
+        } else {
+          // Nếu người dùng chưa có dữ liệu trong Firebase, tạo mới
+          set(userRef, {
+            username: username,
+            token: 10, // Điểm danh lần đầu nhận 10 token
+            lastCheckInDate: new Date().toISOString().split('T')[0]
+          }).then(() => {
+            alert("Bạn đã điểm danh lần đầu và nhận được 10 token!");
+            updateLeaderboard();
+          });
+        }
+      });
+    }
+
+    // Cập nhật bảng xếp hạng
+    function updateLeaderboard() {
+      const leaderboardRef = ref(db, 'users');
+      get(leaderboardRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const users = snapshot.val();
+          const sortedUsers = Object.entries(users).sort((a, b) => b[1].token - a[1].token); // Sắp xếp theo số token giảm dần
+
+          // Hiển thị bảng xếp hạng
+          let leaderboardHTML = "<h3>Bảng Xếp Hạng</h3><ol>";
+          sortedUsers.forEach((user, index) => {
+            leaderboardHTML += `<li>${user[1].username}: ${user[1].token} token</li>`;
+          });
+          leaderboardHTML += "</ol>";
+          document.getElementById("leaderboard").innerHTML = leaderboardHTML;
+        }
+      });
+    }
+
+    // Hiển thị bảng xếp hạng khi trang tải
+    window.onload = updateLeaderboard;
+  </script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f4f7fc;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+      margin-top: 50px;
+    }
+
+    #username {
+      font-weight: bold;
+      color: #1e90ff;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 20px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #leaderboard {
+      margin-top: 30px;
+      text-align: left;
       padding: 20px;
-      background: #f4f4f4;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #leaderboard h3 {
       color: #333;
     }
-    .dark-mode {
-      background: #222;
-      color: white;
+
+    #leaderboard ol {
+      list-style-type: decimal;
+      padding-left: 20px;
+      color: #333;
     }
-    button {
-      padding: 10px 20px;
-      margin: 5px 0;
+
+    #leaderboard li {
+      padding: 8px 0;
       font-size: 16px;
     }
   </style>
 </head>
 <body>
 
-  <h2>Telegram Mini App</h2>
-  <div id="user-info"></div>
-  <div id="ref-info"></div>
-  <div id="token-info"></div>
-  <button onclick="checkIn()">Điểm danh nhận token</button>
-  <button onclick="copyReferral()">Copy link giới thiệu</button>
+  <h2>Điểm danh nhận token</h2>
 
-  <script>
-    const tg = Telegram.WebApp;
-    tg.ready();
+  <p>Chào mừng <span id="username"></span>!</p>
+  <button onclick="saveUserData()">Lưu thông tin người dùng</button>
+  <button onclick="checkIn()">Điểm danh và nhận token</button>
 
-    const user = tg.initDataUnsafe.user;
-    const ref = tg.initDataUnsafe.start_param || null;
+  <div id="leaderboard"></div>
 
-    // Tự động mở rộng giao diện
-    tg.expand();
-
-    // Giao diện tối nếu Telegram đặt vậy
-    if (tg.colorScheme === 'dark') {
-      document.body.classList.add('dark-mode');
-    }
-
-    // Hiển thị thông tin người dùng
-    document.getElementById('user-info').innerHTML = `
-      <b>ID:</b> ${user?.id}<br>
-      <b>Tên:</b> ${user?.first_name || ''} ${user?.last_name || ''}<br>
-      <b>Username:</b> @${user?.username || 'Không có'}<br><br>
-    `;
-
-    // Lưu ref chỉ lần đầu
-    if (ref && !localStorage.getItem('ref_used')) {
-      localStorage.setItem('ref_used', '1');
-      localStorage.setItem('ref_from', ref);
-      // Tặng 20 token nếu nhập qua ref
-      const current = parseInt(localStorage.getItem('token') || '0');
-      localStorage.setItem('token', current + 20);
-    }
-
-    // Hiển thị ref đã dùng
-    const refFrom = localStorage.getItem('ref_from');
-    if (refFrom) {
-      document.getElementById('ref-info').innerHTML = `
-        <b>Được mời bởi ID:</b> ${refFrom} <br>Nhận thêm 20 token!
-      `;
-    }
-
-    // Hiển thị số token hiện có
-    updateTokenUI();
-
-    function updateTokenUI() {
-      const tokens = parseInt(localStorage.getItem('token') || '0');
-      document.getElementById('token-info').innerHTML = `<b>Tổng token:</b> ${tokens}`;
-    }
-
-    // Điểm danh mỗi ngày
-    function checkIn() {
-      const today = new Date().toLocaleDateString();
-      const last = localStorage.getItem('last_checkin');
-      if (today === last) {
-        alert("Bạn đã điểm danh hôm nay.");
-        return;
-      }
-      localStorage.setItem('last_checkin', today);
-      const current = parseInt(localStorage.getItem('token') || '0');
-      localStorage.setItem('token', current + 10);
-      alert("Điểm danh thành công! Nhận 10 token.");
-      updateTokenUI();
-    }
-
-    // Copy link giới thiệu
-    function copyReferral() {
-      const refLink = `https://t.me/${tg.initDataUnsafe.bot.username}?startapp=${user.id}`;
-      
-      // Tạo một input tạm thời để copy
-      const input = document.createElement('input');
-      input.value = refLink;
-      document.body.appendChild(input);
-      
-      // Chọn và sao chép nội dung của input
-      input.select();
-      document.execCommand('copy');
-      
-      // Xóa input tạm thời sau khi sao chép
-      document.body.removeChild(input);
-      
-      alert("Đã copy link giới thiệu:\n" + refLink);
-    }
-  </script>
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 </body>
 </html>
