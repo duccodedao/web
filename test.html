@@ -6,201 +6,190 @@
   <title>Thông Tin Cá Nhân Telegram + TON Connect</title>
 
   <!-- CSS -->
-  <style>
-    /* Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* Body */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      padding: 20px;
-      color: #333;
-    }
-
-    /* Kết nối ví */
-    #connect-only {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    #connect-wallet {
-      background-color: #4CAF50;
-      color: white;
-      padding: 16px 30px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
-    }
-
-    #connect-wallet:hover {
-      background-color: #45a049;
-    }
-
-    /* Container chính */
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 25px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Nút container */
-    .btn-container {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      margin: 20px 0;
-    }
-
-    /* Định dạng chung cho các nút */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 20px;
-      font-size: 16px;
-      font-weight: bold;
-      text-decoration: none;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      text-transform: uppercase;
-      width: 100%;
-      gap: 8px; /* Khoảng cách giữa icon và text */
-    }
-
-    /* Nút Jetton */
-    .btn-jetton {
-      background-color: #4CAF50;
-    }
-
-    .btn-jetton:hover {
-      background-color: #45a049;
-      transform: translateY(-3px);
-    }
-
-    /* Nút Wallet */
-    .btn-wallet {
-      background-color: #008CBA;
-    }
-
-    .btn-wallet:hover {
-      background-color: #007B9A;
-      transform: translateY(-3px);
-    }
-
-    /* Nút Ngắt kết nối */
-    #disconnect {
-      background-color: #f44336;
-    }
-
-    #disconnect:hover {
-      background-color: #d32f2f;
-      transform: translateY(-3px);
-    }
-
-    /* Info container chia 2 cột */
-    .info-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    /* Mỗi ô info */
-    .info-item {
-      background: #e0e5ec;
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: inset 2px 2px 6px #c3c8d3, inset -2px -2px 6px #ffffff;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .info-item:hover {
-      transform: translateY(-2px);
-      box-shadow: inset 2px 2px 8px #b5bbc6, inset -2px -2px 8px #ffffff;
-    }
-
-    /* Nội dung trong mỗi item */
-    .row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 15px;
-      color: #333;
-    }
-
-    .row div:first-child {
-      font-weight: bold;
-      color: #555;
-    }
-
-    /* Địa chỉ ví có thể sao chép */
-    #short-address {
-      cursor: pointer;
-      color: blue;
-      text-decoration: underline;
-      word-break: break-all;
-    }
-
-    #copy-icon {
-      cursor: pointer;
-      color: #4CAF50;
-      margin-left: 8px;
-    }
-
-    #copy-icon:hover {
-      color: #388E3C;
-    }
-
-    /* Responsive: về 1 cột khi nhỏ */
-    @media (max-width: 600px) {
-      .info-container {
-        grid-template-columns: 1fr;
-      }
-
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .header .btn {
-        width: 100%;
-        text-align: center;
-      }
-
-      #disconnect {
-        width: 100%;
-        text-align: center;
-        margin-top: 10px;
-      }
-
-      /* Đảm bảo các nút cũng điều chỉnh kích thước khi màn hình nhỏ */
-      .btn-container {
-        flex-direction: column;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 
   <!-- Font Awesome for copy icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <!-- TON Connect & Telegram -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
+<style>
+  /* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    padding: 20px;
+    color: #333;
+  }
+  
+  /* Kết nối ví */
+  #connect-only {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  #connect-wallet {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  #connect-wallet:hover {
+    background-color: #45a049;
+  }
+  
+  /* Container chính */
+  .container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Nút container */
+  .btn-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* 3 cột */
+    gap: 10px;  /* Khoảng cách giữa các nút */
+    justify-content: center;
+    margin: 10px 0;
+    width: 100%;
+  }
+  
+  /* Định dạng chung cho các nút */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px 0;  /* Giảm padding thêm */
+    border: none;
+    border-radius: 25px;  /* Góc nút mềm mại hơn */
+    font-size: 12px;  /* Giảm kích thước chữ để làm nhỏ nút */
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-transform: uppercase;
+    gap: 6px; /* Khoảng cách giữa icon và text */
+    height: 100%;  /* Đảm bảo chiều cao của nút bằng 100% */
+    width: 100%;   /* Đảm bảo chiều rộng của nút bằng nhau */
+    box-sizing: border-box;
+  }
+  
+  /* Nút Jetton */
+  .btn-jetton {
+    background-color: #4CAF50;
+  }
+  
+  .btn-jetton:hover {
+    background-color: #45a049;
+    transform: translateY(-3px);
+  }
+  
+  /* Nút Wallet */
+  .btn-wallet {
+    background-color: #008CBA;
+  }
+  
+  .btn-wallet:hover {
+    background-color: #007B9A;
+    transform: translateY(-3px);
+  }
+  
+  /* Nút Ngắt kết nối */
+  #disconnect {
+    background-color: #f44336;
+  }
+  
+  #disconnect:hover {
+    background-color: #d32f2f;
+    transform: translateY(-3px);
+  }
+  
+  /* Info container chia 2 cột */
+  .info-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  
+  /* Mỗi ô info */
+  .info-item {
+    background: #e0e5ec;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: inset 2px 2px 6px #c3c8d3, inset -2px -2px 6px #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 2px 2px 8px #b5bbc6, inset -2px -2px 8px #ffffff;
+  }
+  
+  /* Nội dung trong mỗi item */
+  .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    color: #333;
+  }
+  
+  .row div:first-child {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  /* Địa chỉ ví có thể sao chép */
+  #short-address {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+    word-break: break-all;
+  }
+  
+  #copy-icon {
+    cursor: pointer;
+    color: #4CAF50;
+    margin-left: 8px;
+  }
+  
+  #copy-icon:hover {
+    color: #388E3C;
+  }
+  
+  /* Responsive: về 1 cột khi nhỏ */
+  @media (max-width: 600px) {
+    .info-container {
+      grid-template-columns: 1fr;
+    }
+  
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  
+</style>
 <body>
 
   <!-- Khi chưa kết nối ví -->
@@ -213,24 +202,51 @@
   <!-- Nội dung chính sau khi kết nối -->
   <div id="main-content" class="container" style="display: none; margin: 16px;">
     
+    <!-- Nút container -->
     <div class="btn-container">
       <a href="/index/jetton.html" class="btn btn-jetton">
-          <i class="fas fa-coins"></i> Jetton
+        <i class="fas fa-coins"></i> Jetton
       </a>
       <a href="/index/wallet_new.html" class="btn btn-wallet">
-          <i class="fas fa-wallet"></i> Wallet
+        <i class="fas fa-wallet"></i> Wallet
       </a>
       <div class="btn" id="disconnect">
-          <i class="fas fa-sign-out-alt"></i> Ngắt kết nối
+        <i class="fas fa-sign-out-alt"></i> Ngắt kết
       </div>
     </div>
-  
-    <!-- Thông tin người dùng -->
-    <div class="info-container">
-      <div class="info-item"><div class="row"><div>Username</div><div id="tg-username">Loading...</div></div></div>
-      <div class="info-item"><div class="row"><div>Tên</div><div id="tg-name">Loading...</div></div></div>
-      <div class="info-item"><div class="row"><div>ID</div><div id="tg-id">Loading...</div></div></div>
-      
+
+<!-- Thông tin người dùng -->
+<div class="info-container">
+  <div class="info-item">
+    <div class="row">
+      <div>Avatar</div>
+      <div id="avatar">
+        <img id="tg-avatar" alt="User Avatar" />
+        <span id="avatar-status">Đang tải avatar...</span> <!-- Thông báo khi không có avatar -->
+      </div>
+    </div>
+  </div>
+  <div class="info-item">
+    <div class="row">
+      <div>Username</div>
+      <div id="tg-username">Loading...</div>
+    </div>
+  </div>
+  <div class="info-item">
+    <div class="row">
+      <div>Tên</div>
+      <div id="tg-name">Loading...</div>
+    </div>
+  </div>
+  <div class="info-item">
+    <div class="row">
+      <div>ID</div>
+      <div id="tg-id">Loading...</div>
+    </div>
+  </div>
+
+
+
       <!-- Địa chỉ ví với hiệu ứng nổi bật -->
       <div class="info-item highlight-address">
         <div class="row">
@@ -248,76 +264,81 @@
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.ready();
+tg.ready();
 
-    const user = tg.initDataUnsafe.user;
-    if (user) {
-      document.getElementById("tg-name").textContent = `${user.first_name || ''} ${user.last_name || ''}`;
-      document.getElementById("tg-username").textContent = `@${user.username || 'Không có'}`;
-      document.getElementById("tg-id").textContent = user.id;
+const user = tg.initDataUnsafe.user;
+if (user) {
+  // Hiển thị tên người dùng
+  document.getElementById("tg-name").textContent = `${user.first_name || ''} ${user.last_name || ''}`;
+  document.getElementById("tg-username").textContent = `@${user.username || 'Không có'}`;
+  document.getElementById("tg-id").textContent = user.id;
+  
+  // Kiểm tra và hiển thị avatar người dùng
+  const avatarElement = document.getElementById("tg-avatar");
+  const avatarStatusElement = document.getElementById("avatar-status");
+  
+  if (user.photo_url) {
+    avatarElement.src = user.photo_url;
+    avatarStatusElement.style.display = 'none';  // Ẩn thông báo "Đang tải avatar..."
+  } else {
+    avatarElement.style.display = 'none';  // Ẩn ảnh nếu không có avatar
+    avatarStatusElement.style.display = 'inline';  // Hiển thị thông báo "Đang tải avatar..."
+  }
+}
+
+
+
+let base64Addr = "";
+
+const connector = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
+  buttonRootId: "connect-wallet"
+});
+
+connector.onStatusChange(async (wallet) => {
+  if (wallet) {
+    const rawAddress = wallet.account.address;
+
+    document.getElementById("connect-only").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
+
+    try {
+      const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
+      const data = await res.json();
+
+      if (data.ok && data.result && data.result.address && data.result.address.account_address) {
+        base64Addr = data.result.address.account_address;
+        const shortAddress = base64Addr.slice(0, 5) + "..." + base64Addr.slice(-5);
+        document.getElementById("short-address").textContent = shortAddress;
+
+        const copyToClipboard = () => {
+          navigator.clipboard.writeText(base64Addr);
+          tg.showPopup({ message: "✅ Đã sao chép địa chỉ ví!", buttons: [{ type: "ok", text: "OK" }] });
+        };
+
+        document.getElementById("short-address").onclick = copyToClipboard;
+        document.getElementById("copy-icon").onclick = copyToClipboard;
+
+      } else {
+        document.getElementById("short-address").textContent = "Không thể lấy ví.";
+      }
+    } catch (err) {
+      document.getElementById("short-address").textContent = "Lỗi API.";
     }
 
-    let base64Addr = "";
-
-    const connector = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
-      buttonRootId: "connect-wallet"
-    });
-
-    connector.onStatusChange(async (wallet) => {
-      if (wallet) {
-        const rawAddress = wallet.account.address;
-
-        document.getElementById("connect-only").style.display = "none";
-        document.getElementById("main-content").style.display = "block";
-
-        try {
-          const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
-          const data = await res.json();
-
-          if (data.ok && data.result && data.result.address && data.result.address.account_address) {
-            base64Addr = data.result.address.account_address;
-            const shortAddress = base64Addr.slice(0, 5) + "..." + base64Addr.slice(-5);
-            document.getElementById("short-address").textContent = shortAddress;
-
-            const copyToClipboard = () => {
-              navigator.clipboard.writeText(base64Addr);
-              tg.showPopup({ message: "✅ Đã sao chép địa chỉ ví!", buttons: [{ type: "ok", text: "OK" }] });
-            };
-
-            document.getElementById("short-address").onclick = copyToClipboard;
-            document.getElementById("copy-icon").onclick = copyToClipboard;
-
-          } else {
-            document.getElementById("short-address").textContent = "Không thể lấy ví.";
-          }
-        } catch (err) {
-          document.getElementById("short-address").textContent = "Lỗi API.";
-        }
-
-        try {
-          const balanceRes = await fetch(`https://tonapi.io/v2/accounts/${rawAddress}`);
-          const balanceData = await balanceRes.json();
-          if (balanceData.balance) {
-            const ton = parseFloat(balanceData.balance) / 1e9;
-            document.getElementById("ton-balance").textContent = `${ton.toFixed(2)} TON`;
-          } else {
-            document.getElementById("ton-balance").textContent = "Không xác định";
-          }
-        } catch (err) {
-          document.getElementById("ton-balance").textContent = "Lỗi khi lấy số dư.";
-        }
-
-        document.getElementById("disconnect").style.display = 'inline-block';
-      } else {
-        document.getElementById("main-content").style.display = "none";
-        document.getElementById("connect-only").style.display = "flex";
+    try {
+      const balanceRes = await fetch(`https://tonapi.io/v2/accounts/${rawAddress}`);
+      const balanceData = await balanceRes.json();
+      if (balanceData.balance) {
+        const ton = parseFloat(balanceData.balance / Math.pow(10, 9)).toFixed(3);
+        document.getElementById("ton-balance").textContent = `${ton} TON`;
       }
-    });
+    } catch (err) {
+      document.getElementById("ton-balance").textContent = "Lỗi lấy số dư.";
+    }
+  }
+});
 
-    document.getElementById("disconnect").addEventListener("click", () => {
-      connector.disconnect();
-    });
   </script>
 
 </body>
