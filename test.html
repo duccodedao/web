@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang Cá Nhân Telegram + TON Connect</title>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .info {
+      margin-bottom: 10px;
+    }
+    #disconnect {
+      cursor: pointer;
+      color: red;
+      margin-top: 10px;
+      text-decoration: underline;
+    }
+    #connect-only {
+      text-align: center;
+      padding: 50px 0;
+    }
+    #wallet-address {
+      margin-top: 10px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div id="connect-only">
+    <div id="connect-wallet"></div>
+  </div>
+
+  <div id="main-content" class="container" style="display:none">
+    <h2>Thông Tin Cá Nhân Telegram</h2>
+    <div class="info" id="tg-name">Tên: ...</div>
+    <div class="info" id="tg-username">Username: ...</div>
+    <div class="info" id="tg-id">ID: ...</div>
+    <div class="info"><img id="tg-photo" src="" alt="Ảnh đại diện" style="width:80px;height:80px;border-radius:50%;margin-top:10px"></div>
+
+    <hr style="margin:20px 0;">
+
+    <h2>Ví TON</h2>
+    <div id="wallet-address">...</div>
+    <div id="disconnect">Ngắt kết nối</div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    const user = tg.initDataUnsafe.user;
+    if (user) {
+      document.getElementById("tg-name").textContent = `Tên: ${user.first_name || ''} ${user.last_name || ''}`;
+      document.getElementById("tg-username").textContent = `Username: @${user.username || 'Không có'}`;
+      document.getElementById("tg-id").textContent = `ID: ${user.id}`;
+      if (user.photo_url) {
+        document.getElementById("tg-photo").src = user.photo_url;
+      } else {
+        document.getElementById("tg-photo").style.display = 'none';
+      }
+    }
+
+    const connector = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
+      buttonRootId: "connect-wallet"
+    });
+
+    connector.onStatusChange(async (wallet) => {
+      if (wallet) {
+        const rawAddress = wallet.account.address;
+
+        document.getElementById("connect-only").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+
+        try {
+          const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
+          const data = await res.json();
+
+          if (data.ok && data.result && data.result.address && data.result.address.b64) {
+            const base64Addr = data.result.address.b64;
+            const shortAddress = base64Addr.slice(0, 10) + "..." + base64Addr.slice(-10);
+            document.getElementById("wallet-address").textContent = `${shortAddress}\n(Base64: ${base64Addr})`;
+          } else {
+            document.getElementById("wallet-address").textContent = "Không thể lấy thông tin ví.";
+          }
+        } catch (err) {
+          document.getElementById("wallet-address").textContent = "Lỗi khi gọi API.";
+        }
+
+        document.getElementById("disconnect").style.display = 'inline-block';
+      } else {
+        document.getElementById("wallet-address").textContent = "...";
+        document.getElementById("disconnect").style.display = 'none';
+        document.getElementById("main-content").style.display = "none";
+        document.getElementById("connect-only").style.display = "flex";
+      }
+    });
+
+    document.getElementById("disconnect").addEventListener("click", () => {
+      connector.disconnect();
+    });
+  </script>
+</body>
+</html>
