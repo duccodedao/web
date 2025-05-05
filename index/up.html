@@ -355,6 +355,47 @@ a:hover {
   text-decoration: underline;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#qr-scanner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+}
+
+#qr-scanner-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#qr-scanner-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border: 3px solid #fff;
+  box-sizing: border-box;
+}
+
   </style>
 </head>
 <body>
@@ -393,8 +434,15 @@ a:hover {
       <button id="send-ton-btn">Sent Transaction</button>
     </div>
   
+    <!-- Phần tử quét mã QR -->
+    <div id="qr-scanner-container" style="display: none;">
+      <video id="qr-scanner-video" style="width: 100%; height: 100%;"></video>
+      <div id="qr-scanner-box" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 3px solid #fff; box-sizing: border-box;"></div>
+    </div>
+  
     <ul id="transactions-list"></ul>
   </div>
+  
   
 
 
@@ -694,43 +742,67 @@ function toggleMemo(element) {
 
 
 
-
-  // Lấy các phần tử từ DOM
+// Lấy phần tử quét mã QR
 const qrScanButton = document.getElementById("qr-scan");
+const qrScannerContainer = document.getElementById("qr-scanner-container");
+const qrScannerVideo = document.getElementById("qr-scanner-video");
+const qrScannerBox = document.getElementById("qr-scanner-box");
 const toAddressInput = document.getElementById("to-address");
-const qrVideo = document.getElementById("qr-video");
 
-qrScanButton.addEventListener("click", async () => {
-  // Mở camera và quét mã QR
-  const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-  qrVideo.srcObject = stream;
-  qrVideo.style.display = "block";
+// Khi nhấn vào icon quét QR, mở camera quét mã QR
+qrScanButton.addEventListener("click", () => {
+  qrScannerContainer.style.display = "block";
+  startQrScanner();
+});
 
-  // Bắt đầu quét mã QR
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
+// Khởi động camera quét mã QR
+function startQrScanner() {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(function (stream) {
+        qrScannerVideo.srcObject = stream;
+        qrScannerVideo.play();
+        requestAnimationFrame(scanQRCode);
+      })
+      .catch(function (err) {
+        console.log("Error accessing camera: " + err);
+      });
+  }
+}
 
-  function scanQRCode() {
-    if (qrVideo.readyState === qrVideo.HAVE_ENOUGH_DATA) {
-      canvas.width = qrVideo.videoWidth;
-      canvas.height = qrVideo.videoHeight;
-      context.drawImage(qrVideo, 0, 0, canvas.width, canvas.height);
-
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-      if (qrCode) {
-        toAddressInput.value = qrCode.data;  // Gán địa chỉ ví từ mã QR vào ô nhập địa chỉ
-        stream.getTracks().forEach(track => track.stop());  // Dừng video sau khi quét xong
-        qrVideo.style.display = "none";  // Ẩn video sau khi quét xong
-      }
+// Quét mã QR từ video stream
+function scanQRCode() {
+  if (qrScannerVideo.readyState === qrScannerVideo.HAVE_ENOUGH_DATA) {
+    const canvas = document.createElement("canvas");
+    canvas.width = qrScannerVideo.videoWidth;
+    canvas.height = qrScannerVideo.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(qrScannerVideo, 0, 0, canvas.width, canvas.height);
+    
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height, {
+      inversionAttempts: "dontInvert",
+    });
+    
+    if (code) {
+      // Đã quét được mã QR, điền vào ô địa chỉ
+      toAddressInput.value = code.data;
+      stopQrScanner();
+    } else {
+      requestAnimationFrame(scanQRCode); // Tiếp tục quét
     }
-
+  } else {
     requestAnimationFrame(scanQRCode);
   }
+}
 
-  scanQRCode();  // Bắt đầu quét mã QR
-});
+// Dừng quét mã QR
+function stopQrScanner() {
+  const stream = qrScannerVideo.srcObject;
+  const tracks = stream.getTracks();
+  tracks.forEach(track => track.stop());
+  qrScannerContainer.style.display = "none"; // Ẩn container quét QR
+}
 
 </script>
 
