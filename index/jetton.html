@@ -214,11 +214,9 @@
 
 
 
-
-
-
+/* Header cố định đầu trang */
 #header-container {
-  position: fixed;
+  position: fixed; /* giữ cố định trên đầu */
   top: 42px;
   left: 50%;
   transform: translateX(-50%);
@@ -236,11 +234,7 @@
   font-weight: 600;
 }
 
-#token-header {
-  margin: 0;
-  color: #000;
-}
-
+/* Nút Disconnect */
 #disconnect-wallet {
   background-color: #ffffff;
   padding: 8px 16px;
@@ -258,6 +252,12 @@
   background-color: #f0f0f0;
 }
 
+/* Khoảng trống phía trên danh sách để không bị header che */
+#jettons-list {
+  margin-top: 100px;
+}
+
+
 
   </style>
 </head>
@@ -266,20 +266,16 @@
     <div id="connect-wallet"></div>
   </div>
 <!-- Header cố định đầu màn hình -->
-<div id="header-disconnect-wallet">
-  <button id="disconnect-wallet">Disconnect</button>
-</div>
-
-<!-- Header cố định đầu màn hình -->
 <div id="header-container">
   <h2 id="token-header">Jettons</h2>
   <button id="disconnect-wallet">Disconnect</button>
 </div>
 
-<div id="loading-spinner" style="display:none;" class="loader"></div>
+<!-- Danh sách Jettons phía dưới -->
 <div id="jettons-list"></div>
 <div id="zero-balance-list" style="display: none;"></div>
 <div id="see-all-btn">------- See all -------</div>
+
 
 
 
