@@ -454,9 +454,7 @@ item.classList.add("active");
 
 
 
-
-
-    async function fetchTransactionHistory(walletAddress) {
+async function fetchTransactionHistory(walletAddress) {
   try {
     const response = await fetch(`https://toncenter.com/api/v2/getTransactions?address=${walletAddress}`);
     const result = await response.json();
@@ -469,13 +467,16 @@ item.classList.add("active");
         const isReceived = tx.in_msg && tx.in_msg.value > 0;
         const isSent = tx.out_msgs && tx.out_msgs.length > 0 && tx.out_msgs[0].value > 0;
 
-        const fromAddress = isReceived
+        const fromRaw = isReceived
           ? tx.in_msg.source || 'Unknown'
           : (isSent ? walletAddress : 'Unknown');
 
-        const toAddress = isSent
+        const toRaw = isSent
           ? tx.out_msgs[0]?.destination || 'Unknown'
           : (isReceived ? walletAddress : 'Unknown');
+
+        const fromAddress = fromRaw.length > 10 ? shortenBase64(fromRaw) : fromRaw;
+        const toAddress = toRaw.length > 10 ? shortenBase64(toRaw) : toRaw;
 
         const amountRaw = isReceived ? tx.in_msg.value : (isSent ? tx.out_msgs[0].value : 0);
         const amountTon = amountRaw / 1e9;
@@ -487,6 +488,8 @@ item.classList.add("active");
         const memo = isReceived
           ? tx.in_msg.message || '📝 No memo'
           : (isSent ? tx.out_msgs[0]?.message || '📝 No memo' : '📝 No memo');
+
+        const txhash = tx.transaction_id?.hash || 'N/A';
 
         const li = document.createElement("li");
         li.className = "transaction-item";
@@ -506,6 +509,9 @@ item.classList.add("active");
             </div>
             <div class="time">${time}</div>
           </div>
+          <div class="row">
+            <div class="txhash"><strong>Txhash:</strong> ${shortenBase64(txhash)}</div>
+          </div>
           ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
         `;
 
@@ -519,6 +525,15 @@ item.classList.add("active");
   }
 }
 
+// Rút gọn chuỗi base64 kiểu: ABC...XYZ
+function shortenBase64(str) {
+  if (!str || typeof str !== "string") return str;
+  return str.slice(0, 6) + '...' + str.slice(-4);
+}
+
+
+
+    
 // Hàm rút gọn số thập phân
 function truncateDecimal(num, decimalPlaces = 6) {
   return parseFloat(num.toFixed(decimalPlaces));
