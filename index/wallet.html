@@ -390,74 +390,65 @@ item.classList.add("active");
 </script>
 
   <script>
-       const tg = window.Telegram.WebApp;
-    tg.ready();
+const tg = window.Telegram.WebApp;
+tg.ready();
 
-    const connector = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
-      buttonRootId: "connect-wallet"
-    });
+const connector = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
+  buttonRootId: "connect-wallet"
+});
 
-    connector.onStatusChange(async (wallet) => {
-      if (wallet) {
-        const rawAddress = wallet.account.address;
+connector.onStatusChange(async (wallet) => {
+  if (wallet) {
+    const rawAddress = wallet.account.address;
 
-        document.getElementById("connect-only").style.display = "none";
-        document.getElementById("main-content").style.display = "block";
+    document.getElementById("connect-only").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
 
-        try {
-          const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
-          const data = await res.json();
+    try {
+      const res = await fetch(`https://toncenter.com/api/v2/getExtendedAddressInformation?address=${rawAddress}`);
+      const data = await res.json();
 
-          if (data.ok && data.result) {
-            const accountAddress = data.result.address.account_address;
-            const balanceTon = parseFloat(data.result.balance) / 1e9;
-            document.getElementById("wallet-balance").textContent = `Số dư: ${truncateDecimal(balanceTon)} TON`;
-            document.getElementById("ton-amount").setAttribute("max", balanceTon);
+      if (data.ok && data.result) {
+        const accountAddress = data.result.address.account_address;
+        const balanceNanoTON = parseInt(data.result.balance); // Lấy số dư nanoTON
+        const balanceTon = safeParseNanoTON(balanceNanoTON); // Chuyển đổi nanoTON sang TON
+        document.getElementById("wallet-balance").textContent = `Số dư: ${truncateDecimal(balanceTon)} TON`;
+        document.getElementById("ton-amount").setAttribute("max", balanceTon);
 
+        const shortAddress = accountAddress.slice(0, 10) + "..." + accountAddress.slice(-10);
+        document.getElementById("wallet-address").textContent = shortAddress;
 
-            const shortAddress = accountAddress.slice(0, 10) + "..." + accountAddress.slice(-10);
-            document.getElementById("wallet-address").textContent = shortAddress;
+        document.getElementById("disconnect").style.display = 'inline-block';
 
-            document.getElementById("disconnect").style.display = 'inline-block';
-
-            fetchTransactionHistory(rawAddress);
-          }
-        } catch (err) {
-          console.error("Lỗi khi tải thông tin:", err);
-        }
-      } else {
-        document.getElementById("wallet-address").textContent = "...";
-        document.getElementById("wallet-balance").textContent = "Số dư: ... TON";
-        document.getElementById("disconnect").style.display = 'none';
-        document.getElementById("main-content").style.display = "none";
-        document.getElementById("connect-only").style.display = "flex";
+        fetchTransactionHistory(rawAddress);
       }
-    });
-
-    document.getElementById("disconnect").addEventListener("click", () => {
-      connector.disconnect();
-    });
-
-    function truncateDecimal(number) {
-      return number % 1 !== 0 ? number.toFixed(9).replace(/0+$/, '').replace(/\.$/, '') : number.toFixed(0);
+    } catch (err) {
+      console.error("Lỗi khi tải thông tin:", err);
     }
+  } else {
+    document.getElementById("wallet-address").textContent = "...";
+    document.getElementById("wallet-balance").textContent = "Số dư: ... TON";
+    document.getElementById("disconnect").style.display = 'none';
+    document.getElementById("main-content").style.display = "none";
+    document.getElementById("connect-only").style.display = "flex";
+  }
+});
 
-    async function encodeBase64(str) {
-      const encoder = new TextEncoder();
-      const bytes = encoder.encode(str);
-      let binary = '';
-      bytes.forEach((b) => binary += String.fromCharCode(b));
-      return btoa(binary);
-    }
+document.getElementById("disconnect").addEventListener("click", () => {
+  connector.disconnect();
+});
 
+// Hàm để cắt bớt chữ số thập phân
+function truncateDecimal(number) {
+  return number % 1 !== 0 ? number.toFixed(9).replace(/0+$/, '').replace(/\.$/, '') : number.toFixed(0);
+}
 
-
-
-
-
-
-
+// Hàm để chuyển nanoTON sang TON
+function safeParseNanoTON(value) {
+  if (!value || isNaN(value)) return 0; // Kiểm tra giá trị hợp lệ
+  return value / 1e9; // Chuyển từ nanoTON (1e9 nanoTON = 1 TON)
+}
 
 function base64ToHex(base64) {
   const raw = atob(base64.replace(/-/g, '+').replace(/\_/g, '/'));
@@ -468,21 +459,12 @@ function base64ToHex(base64) {
   return result;
 }
 
-function truncateDecimal(num) {
-  return parseFloat(num.toFixed(6)); // Giới hạn số thập phân sau dấu phẩy là 6
-}
-
 function truncateBase64(addr) {
   return addr.length > 12 ? addr.slice(0, 4) + "…" + addr.slice(-4) : addr;
 }
 
 function toggleMemo(el) {
   el.classList.toggle("expanded");
-}
-
-function safeParseNanoTON(value) {
-  if (!value || isNaN(value)) return 0; // Kiểm tra giá trị hợp lệ
-  return parseInt(value) / 1e9; // Chuyển từ nanoTON (1e9 nanoTON = 1 TON)
 }
 
 async function fetchTransactionHistory(walletAddress) {
