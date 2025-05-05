@@ -196,19 +196,7 @@ a:hover {
   background: #999;
 }
 
-#disconnect {
-  font-size: 16px;
-  margin-left: 3px;
-  cursor: pointer;
-  color: #d32f2f;
-  display: none;
-  transition: transform 0.2s ease;
-}
 
-#disconnect:hover {
-  transform: scale(1.1);
-  color: #b71c1c;
-}
 
 /* Form gửi */
 .form-send {
@@ -306,11 +294,37 @@ a:hover {
     width: 18px;
     height: 18px;
   }
-
-  #disconnect {
-    font-size: 14px;
-  }
 }
+
+
+
+
+
+ #header-disconnect {
+  position: fixed;
+  top: env(safe-area-inset-top, 25px); /* Tự động nhận padding an toàn trên iOS */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background-color: #e0e5ec;
+  padding: 8px 18px;
+  border-radius: 25px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+#disconnect {
+  font-size: 16px;
+  cursor: pointer;
+  color: #d32f2f;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+#disconnect:hover {
+  transform: scale(1.1);
+  color: #b71c1c;
+}
+
 
   </style>
 </head>
@@ -322,12 +336,16 @@ a:hover {
 
 
 
-  <div class="container" id="main-content">
-    <p class="info">
-      <span id="wallet-address">Loading...</span>
-      <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
-    </p>
-    <p id="wallet-balance" class="balance">Loading...</p>
+<!-- Header Disconnect button -->
+<div id="header-disconnect">
+  <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
+</div>
+
+<!-- Main content -->
+<div class="container" id="main-content">
+  <p class="info">
+    <span id="wallet-address">Loading...</span>
+  </p>
     <div class="form-send">
       <h2>Gửi TON</h2>
     
