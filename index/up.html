@@ -453,26 +453,42 @@ item.classList.add("active");
 
 
 
+function truncateBase64(addr) {
+  return addr.length > 12 ? addr.slice(0, 3) + '…' + addr.slice(-3) : addr;
+}
+
+function truncateDecimal(num) {
+  return parseFloat(num.toFixed(6));
+}
+
+function toggleMemo(el) {
+  el.classList.toggle("expanded");
+}
 
 async function fetchTransactionHistory(walletAddress) {
   try {
     const response = await fetch(`https://toncenter.com/api/v2/getTransactions?address=${walletAddress}`);
-    const result = await response.json();
-    const data = result.result || [];
+    const data = await response.json();
     const list = document.getElementById("transactions-list");
     list.innerHTML = "";
 
-    if (data.length > 0) {
-      for (const tx of data) {
-        const isReceived = tx.in_msg && tx.in_msg.value > 0;
-        const isSent = tx.out_msgs && tx.out_msgs.length > 0 && tx.out_msgs[0].value > 0;
+    if (data && data.result && data.result.length > 0) {
+      for (const tx of data.result) {
+        const inMsg = tx.in_msg;
+        const outMsgs = tx.out_msgs || [];
 
-        const fromRaw = tx.in_msg?.source || '';
-        const toRaw = tx.out_msgs?.[0]?.destination || '';
-        const fromAddress = shortenBase64(fromRaw);
-        const toAddress = shortenBase64(toRaw);
+        const isReceived = inMsg && inMsg.value > 0;
+        const isSent = outMsgs.length > 0 && outMsgs[0].value > 0;
 
-        const amountRaw = isReceived ? tx.in_msg.value : (isSent ? tx.out_msgs[0].value : 0);
+        const fromAddress = isReceived
+          ? truncateBase64(inMsg.source)
+          : (isSent ? walletAddress : '');
+
+        const toAddress = isSent
+          ? truncateBase64(outMsgs[0].destination)
+          : (isReceived ? walletAddress : '');
+
+        const amountRaw = isReceived ? inMsg.value : (isSent ? outMsgs[0].value : 0);
         const amountTon = amountRaw / 1e9;
         const time = new Date(tx.utime * 1000).toLocaleString();
         const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Unknown');
@@ -480,17 +496,11 @@ async function fetchTransactionHistory(walletAddress) {
         const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
         const memo = isReceived
-          ? tx.in_msg.message || '📝 No memo'
-          : (isSent ? tx.out_msgs[0]?.message || '📝 No memo' : '📝 No memo');
+          ? inMsg.message || '📝 No memo'
+          : (isSent ? outMsgs[0].message || '📝 No memo' : '📝 No memo');
 
-        const txhash = tx.transaction_id?.hash || '';
-
-        let addressRow = '';
-        if (isSent) {
-          addressRow = `<strong>To:</strong> ${toAddress}`;
-        } else if (isReceived) {
-          addressRow = `<strong>From:</strong> ${fromAddress}`;
-        }
+        const txhashRaw = tx.transaction_id?.hash || '';
+        const txhashLink = `https://tonviewer.com/transaction/${txhashRaw}`;
 
         const li = document.createElement("li");
         li.className = "transaction-item";
@@ -503,15 +513,15 @@ async function fetchTransactionHistory(walletAddress) {
             </div>
             <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
           </div>
-          ${addressRow ? `
           <div class="row">
-            <div class="address">${addressRow}</div>
+            <div class="address">
+              ${isReceived ? `<strong>From:</strong> ${fromAddress}` : ''}
+              ${isSent ? `<strong>To:</strong> ${toAddress}` : ''}
+            </div>
             <div class="time">${time}</div>
-          </div>` : ''}
-          <div class="row">
-            <a class="txhash" href="https://tonviewer.com/transaction/${txhash}" target="_blank">Transaction</a>
           </div>
           ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
+          <div class="row"><a class="txhash" href="${txhashLink}" target="_blank">Transaction</a></div>
         `;
 
         list.appendChild(li);
@@ -523,6 +533,7 @@ async function fetchTransactionHistory(walletAddress) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
   }
 }
+
 
 function shortenBase64(str) {
   if (!str || typeof str !== "string") return str;
