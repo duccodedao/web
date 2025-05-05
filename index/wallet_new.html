@@ -494,7 +494,7 @@ function toggleMemo(el) {
 
 async function fetchTransactionHistory(walletAddress) {
   try {
-    const response = await fetch(`https://toncenter.com/api/v2/getTransactions?address=${walletAddress}`);
+    const response = await fetch(`https://toncenter.com/api/v2/getTransactions?address=${walletAddress}&limit=40&to_lt=0&archival=false`);
     const data = await response.json();
     const list = document.getElementById("transactions-list");
     list.innerHTML = "";
