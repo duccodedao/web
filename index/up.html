@@ -509,8 +509,9 @@ async function fetchTransactionHistory(walletAddress) {
             <div class="time">${time}</div>
           </div>` : ''}
           <div class="row">
-            <a class="txhash" href="https://tonviewer.com/transaction/${txhash}" target="_blank">Transaction</a>
-          </div>
+          <div class="address" title="${base64Addr}">
+              <a href="https://tonviewer.com/transaction/${tx.hash}" target="_blank">Transaction</a>
+            </div>
           ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
         `;
 
