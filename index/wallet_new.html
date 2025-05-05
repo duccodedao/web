@@ -24,9 +24,6 @@ body {
   align-items: center;
   min-height: 100vh;
   color: #333;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 #connect-only {
@@ -42,8 +39,8 @@ body {
   border-radius: 20px;
   box-shadow: 10px 10px 25px #bec4d0, -10px -10px 25px #ffffff;
   padding: 30px;
-  max-width: 100%; /* Đảm bảo chiều rộng container có thể co giãn */
-  width: 100%; /* Đảm bảo chiều rộng luôn là 100% của màn hình */
+  max-width: 100%;
+  width: 100%;
   text-align: center;
   overflow-y: auto;
   max-height: 90vh;
@@ -90,6 +87,8 @@ ul#transactions-list {
   margin-bottom: 14px;
   box-shadow: inset 2px 2px 6px #c3c8d3, inset -2px -2px 6px #ffffff;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  padding-bottom: 40px; /* chừa không gian cho tx link */
 }
 
 .transaction-item:hover {
@@ -136,6 +135,44 @@ ul#transactions-list {
   text-align: right;
 }
 
+.memo {
+  font-size: 13px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  transition: max-height 0.3s ease;
+  max-height: 20px;
+  margin-bottom: 6px;
+}
+
+.memo.expanded {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  max-height: 300px;
+}
+
+.tx-link-row {
+  position: absolute;
+  bottom: 8px;
+  right: 14px;
+}
+
+.tx-link-row a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.tx-link-row a:hover {
+  text-decoration: underline;
+}
+
 a {
   color: #0056b3;
   text-decoration: none;
@@ -173,63 +210,8 @@ a:hover {
   color: #b71c1c;
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 20px;
-    max-width: 92%;
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-
-  .info,
-  .balance,
-  #wallet-address,
-  .row,
-  .address,
-  .time {
-    font-size: 14px;
-  }
-
-  .transaction-item {
-    padding: 14px;
-  }
-
-  .icon img {
-    width: 18px;
-    height: 18px;
-  }
-
-  #disconnect {
-    font-size: 14px;
-  }
-}
-.memo {
-  white-space: nowrap; /* Ngăn không cho text xuống dòng */
-  overflow: hidden; /* Ẩn phần text bị tràn ra */
-  text-overflow: ellipsis; /* Hiển thị '...' khi quá dài */
-  display: inline-block;
-  width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
-  cursor: pointer; /* Thêm dấu con trỏ khi hover vào phần ghi chú */
-  text-align: left; /* Đảm bảo ghi chú nằm lề trái */
-  transition: max-height 2s ease-out; /* Hiệu ứng nới rộng nhẹ nhàng */
-  max-height: 20px; /* Đặt chiều cao tối đa cho phần thu nhỏ */
-}
-
-.memo.expanded {
-  white-space: normal; /* Cho phép xuống dòng khi mở rộng */
-  overflow: visible; /* Hiển thị đầy đủ text */
-  text-overflow: unset; /* Xóa dấu '...' */
-  text-align: left; /* Đảm bảo ghi chú nằm lề trái khi mở rộng */
-  max-height: 200px; /* Chiều cao tối đa khi mở rộng (có thể thay đổi tùy ý) */
-}
-
-
-
-
-
-    .form-send {
+/* Form gửi */
+.form-send {
   margin-top: 10px;
   text-align: left;
 }
@@ -258,13 +240,11 @@ a:hover {
   background: #004d40;
 }
 
-    #memo-text:disabled {
+#memo-text:disabled {
   background-color: #f0f0f0;
   color: #999;
   cursor: not-allowed;
 }
-
-
 
 .input-icon {
   position: relative;
@@ -282,8 +262,9 @@ a:hover {
 }
 
 .input-icon input {
-  padding-left: 45px !important; /* Để chừa khoảng cho icon */
+  padding-left: 45px !important;
 }
+
 .input-logo {
   position: absolute;
   left: 15px;
@@ -295,30 +276,40 @@ a:hover {
   pointer-events: none;
 }
 
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+    max-width: 92%;
+  }
 
+  h2 {
+    font-size: 20px;
+  }
 
+  .info,
+  .balance,
+  #wallet-address,
+  .row,
+  .address,
+  .time,
+  .memo {
+    font-size: 14px;
+  }
 
+  .transaction-item {
+    padding: 14px;
+    padding-bottom: 40px;
+  }
 
+  .icon img {
+    width: 18px;
+    height: 18px;
+  }
 
-
-    li {
-  position: relative;
-  padding-bottom: 30px; /* Chừa chỗ cho link ở dưới */
-}
-
-.tx-link-row {
-  position: absolute;
-  bottom: 5px;
-  right: 10px;
-}
-
-.tx-link-row a {
-  color: #007bff;
-  text-decoration: none;
-  font-size: 14px;
-}
-.tx-link-row a:hover {
-  text-decoration: underline;
+  #disconnect {
+    font-size: 14px;
+  }
 }
 
   </style>
