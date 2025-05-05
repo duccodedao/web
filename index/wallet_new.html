@@ -296,6 +296,31 @@ a:hover {
 }
 
 
+
+
+
+
+
+    li {
+  position: relative;
+  padding-bottom: 30px; /* Chừa chỗ cho link ở dưới */
+}
+
+.tx-link-row {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+}
+
+.tx-link-row a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+}
+.tx-link-row a:hover {
+  text-decoration: underline;
+}
+
   </style>
 </head>
 <body>
@@ -511,26 +536,27 @@ async function fetchTransactionHistory(walletAddress) {
         const li = document.createElement("li");
         li.className = "transaction-item";
         li.innerHTML = `
-          <div class="row">
-            <div class="icon-label">
-              <span class="icon"><img src="${iconPath}" alt="icon"></span>
-              <span>${label}</span>
-            </div>
-            <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
-          </div>
-          <div class="row">
-            <div class="address">${addressInfo}</div>
-            <div class="time">${time}</div>
-          </div>
-          <div class="row">
-            <div class="address" title="${txHex}">
-              <a href="${txLink}" target="_blank">Xem giao dịch</a>
-            </div>
-          </div>
-          <div class="row">
-            <div class="memo" onclick="toggleMemo(this)">${memo}</div>
-          </div>
-        `;
+  <div class="row">
+    <div class="icon-label">
+      <span class="icon"><img src="${iconPath}" alt="icon"></span>
+      <span>${label}</span>
+    </div>
+    <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
+  </div>
+  <div class="row">
+    <div class="address">${addressInfo}</div>
+    <div class="time">${time}</div>
+  </div>
+  <div class="row tx-link-row">
+    <div class="address" title="${txHex}">
+      <a href="${txLink}" target="_blank">Xem giao dịch</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="memo" onclick="toggleMemo(this)">${memo}</div>
+  </div>
+`;
+
 
         list.appendChild(li);
       }
