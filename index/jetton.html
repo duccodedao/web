@@ -33,7 +33,16 @@
       flex-direction: column;
     }
 
-  
+    #disconnect-wallet {
+      margin-top: 20px;
+      display: none;
+      padding: 10px 20px;
+      background-color: #ff4c4c;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+    }
 
     h2 {
       font-size: 22px;
@@ -197,6 +206,16 @@
 
 
 
+  #disconnect-wallet {
+  display: none;
+  padding: 8px 14px;
+  background-color: #ff4c4c;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
 
 
 
@@ -211,89 +230,48 @@
   display: none;
 }
 
-
-
-
-/* Header cố định đầu trang */
-#header-container {
-  position: fixed; /* giữ cố định trên đầu */
-  top: 42px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 600px;
-  background-color: #ffffff;
-  padding: 8px 16px;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* Nút Disconnect */
-#disconnect-wallet {
-  background-color: #ffffff;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s;
-  color: #d32f2f;
-}
-
-#disconnect-wallet:hover {
-  background-color: #f0f0f0;
-}
-
-
-
   </style>
 </head>
 <body>
   <div id="connect-only">
     <div id="connect-wallet"></div>
   </div>
-<!-- Header cố định đầu màn hình -->
-<div id="header-container">
-  <h2 id="token-header">Jettons</h2>
-  <button id="disconnect-wallet">Disconnect</button>
-</div>
-<div id="loading-spinner" style="display:none;" class="loader">
-<!-- Danh sách Jettons phía dưới -->
-<div id="jettons-list"></div>
-<div id="zero-balance-list" style="display: none;"></div>
-<div id="see-all-btn">------- See all -------</div>
+  <div id="header-container" style="display:none; display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; margin-bottom: 20px; margin-top: 65px;">
+    <h2 id="token-header" style="margin: 0;">Jettons</h2>
+    <button id="disconnect-wallet">Disconnect</button>
+  </div>
+  
+  <div id="loading-spinner" style="display:none;" class="loader"></div>
+  <div id="jettons-list"></div>
+  <div id="zero-balance-list" style="display: none;"></div>
+  <div id="see-all-btn">------- See all -------</div>
+
+  
 
 
-
-
-  <footer>
+   <footer>
     <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
       <i class="fas fa-wallet"></i>
       <span>Wallet</span>
     </a>
     <a href="/index/jetton.html" class="footer-item" data-page="jetton.html">
-      <i class="fas fa-coins"></i> <!-- Biểu tượng Coins cho Jetton -->
+      <i class="fas fa-coins"></i>
       <span>Jetton</span>
+    </a>
+    <a href="/index/index.html" class="footer-item home">
+      <div class="home-circle">
+        <i class="fas fa-house"></i>
+      </div>
+      <span>Home</span>
     </a>
     <a href="/index/main.html" class="footer-item" data-page="main.html">
       <i class="fas fa-th"></i>
       <span>App</span>
     </a>
-  
-    <!-- Thêm Profile thay vì Home và Shop -->
-    <a href="/index/profile.html" class="footer-item" data-page="profile.html">
-      <i class="fas fa-user"></i>
-      <span>Profile</span>
+    <a href="/index/shop.html" class="footer-item" data-page="shop.html">
+      <i class="fas fa-store"></i>
+      <span>Shop</span>
     </a>
-  
   </footer>
 
   <script>
