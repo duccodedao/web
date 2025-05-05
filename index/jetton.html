@@ -230,21 +230,71 @@
   display: none;
 }
 
+
+
+
+
+
+
+
+
+    #header-disconnect-wallet {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 20px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background-color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#header-disconnect-wallet button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px; /* đẩy xuống dưới nút disconnect */
+  margin-bottom: 20px;
+}
+
+#token-header {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+
   </style>
 </head>
 <body>
   <div id="connect-only">
     <div id="connect-wallet"></div>
   </div>
-  <div id="header-container" style="display:none; display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; margin-bottom: 20px; margin-top: 65px;">
-    <h2 id="token-header" style="margin: 0;">Jettons</h2>
-    <button id="disconnect-wallet">Disconnect</button>
-  </div>
-  
-  <div id="loading-spinner" style="display:none;" class="loader"></div>
-  <div id="jettons-list"></div>
-  <div id="zero-balance-list" style="display: none;"></div>
-  <div id="see-all-btn">------- See all -------</div>
+<!-- Header cố định đầu màn hình -->
+<div id="header-disconnect-wallet">
+  <button id="disconnect-wallet">Disconnect</button>
+</div>
+
+<!-- Tiêu đề Jettons -->
+<div id="header-container">
+  <h2 id="token-header">Jettons</h2>
+</div>
+
+<div id="loading-spinner" style="display:none;" class="loader"></div>
+<div id="jettons-list"></div>
+<div id="zero-balance-list" style="display: none;"></div>
+<div id="see-all-btn">------- See all -------</div>
 
   
 
