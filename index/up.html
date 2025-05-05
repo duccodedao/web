@@ -453,6 +453,9 @@ item.classList.add("active");
 
 
 
+
+    
+
 function truncateBase64(addr) {
   return addr.length > 12 ? addr.slice(0, 3) + '…' + addr.slice(-3) : addr;
 }
@@ -481,11 +484,11 @@ async function fetchTransactionHistory(walletAddress) {
         const isSent = outMsgs.length > 0 && outMsgs[0].value > 0;
 
         const fromAddress = isReceived
-          ? truncateBase64(inMsg.source)
+          ? inMsg.source
           : (isSent ? walletAddress : '');
 
         const toAddress = isSent
-          ? truncateBase64(outMsgs[0].destination)
+          ? outMsgs[0].destination
           : (isReceived ? walletAddress : '');
 
         const amountRaw = isReceived ? inMsg.value : (isSent ? outMsgs[0].value : 0);
@@ -499,11 +502,19 @@ async function fetchTransactionHistory(walletAddress) {
           ? inMsg.message || '📝 No memo'
           : (isSent ? outMsgs[0].message || '📝 No memo' : '📝 No memo');
 
-        const txhashRaw = tx.transaction_id?.hash || '';
-        const txhashLink = `https://tonviewer.com/transaction/${txhashRaw}`;
+        const txHash = tx.transaction_id?.hash || '';
+        const txLink = `https://tonviewer.com/transaction/${txHash}`;
 
         const li = document.createElement("li");
         li.className = "transaction-item";
+
+        // Giao dịch Sent thì hiện To, Received thì hiện From, còn lại ẩn
+        let addressInfo = '';
+        if (isSent && toAddress) {
+          addressInfo = `<strong>To:</strong> ${truncateBase64(toAddress)}`;
+        } else if (isReceived && fromAddress) {
+          addressInfo = `<strong>From:</strong> ${truncateBase64(fromAddress)}`;
+        }
 
         li.innerHTML = `
           <div class="row">
@@ -514,14 +525,11 @@ async function fetchTransactionHistory(walletAddress) {
             <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
           </div>
           <div class="row">
-            <div class="address">
-              ${isReceived ? `<strong>From:</strong> ${fromAddress}` : ''}
-              ${isSent ? `<strong>To:</strong> ${toAddress}` : ''}
-            </div>
+            <div class="address">${addressInfo}</div>
             <div class="time">${time}</div>
           </div>
           ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
-          <div class="row"><a class="txhash" href="${txhashLink}" target="_blank">Transaction</a></div>
+          <div class="row"><a class="txhash" href="${txLink}" target="_blank">Transaction</a></div>
         `;
 
         list.appendChild(li);
@@ -533,6 +541,7 @@ async function fetchTransactionHistory(walletAddress) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
   }
 }
+
 
 
 function shortenBase64(str) {
