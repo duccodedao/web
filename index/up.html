@@ -454,25 +454,34 @@ item.classList.add("active");
 
 
 
-async function encodeBase64(address) {
-  // Hàm này mã hóa địa chỉ ví sang dạng base64
-  const encoder = new TextEncoder();
-  const data = encoder.encode(address);
-  return btoa(String.fromCharCode(...new Uint8Array(data.buffer)));
-}
 
-function truncateBase64(addr) {
-  // Cắt ngắn địa chỉ ví base64 cho dễ nhìn
-  return addr.length > 12 ? addr.slice(0, 3) + '…' + addr.slice(-3) : addr;
+
+
+
+
+
+
+
+// ⚙️ Convert base64 string to hex (for tx hash link)
+function base64ToHex(base64) {
+  const raw = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+  let result = '';
+  for (let i = 0; i < raw.length; i++) {
+    const hex = raw.charCodeAt(i).toString(16).padStart(2, '0');
+    result += hex;
+  }
+  return result;
 }
 
 function truncateDecimal(num) {
-  // Cắt bớt phần thập phân cho số lượng TON
-  return parseFloat(num.toFixed(9));
+  return parseFloat(num.toFixed(6));
+}
+
+function truncateBase64(addr) {
+  return addr.length > 12 ? addr.slice(0, 4) + "…" + addr.slice(-4) : addr;
 }
 
 function toggleMemo(el) {
-  // Hàm thay đổi trạng thái mở rộng memo
   el.classList.toggle("expanded");
 }
 
@@ -491,32 +500,25 @@ async function fetchTransactionHistory(walletAddress) {
         const isReceived = inMsg && inMsg.value > 0;
         const isSent = outMsgs.length > 0 && outMsgs[0].value > 0;
 
-        const fromAddress = isReceived
-          ? inMsg.source
-          : (isSent ? walletAddress : '');
+        const fromAddress = isReceived ? inMsg.source : (isSent ? walletAddress : '');
+        const toAddress = isSent ? outMsgs[0].destination : (isReceived ? walletAddress : '');
 
-        const toAddress = isSent
-          ? outMsgs[0].destination
-          : (isReceived ? walletAddress : '');
-
-        const amountRaw = isReceived ? inMsg.value : (isSent ? outMsgs[0].value : 0);
+        const amountRaw = isReceived ? parseInt(inMsg.value) : (isSent ? parseInt(outMsgs[0].value) : 0);
         const amountTon = amountRaw / 1e9;
+
         const time = new Date(tx.utime * 1000).toLocaleString();
         const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Unknown');
-        const sign = isReceived ? '+ ' : (isSent ? '- ' : ' ');
+        const sign = isReceived ? '+ ' : (isSent ? '- ' : '');
         const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
         const memo = isReceived
           ? inMsg.message || '📝 No memo'
           : (isSent ? outMsgs[0].message || '📝 No memo' : '📝 No memo');
 
-        const txHash = tx.transaction_id?.hash || '';
-        const txLink = `https://tonviewer.com/transaction/${txHash}`;
+        const txBase64 = tx.transaction_id?.hash || '';
+        const txHex = base64ToHex(txBase64);
+        const txLink = `https://tonviewer.com/transaction/${txHex}`;
 
-        const li = document.createElement("li");
-        li.className = "transaction-item";
-
-        // Giao dịch Sent thì hiện To, Received thì hiện From, còn lại ẩn
         let addressInfo = '';
         if (isSent && toAddress) {
           addressInfo = `<strong>To:</strong> ${truncateBase64(toAddress)}`;
@@ -524,6 +526,8 @@ async function fetchTransactionHistory(walletAddress) {
           addressInfo = `<strong>From:</strong> ${truncateBase64(fromAddress)}`;
         }
 
+        const li = document.createElement("li");
+        li.className = "transaction-item";
         li.innerHTML = `
           <div class="row">
             <div class="icon-label">
@@ -537,8 +541,8 @@ async function fetchTransactionHistory(walletAddress) {
             <div class="time">${time}</div>
           </div>
           <div class="row">
-            <div class="address" title="${tx.transaction_id.hash}">
-              <a href="${txLink}" target="_blank">Xem chi tiết giao dịch</a>
+            <div class="address" title="${txHex}">
+              <a href="${txLink}" target="_blank">Xem giao dịch</a>
             </div>
           </div>
           <div class="row">
@@ -555,6 +559,16 @@ async function fetchTransactionHistory(walletAddress) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
