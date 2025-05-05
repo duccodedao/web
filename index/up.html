@@ -498,7 +498,7 @@ async function fetchTransactionHistory(walletAddress) {
         const base64Addr = await encodeBase64(address);
         const txHash = tx.hash || "unknown";
 
-        // 👉 Thêm phần From / To
+        // Thêm hiển thị From / To
         let addressInfo = '';
         if (isSent && toAddress) {
           addressInfo = `<strong>To:</strong> ${truncateBase64(toAddress)}`;
@@ -536,6 +536,7 @@ async function fetchTransactionHistory(walletAddress) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
   }
 }
+
 
 
 
