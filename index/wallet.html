@@ -459,22 +459,17 @@ item.classList.add("active");
 
 
 
-
 function base64ToHex(base64) {
   const raw = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
-  let result = '';
-  for (let i = 0; i < raw.length; i++) {
-    result += raw.charCodeAt(i).toString(16).padStart(2, '0');
-  }
-  return result;
+  return [...raw].map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
 }
 
 function truncateDecimal(num) {
-  return parseFloat(num.toFixed(6));
+  return Math.floor(num * 1e6) / 1e6; // Chính xác đến 6 chữ số thập phân, không làm tròn
 }
 
 function truncateBase64(addr) {
-  return addr.length > 12 ? addr.slice(0, 4) + "…" + addr.slice(-4) : addr;
+  return addr.length > 12 ? `${addr.slice(0, 4)}…${addr.slice(-4)}` : addr;
 }
 
 function toggleMemo(el) {
@@ -482,8 +477,11 @@ function toggleMemo(el) {
 }
 
 function safeParseNanoTON(value) {
-  if (!value || isNaN(value)) return 0;
-  return parseInt(value) / 1e9;
+  try {
+    return parseInt(value) / 1e9;
+  } catch {
+    return 0;
+  }
 }
 
 async function fetchTransactionHistory(walletAddress) {
@@ -493,39 +491,34 @@ async function fetchTransactionHistory(walletAddress) {
     const list = document.getElementById("transactions-list");
     list.innerHTML = "";
 
-    if (data && data.result && data.result.length > 0) {
+    if (data?.result?.length > 0) {
       for (const tx of data.result) {
         const inMsg = tx.in_msg;
         const outMsgs = tx.out_msgs || [];
 
-        const isReceived = inMsg && parseInt(inMsg.value) > 0;
-        const isSent = outMsgs.length > 0 && parseInt(outMsgs[0].value) > 0;
+        const isReceived = inMsg?.value && parseInt(inMsg.value) > 0;
+        const isSent = outMsgs.length > 0 && outMsgs[0]?.value && parseInt(outMsgs[0].value) > 0;
 
         const fromAddress = isReceived ? inMsg.source : (isSent ? walletAddress : '');
         const toAddress = isSent ? outMsgs[0].destination : (isReceived ? walletAddress : '');
 
         const amountRaw = isReceived ? inMsg.value : (isSent ? outMsgs[0].value : "0");
-        const amountTon = safeParseNanoTON(amountRaw);
+        const amountTon = truncateDecimal(safeParseNanoTON(amountRaw));
 
         const time = new Date(tx.utime * 1000).toLocaleString();
         const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Unknown');
         const sign = isReceived ? '+ ' : (isSent ? '- ' : '');
         const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
-        const memo = isReceived
-          ? inMsg.message || '📝 No memo'
-          : (isSent ? outMsgs[0].message || '📝 No memo' : '📝 No memo');
+        const memo = (isReceived ? inMsg.message : (isSent ? outMsgs[0].message : '')) || '📝 No memo';
 
         const txBase64 = tx.transaction_id?.hash || '';
         const txHex = base64ToHex(txBase64);
         const txLink = `https://tonviewer.com/transaction/${txHex}`;
 
-        let addressInfo = '';
-        if (isSent && toAddress) {
-          addressInfo = `<strong>To:</strong> ${truncateBase64(toAddress)}`;
-        } else if (isReceived && fromAddress) {
-          addressInfo = `<strong>From:</strong> ${truncateBase64(fromAddress)}`;
-        }
+        const addressInfo = isSent && toAddress
+          ? `<strong>To:</strong> ${truncateBase64(toAddress)}`
+          : (isReceived && fromAddress ? `<strong>From:</strong> ${truncateBase64(fromAddress)}` : '');
 
         const li = document.createElement("li");
         li.className = "transaction-item";
@@ -535,7 +528,7 @@ async function fetchTransactionHistory(walletAddress) {
               <span class="icon"><img src="${iconPath}" alt="icon"></span>
               <span>${label}</span>
             </div>
-            <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
+            <div class="amount">${sign}${amountTon} TON</div>
           </div>
           <div class="row">
             <div class="address">${addressInfo}</div>
@@ -560,7 +553,6 @@ async function fetchTransactionHistory(walletAddress) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
   }
 }
-
 
 
 
