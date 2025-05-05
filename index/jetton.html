@@ -202,6 +202,15 @@
     font-size: 20px;
     vertical-align: middle;
   }
+  .warning-badge {
+  color: #ffa500; /* Màu cam cảnh báo */
+  margin-left: 1px;
+  margin-bottom: 3px;
+  font-size: 20px;
+  vertical-align: middle;
+  filter: drop-shadow(0 0 1px rgba(255, 165, 0, 0.6));
+}
+
 
 
 
@@ -308,14 +317,18 @@ item.classList.add("active");
       const tonData = await tonRes.json();
       const tonBalance = parseFloat(tonData.balance) / 1e9;
       const tonHTML = `
-        <div class="jetton-item">
-          <img src="/logo-coin/ton.jpg" alt="TON" class="jetton-logo">
-          <div class="jetton-info">
-            <strong>TON</strong>
-            <p>${tonBalance.toLocaleString("vi-VN", { maximumFractionDigits: 9 })} TON</p>
-          </div>
-        </div>
-      `;
+  <div class="jetton-item">
+    <img src="/logo-coin/ton.jpg" alt="TON" class="jetton-logo">
+    <div class="jetton-info">
+      <strong>TON 
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg" 
+             alt="verified" width="16" class="verified-badge">
+      </strong>
+      <p>${tonBalance.toLocaleString("vi-VN", { maximumFractionDigits: 9 })} TON</p>
+    </div>
+  </div>
+`;
+
       list.innerHTML += tonHTML;
 
       // Lấy danh sách jetton
@@ -333,37 +346,46 @@ item.classList.add("active");
       const zeroBalanceJettons = [];
 
       data.balances.forEach(jetton => {
-        const decimals = jetton.jetton.decimals || 9;
-        const balance = parseFloat(jetton.balance) / 10 ** decimals;
-        const formattedBalance = balance.toLocaleString("vi-VN", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: decimals > 5 ? 5 : decimals
-        });
-        const name = jetton.jetton.name || '';
-        const symbol = jetton.jetton.symbol || '';
-        const image = jetton.jetton.image || 'https://via.placeholder.com/40';
-        const jettonAddress = jetton.jetton.address;
-        const isVerified = jetton.jetton.verification === "whitelist";
-        const verifiedBadge = isVerified ? '<img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg" alt="verified" width="16" class="verified-badge">' : '';
+  const decimals = jetton.jetton.decimals || 9;
+  const balance = parseFloat(jetton.balance) / 10 ** decimals;
+  const formattedBalance = balance.toLocaleString("vi-VN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals > 5 ? 5 : decimals
+  });
 
-        const itemHTML = `
-          <div class="jetton-item">
-            <img src="${image}" alt="${jetton.jetton.name}" class="jetton-logo">
-            <div class="jetton-info">
-              <strong>${name} ${verifiedBadge}</strong>
-              <p>${formattedBalance} ${symbol}</p>
-            </div>
-            <a href="https://tonviewer.com/${walletAddress}/jetton/${jettonAddress}" class="jetton-address-link" target="_blank">View</a>
+  const name = jetton.jetton.name || '';
+  const symbol = jetton.jetton.symbol || '';
+  const image = jetton.jetton.image || 'https://via.placeholder.com/40';
+  const jettonAddress = jetton.jetton.address;
+  const isVerified = jetton.jetton.verification === "whitelist";
+  const verifiedBadge = isVerified
+    ? '<img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg" alt="verified" width="16" class="verified-badge">'
+    : '';
 
-          </div>
-        `;
+  // 🚨 Nếu không verified hoặc không có ảnh => nghi ngờ
+  const isSuspicious = !isVerified || image.includes("placeholder");
+  const warningIcon = isSuspicious
+    ? '<img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="warning" width="16" title="Token chưa xác minh hoặc đáng nghi" class="warning-badge">'
+    : '';
 
-        if (balance > 0) {
-          list.innerHTML += itemHTML;
-        } else {
-          zeroBalanceJettons.push(itemHTML);
-        }
-      });
+  const itemHTML = `
+    <div class="jetton-item">
+      <img src="${image}" alt="${name}" class="jetton-logo">
+      <div class="jetton-info">
+        <strong>${name} ${verifiedBadge} ${warningIcon}</strong>
+        <p>${formattedBalance} ${symbol}</p>
+      </div>
+      <a href="https://tonviewer.com/${walletAddress}/jetton/${jettonAddress}" class="jetton-address-link" target="_blank">View</a>
+    </div>
+  `;
+
+  if (balance > 0) {
+    list.innerHTML += itemHTML;
+  } else {
+    zeroBalanceJettons.push(itemHTML);
+  }
+});
+
 
       if (zeroBalanceJettons.length > 0) {
         seeAllBtn.style.display = 'block';
