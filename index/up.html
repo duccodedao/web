@@ -467,16 +467,10 @@ async function fetchTransactionHistory(walletAddress) {
         const isReceived = tx.in_msg && tx.in_msg.value > 0;
         const isSent = tx.out_msgs && tx.out_msgs.length > 0 && tx.out_msgs[0].value > 0;
 
-        const fromRaw = isReceived
-          ? tx.in_msg.source || 'Unknown'
-          : (isSent ? walletAddress : 'Unknown');
-
-        const toRaw = isSent
-          ? tx.out_msgs[0]?.destination || 'Unknown'
-          : (isReceived ? walletAddress : 'Unknown');
-
-        const fromAddress = fromRaw.length > 10 ? shortenBase64(fromRaw) : fromRaw;
-        const toAddress = toRaw.length > 10 ? shortenBase64(toRaw) : toRaw;
+        const fromRaw = tx.in_msg?.source || '';
+        const toRaw = tx.out_msgs?.[0]?.destination || '';
+        const fromAddress = shortenBase64(fromRaw);
+        const toAddress = shortenBase64(toRaw);
 
         const amountRaw = isReceived ? tx.in_msg.value : (isSent ? tx.out_msgs[0].value : 0);
         const amountTon = amountRaw / 1e9;
@@ -489,7 +483,14 @@ async function fetchTransactionHistory(walletAddress) {
           ? tx.in_msg.message || '📝 No memo'
           : (isSent ? tx.out_msgs[0]?.message || '📝 No memo' : '📝 No memo');
 
-        const txhash = tx.transaction_id?.hash || 'N/A';
+        const txhash = tx.transaction_id?.hash || '';
+
+        let addressRow = '';
+        if (isSent) {
+          addressRow = `<strong>To:</strong> ${toAddress}`;
+        } else if (isReceived) {
+          addressRow = `<strong>From:</strong> ${fromAddress}`;
+        }
 
         const li = document.createElement("li");
         li.className = "transaction-item";
@@ -502,15 +503,13 @@ async function fetchTransactionHistory(walletAddress) {
             </div>
             <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
           </div>
+          ${addressRow ? `
           <div class="row">
-            <div class="address">
-              <strong>From:</strong> ${fromAddress}<br>
-              <strong>To:</strong> ${toAddress}
-            </div>
+            <div class="address">${addressRow}</div>
             <div class="time">${time}</div>
-          </div>
+          </div>` : ''}
           <div class="row">
-            <div class="txhash"><strong>Txhash:</strong> ${shortenBase64(txhash)}</div>
+            <a class="txhash" href="https://tonviewer.com/transaction/${txhash}" target="_blank">Transaction</a>
           </div>
           ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
         `;
@@ -525,24 +524,23 @@ async function fetchTransactionHistory(walletAddress) {
   }
 }
 
-// Rút gọn chuỗi base64 kiểu: ABC...XYZ
 function shortenBase64(str) {
   if (!str || typeof str !== "string") return str;
   return str.slice(0, 6) + '...' + str.slice(-4);
 }
 
-
-
-    
-// Hàm rút gọn số thập phân
 function truncateDecimal(num, decimalPlaces = 6) {
   return parseFloat(num.toFixed(decimalPlaces));
 }
 
-// Hàm toggle ghi chú
 function toggleMemo(el) {
   el.classList.toggle("expanded");
 }
+
+
+
+    
+
 // Hàm mở rộng hoặc thu gọn memo
 function toggleMemo(element) {
   element.classList.toggle("expanded");
