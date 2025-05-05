@@ -217,13 +217,28 @@
 
 
 
-
-#header-disconnect-wallet {
+#header-container {
   position: fixed;
   top: 42px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  background-color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#token-header {
+  margin: 0;
+  color: #000;
 }
 
 #disconnect-wallet {
@@ -255,9 +270,10 @@
   <button id="disconnect-wallet">Disconnect</button>
 </div>
 
-<!-- Tiêu đề Jettons -->
+<!-- Header cố định đầu màn hình -->
 <div id="header-container">
   <h2 id="token-header">Jettons</h2>
+  <button id="disconnect-wallet">Disconnect</button>
 </div>
 
 <div id="loading-spinner" style="display:none;" class="loader"></div>
@@ -265,7 +281,6 @@
 <div id="zero-balance-list" style="display: none;"></div>
 <div id="see-all-btn">------- See all -------</div>
 
-  
 
 
   <footer>
