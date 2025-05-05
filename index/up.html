@@ -271,47 +271,6 @@ a:hover {
 
 
 
-
-.input-icon {
-  position: relative;
-  margin: 10px 0;
-}
-
-.input-icon .icon {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-size: 18px;
-  color: #555;
-}
-
-/* Đặt icon 📬 bên trái */
-.input-icon .icon:first-child {
-  left: 15px;  /* Đặt icon 📬 ở bên trái */
-}
-
-/* Đặt icon 📷 bên phải */
-#qr-scan {
-  position: absolute;
-  top: 50%;
-  right: 15px;  /* Đặt icon 📷 ở bên phải */
-  transform: translateY(-50%);
-  font-size: 20px;
-  color: #555;
-  cursor: pointer;
-  pointer-events: auto; /* Cho phép click vào icon */
-}
-
-/* Thêm hiệu ứng hover cho icon quét mã QR */
-#qr-scan:hover {
-  color: #4CAF50;
-}
-
-.input-icon input {
-  padding-left: 45px !important; /* Chừa khoảng cho icon bên trái */
-  padding-right: 45px !important; /* Chừa khoảng cho icon bên phải */
-}
 .input-logo {
   position: absolute;
   left: 15px;
@@ -365,35 +324,80 @@ a:hover {
 
 
 
+.input-icon {
+  position: relative;
+  margin: 10px 0;
+}
 
+.input-icon .icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: #555;
+}
 
+/* Đặt icon 📬 bên trái */
+.input-icon .icon:first-child {
+  left: 15px;  /* Đặt icon 📬 ở bên trái */
+}
+
+/* Đặt icon 📷 bên phải */
+#qr-scan {
+  position: absolute;
+  top: 50%;
+  right: 15px;  /* Đặt icon 📷 ở bên phải */
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #555;
+  cursor: pointer;
+  pointer-events: auto; /* Cho phép click vào icon */
+}
+
+/* Thêm hiệu ứng hover cho icon quét mã QR */
+#qr-scan:hover {
+  color: #4CAF50;
+}
+
+.input-icon input {
+  padding-left: 45px !important; /* Chừa khoảng cho icon bên trái */
+  padding-right: 45px !important; /* Chừa khoảng cho icon bên phải */
+}
+.input-logo {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  border-radius: 25px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
 
 
 #qr-scanner-container {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
 }
 
 #qr-scanner-video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 
 #qr-scanner-box {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200px;
-  height: 200px;
-  border: 3px solid #fff;
-  box-sizing: border-box;
+  border: 2px solid red;
+  top: 30%;
+  left: 20%;
+  width: 60%;
+  height: 40%;
 }
 
   </style>
@@ -414,34 +418,35 @@ a:hover {
     <p id="wallet-balance" class="balance">Loading...</p>
     <div class="form-send">
       <h2>Gửi TON</h2>
-  
+    
       <div class="input-icon">
         <span class="icon">📬</span>
         <input type="text" id="to-address" placeholder="Address">
         <span id="qr-scan" class="icon" title="Scan QR" style="cursor: pointer;">📷</span> <!-- Thêm icon quét QR -->
       </div>
-  
+    
       <div class="input-icon">
         <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
         <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
       </div>
-  
+
       <div class="input-icon">
         <span class="icon">📝</span>
         <input type="text" id="memo-text" placeholder="Memo" disabled>
       </div>
-  
+    
       <button id="send-ton-btn">Sent Transaction</button>
     </div>
-  
-    <!-- Phần tử quét mã QR -->
-    <div id="qr-scanner-container" style="display: none;">
-      <video id="qr-scanner-video" style="width: 100%; height: 100%;"></video>
-      <div id="qr-scanner-box" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 3px solid #fff; box-sizing: border-box;"></div>
-    </div>
-  
+    
     <ul id="transactions-list"></ul>
-  </div>
+</div>
+
+<!-- Container quét QR -->
+<div id="qr-scanner-container" style="display: none;">
+  <video id="qr-scanner-video" width="100%" height="100%" style="border: 1px solid black;"></video>
+  <div id="qr-scanner-box" style="position: absolute; border: 2px solid red; top: 30%; left: 20%; width: 60%; height: 40%;"></div> <!-- Khu vực quét -->
+</div>
+
   
   
 
@@ -741,28 +746,27 @@ function toggleMemo(element) {
 
 
 
-
-// Lấy phần tử quét mã QR
+// Lấy các phần tử
 const qrScanButton = document.getElementById("qr-scan");
 const qrScannerContainer = document.getElementById("qr-scanner-container");
 const qrScannerVideo = document.getElementById("qr-scanner-video");
-const qrScannerBox = document.getElementById("qr-scanner-box");
 const toAddressInput = document.getElementById("to-address");
 
-// Khi nhấn vào icon quét QR, mở camera quét mã QR
+// Khi bấm vào icon quét QR, mở camera quét mã QR
 qrScanButton.addEventListener("click", () => {
-  qrScannerContainer.style.display = "block";
-  startQrScanner();
+  qrScannerContainer.style.display = "block"; // Hiển thị phần quét QR
+  startQrScanner(); // Bắt đầu quét mã QR
 });
 
 // Khởi động camera quét mã QR
 function startQrScanner() {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Truy cập camera
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
       .then(function (stream) {
         qrScannerVideo.srcObject = stream;
         qrScannerVideo.play();
-        requestAnimationFrame(scanQRCode);
+        requestAnimationFrame(scanQRCode); // Bắt đầu quét mã QR
       })
       .catch(function (err) {
         console.log("Error accessing camera: " + err);
@@ -785,9 +789,9 @@ function scanQRCode() {
     });
     
     if (code) {
-      // Đã quét được mã QR, điền vào ô địa chỉ
+      // Đã quét được mã QR, lấy dữ liệu địa chỉ và điền vào ô input
       toAddressInput.value = code.data;
-      stopQrScanner();
+      stopQrScanner(); // Dừng quét mã QR
     } else {
       requestAnimationFrame(scanQRCode); // Tiếp tục quét
     }
@@ -796,11 +800,11 @@ function scanQRCode() {
   }
 }
 
-// Dừng quét mã QR
+// Dừng quét mã QR và đóng phần quét QR
 function stopQrScanner() {
   const stream = qrScannerVideo.srcObject;
   const tracks = stream.getTracks();
-  tracks.forEach(track => track.stop());
+  tracks.forEach(track => track.stop()); // Dừng camera
   qrScannerContainer.style.display = "none"; // Ẩn container quét QR
 }
 
