@@ -462,66 +462,43 @@ item.classList.add("active");
 
 
 
-function base64ToHex(base64) {
-  const raw = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
-  let result = '';
-  for (let i = 0; i < raw.length; i++) {
-    result += raw.charCodeAt(i).toString(16).padStart(2, '0');
-  }
-  return result;
-}
-
-function truncateDecimal(num) {
-  return parseFloat(num.toFixed(6));
-}
-
-function truncateBase64(addr) {
-  return addr.length > 12 ? addr.slice(0, 4) + "…" + addr.slice(-4) : addr;
-}
-
-function toggleMemo(el) {
-  el.classList.toggle("expanded");
-}
-
-function safeParseNanoTON(value) {
-  if (!value || isNaN(value)) return 0;
-  return parseInt(value) / 1e9;
-}
-
 async function fetchTransactionHistory(walletAddress) {
   try {
-    const response = await fetch(`https://toncenter.com/api/v2/getTransactions?address=${walletAddress}`);
+    const response = await fetch(`https://tonapi.io/v2/blockchain/accounts/${walletAddress}/transactions`);
     const data = await response.json();
     const list = document.getElementById("transactions-list");
     list.innerHTML = "";
 
-    if (data && data.result && data.result.length > 0) {
-      for (const tx of data.result) {
-        const inMsg = tx.in_msg;
-        const outMsgs = tx.out_msgs || [];
+    if (data.transactions && data.transactions.length > 0) {
+      for (const tx of data.transactions) {
+        const isReceived = tx.in_msg && parseInt(tx.in_msg.value) > 0;
+        const isSent = tx.out_msgs && tx.out_msgs.length > 0 && parseInt(tx.out_msgs[0].value) > 0;
 
-        const isReceived = inMsg && parseInt(inMsg.value) > 0;
-        const isSent = outMsgs.length > 0 && parseInt(outMsgs[0].value) > 0;
+        const fromAddress = isReceived ? tx.in_msg?.source?.address : null;
+        const toAddress = isSent ? tx.out_msgs[0]?.destination?.address : null;
 
-        const fromAddress = isReceived ? inMsg.source : (isSent ? walletAddress : '');
-        const toAddress = isSent ? outMsgs[0].destination : (isReceived ? walletAddress : '');
+        const address = isReceived
+          ? fromAddress || 'No'
+          : (isSent ? toAddress || 'No' : 'No');
 
-        const amountRaw = isReceived ? inMsg.value : (isSent ? outMsgs[0].value : "0");
-        const amountTon = safeParseNanoTON(amountRaw);
+        const amountRaw = isReceived
+          ? parseInt(tx.in_msg.value)
+          : (isSent ? parseInt(tx.out_msgs[0].value) : 0);
 
+        const amountTon = amountRaw / 1e9;
         const time = new Date(tx.utime * 1000).toLocaleString();
-        const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Unknown');
-        const sign = isReceived ? '+ ' : (isSent ? '- ' : '');
+        const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Error');
+        const sign = isReceived ? '+ ' : (isSent ? '- ' : ' ');
         const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
         const memo = isReceived
-          ? inMsg.message || '📝 No memo'
-          : (isSent ? outMsgs[0].message || '📝 No memo' : '📝 No memo');
+          ? tx.in_msg?.message || (tx.in_msg?.decoded_body?.text || '📝 No memo')
+          : (isSent ? tx.out_msgs[0]?.message || (tx.out_msgs[0]?.decoded_body?.text || '📝 No memo') : '📝 No memo');
 
-        const txBase64 = tx.transaction_id?.hash || '';
-        const txHex = base64ToHex(txBase64);
-        const txLink = `https://tonviewer.com/transaction/${txHex}`;
+        const base64Addr = await encodeBase64(address);
+        const txHash = tx.hash || "unknown";
 
+        // 👉 Thêm phần From / To
         let addressInfo = '';
         if (isSent && toAddress) {
           addressInfo = `<strong>To:</strong> ${truncateBase64(toAddress)}`;
@@ -531,6 +508,7 @@ async function fetchTransactionHistory(walletAddress) {
 
         const li = document.createElement("li");
         li.className = "transaction-item";
+
         li.innerHTML = `
           <div class="row">
             <div class="icon-label">
@@ -540,17 +518,13 @@ async function fetchTransactionHistory(walletAddress) {
             <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
           </div>
           <div class="row">
-            <div class="address">${addressInfo}</div>
+            <div class="address" title="${base64Addr}">
+              <a href="https://tonviewer.com/transaction/${txHash}" target="_blank">Transaction</a>
+            </div>
             <div class="time">${time}</div>
           </div>
-          <div class="row">
-            <div class="address" title="${txHex}">
-              <a href="${txLink}" target="_blank">Xem giao dịch</a>
-            </div>
-          </div>
-          <div class="row">
-            <div class="memo" onclick="toggleMemo(this)">${memo}</div>
-          </div>
+          ${addressInfo ? `<div class="row"><div class="memo">${addressInfo}</div></div>` : ''}
+          ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
         `;
 
         list.appendChild(li);
