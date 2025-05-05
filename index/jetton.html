@@ -339,6 +339,7 @@ item.classList.add("active");
           minimumFractionDigits: 0,
           maximumFractionDigits: decimals > 5 ? 5 : decimals
         });
+        const name = jetton.jetton.name || '';
         const symbol = jetton.jetton.symbol || '';
         const image = jetton.jetton.image || 'https://via.placeholder.com/40';
         const jettonAddress = jetton.jetton.address;
@@ -349,7 +350,7 @@ item.classList.add("active");
           <div class="jetton-item">
             <img src="${image}" alt="${jetton.jetton.name}" class="jetton-logo">
             <div class="jetton-info">
-              <strong>${symbol} ${verifiedBadge}</strong>
+              <strong>${name} ${verifiedBadge}</strong>
               <p>${formattedBalance} ${symbol}</p>
             </div>
             <a href="https://tonviewer.com/${walletAddress}/jetton/${jettonAddress}" class="jetton-address-link" target="_blank">View</a>
