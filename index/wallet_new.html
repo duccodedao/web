@@ -313,6 +313,36 @@ a:hover {
 }
 
 
+
+
+
+
+
+
+
+
+    #header-disconnect {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 20px) + 12px); /* Tương thích tai thỏ iOS */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background-color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#header-disconnect:hover {
+  background-color: #f0f0f0;
+}
+
+
+
   </style>
 </head>
 <body>
@@ -321,39 +351,40 @@ a:hover {
     <div id="connect-wallet"></div>
   </div>
 
-<div class="container" id="main-content">
-    <p class="info">
-      <span id="wallet-address">Loading...</span>
-      <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
-    </p>
-    <p id="wallet-balance" class="balance">Loading...</p>
-    <div class="form-send">
-      <h2>Gửi TON</h2>
-    
-      <div class="input-icon">
-        <span class="icon">📬</span>
-        <input type="text" id="to-address" placeholder="Address">
-      </div>
-    
-      <div class="input-icon">
-        <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
+<!-- Header chứa nút Disconnect căn giữa -->
+<div id="header-disconnect">
+  <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
+</div>
 
-        <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
-      </div>
-      
-      
-    
-      <div class="input-icon">
-        <span class="icon">📝</span>
-        <input type="text" id="memo-text" placeholder="Memo" disabled>
-      </div>
-    
-      <button id="send-ton-btn">Sent Transaction</button>
+<div class="container" id="main-content">
+  <p class="info">
+    <span id="wallet-address">Loading...</span>
+  </p>
+  <p id="wallet-balance" class="balance">Loading...</p>
+  
+  <div class="form-send">
+    <h2>Gửi TON</h2>
+
+    <div class="input-icon">
+      <span class="icon">📬</span>
+      <input type="text" id="to-address" placeholder="Address">
     </div>
-    
-    <ul id="transactions-list"></ul>
+
+    <div class="input-icon">
+      <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
+      <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
+    </div>
+
+    <div class="input-icon">
+      <span class="icon">📝</span>
+      <input type="text" id="memo-text" placeholder="Memo" disabled>
+    </div>
+
+    <button id="send-ton-btn">Sent Transaction</button>
   </div>
 
+  <ul id="transactions-list"></ul>
+</div>
 
 
 
