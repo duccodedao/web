@@ -454,44 +454,73 @@ item.classList.add("active");
 
 
 
+async function encodeBase64(address) {
+  // Hàm này mã hóa địa chỉ ví sang dạng base64
+  const encoder = new TextEncoder();
+  const data = encoder.encode(address);
+  return btoa(String.fromCharCode(...new Uint8Array(data.buffer)));
+}
+
+function truncateBase64(addr) {
+  // Cắt ngắn địa chỉ ví base64 cho dễ nhìn
+  return addr.length > 12 ? addr.slice(0, 3) + '…' + addr.slice(-3) : addr;
+}
+
+function truncateDecimal(num) {
+  // Cắt bớt phần thập phân cho số lượng TON
+  return parseFloat(num.toFixed(9));
+}
+
+function toggleMemo(el) {
+  // Hàm thay đổi trạng thái mở rộng memo
+  el.classList.toggle("expanded");
+}
+
 async function fetchTransactionHistory(walletAddress) {
   try {
-    const response = await fetch(`https://tonapi.io/v2/blockchain/accounts/${walletAddress}/transactions`);
+    const response = await fetch(`https://toncenter.com/api/v2/getTransactions?address=${walletAddress}`);
     const data = await response.json();
     const list = document.getElementById("transactions-list");
     list.innerHTML = "";
 
-    if (data.transactions && data.transactions.length > 0) {
-      for (const tx of data.transactions) {
-        const isReceived = tx.in_msg && tx.in_msg.value > 0;
-        const isSent = tx.out_msgs && tx.out_msgs.length > 0 && tx.out_msgs[0].value > 0;
+    if (data && data.result && data.result.length > 0) {
+      for (const tx of data.result) {
+        const inMsg = tx.in_msg;
+        const outMsgs = tx.out_msgs || [];
 
-        const fromAddress = isReceived ? (tx.in_msg?.source?.address || 'No') : walletAddress;
-        const toAddress = isSent ? (tx.out_msgs[0]?.destination?.address || 'No') : walletAddress;
+        const isReceived = inMsg && inMsg.value > 0;
+        const isSent = outMsgs.length > 0 && outMsgs[0].value > 0;
 
-        const amountRaw = isReceived ? tx.in_msg.value : (isSent ? tx.out_msgs[0].value : 0);
+        const fromAddress = isReceived
+          ? inMsg.source
+          : (isSent ? walletAddress : '');
+
+        const toAddress = isSent
+          ? outMsgs[0].destination
+          : (isReceived ? walletAddress : '');
+
+        const amountRaw = isReceived ? inMsg.value : (isSent ? outMsgs[0].value : 0);
         const amountTon = amountRaw / 1e9;
         const time = new Date(tx.utime * 1000).toLocaleString();
-        const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Error');
+        const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Unknown');
         const sign = isReceived ? '+ ' : (isSent ? '- ' : ' ');
         const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
-        // 👉 Memo / Comment
         const memo = isReceived
-          ? tx.in_msg?.message || (tx.in_msg?.decoded_body?.text || '📝 No memo')
-          : (isSent ? tx.out_msgs[0]?.message || (tx.out_msgs[0]?.decoded_body?.text || '📝 No memo') : '📝 No memo');
+          ? inMsg.message || '📝 No memo'
+          : (isSent ? outMsgs[0].message || '📝 No memo' : '📝 No memo');
+
+        const txHash = tx.transaction_id?.hash || '';
+        const txLink = `https://tonviewer.com/transaction/${txHash}`;
 
         const li = document.createElement("li");
         li.className = "transaction-item";
 
-        const fromBase64 = await encodeBase64(fromAddress);
-        const toBase64 = await encodeBase64(toAddress);
-
-        // 👉 Dòng From/To hiển thị
+        // Giao dịch Sent thì hiện To, Received thì hiện From, còn lại ẩn
         let addressInfo = '';
-        if (isSent) {
+        if (isSent && toAddress) {
           addressInfo = `<strong>To:</strong> ${truncateBase64(toAddress)}`;
-        } else if (isReceived) {
+        } else if (isReceived && fromAddress) {
           addressInfo = `<strong>From:</strong> ${truncateBase64(fromAddress)}`;
         }
 
@@ -507,9 +536,13 @@ async function fetchTransactionHistory(walletAddress) {
             <div class="address">${addressInfo}</div>
             <div class="time">${time}</div>
           </div>
-          ${memo ? `<div class="row"><div class="memo" onclick="toggleMemo(this)">${memo}</div></div>` : ''}
           <div class="row">
-            <a class="txhash" href="https://tonviewer.com/transaction/${tx.hash}" target="_blank">Transaction</a>
+            <div class="address" title="${tx.transaction_id.hash}">
+              <a href="${txLink}" target="_blank">Xem chi tiết giao dịch</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="memo" onclick="toggleMemo(this)">${memo}</div>
           </div>
         `;
 
@@ -523,31 +556,7 @@ async function fetchTransactionHistory(walletAddress) {
   }
 }
 
-// Hàm rút gọn địa chỉ (Base64)
-function truncateBase64(addr) {
-  return addr.length > 12 ? addr.slice(0, 3) + '…' + addr.slice(-3) : addr;
-}
 
-// Hàm rút gọn số thập phân
-function truncateDecimal(num) {
-  return parseFloat(num.toFixed(9));
-}
-
-// Hiển thị/ẩn memo
-function toggleMemo(el) {
-  el.classList.toggle("expanded");
-}
-
-// Chuyển địa chỉ sang Base64 (nếu cần)
-async function encodeBase64(address) {
-  try {
-    const response = await fetch(`https://tonapi.io/v2/utils/address/${address}/convert`);
-    const result = await response.json();
-    return result.base64 || address;
-  } catch {
-    return address;
-  }
-}
 
     
 
