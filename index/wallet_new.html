@@ -335,43 +335,42 @@ a:hover {
   </div>
 
 
-
-<!-- Header Disconnect button -->
+<!-- Nút Disconnect ở header -->
 <div id="header-disconnect">
   <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
 </div>
 
-<!-- Main content -->
 <div class="container" id="main-content">
   <p class="info">
     <span id="wallet-address">Loading...</span>
   </p>
-    <div class="form-send">
-      <h2>Gửi TON</h2>
-    
-      <div class="input-icon">
-        <span class="icon">📬</span>
-        <input type="text" id="to-address" placeholder="Address">
-      </div>
-    
-      <div class="input-icon">
-        <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
 
-        <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
-      </div>
-      
-      
-    
-      <div class="input-icon">
-        <span class="icon">📝</span>
-        <input type="text" id="memo-text" placeholder="Memo" disabled>
-      </div>
-    
-      <button id="send-ton-btn">Sent Transaction</button>
+  <p id="wallet-balance" class="balance">Loading...</p>
+
+  <div class="form-send">
+    <h2>Gửi TON</h2>
+
+    <div class="input-icon">
+      <span class="icon">📬</span>
+      <input type="text" id="to-address" placeholder="Address">
     </div>
-    
-    <ul id="transactions-list"></ul>
+
+    <div class="input-icon">
+      <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
+      <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
+    </div>
+
+    <div class="input-icon">
+      <span class="icon">📝</span>
+      <input type="text" id="memo-text" placeholder="Memo" disabled>
+    </div>
+
+    <button id="send-ton-btn">Sent Transaction</button>
   </div>
+
+  <ul id="transactions-list"></ul>
+</div>
+
 
 
 
