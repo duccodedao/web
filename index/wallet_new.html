@@ -487,8 +487,8 @@ a:hover {
     <span id="close-qr" class="close-btn">✖</span>
     <h3>QR Code Địa Chỉ</h3>
     <canvas id="qr-canvas" class="qr-canvas"></canvas>
-    <p id="qr-address" class="qr-address"></p>
-    <button onclick="copyAddress()" class="copy-btn">Copy Address</button>
+    <p id="qr-address" class="qr-address">Địa chỉ ví: <span id="address">0x1234567890abcdef</span></p>
+    <button id="copy-btn" onclick="copyAddress()" class="copy-btn">Copy Address</button>
   </div>
 </div>
 
@@ -496,43 +496,52 @@ a:hover {
 
 
 
+
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
-  const qrBtn = document.getElementById('show-qr-btn');
-  const qrModal = document.getElementById('qr-modal');
-  const closeQr = document.getElementById('close-qr');
-  const qrCanvas = document.getElementById('qr-canvas');
-  const qrAddress = document.getElementById('qr-address');
+const qrBtn = document.getElementById('show-qr-btn');
+const qrModal = document.getElementById('qr-modal');
+const closeQr = document.getElementById('close-qr');
+const qrCanvas = document.getElementById('qr-canvas');
+const qrAddress = document.getElementById('qr-address');
+const copyBtn = document.getElementById('copy-btn'); // Lấy nút Copy Address
 
-  qrBtn.addEventListener('click', () => {
-    // Lấy địa chỉ đầy đủ từ data-full-address
-    const fullAddress = document.getElementById('wallet-address').getAttribute("data-full-address");
-    qrAddress.innerText = fullAddress;
+qrBtn.addEventListener('click', () => {
+  // Lấy địa chỉ đầy đủ từ data-full-address
+  const fullAddress = document.getElementById('wallet-address').getAttribute("data-full-address");
+  qrAddress.innerText = fullAddress;
 
-    // Tạo mã QR từ địa chỉ đầy đủ
-    QRCode.toCanvas(qrCanvas, fullAddress, { width: 200 }, function (error) {
-      if (error) console.error(error);
+  // Tạo mã QR từ địa chỉ đầy đủ
+  QRCode.toCanvas(qrCanvas, fullAddress, { width: 200 }, function (error) {
+    if (error) console.error(error);
+  });
+
+  qrModal.style.display = 'flex';
+});
+
+closeQr.addEventListener('click', () => {
+  qrModal.style.display = 'none';
+});
+
+function copyAddress() {
+  // Lấy địa chỉ đầy đủ từ data-full-address
+  const fullAddress = document.getElementById("wallet-address").getAttribute("data-full-address");
+  if (fullAddress) {
+    // Sao chép địa chỉ đầy đủ vào clipboard
+    navigator.clipboard.writeText(fullAddress).then(() => {
+      // Thay đổi văn bản của nút thành "Copied!"
+      copyBtn.innerText = "Copied!";
+      
+      // Sau 2 giây, thay đổi lại văn bản của nút về "Copy Address"
+      setTimeout(() => {
+        copyBtn.innerText = "Copy Address";
+      }, 2000);
+    }).catch((err) => {
+      console.error("Không thể copy:", err);
     });
-
-    qrModal.style.display = 'flex';
-  });
-
-  closeQr.addEventListener('click', () => {
-    qrModal.style.display = 'none';
-  });
-
-  function copyAddress() {
-    // Lấy địa chỉ đầy đủ từ data-full-address
-    const fullAddress = document.getElementById("wallet-address").getAttribute("data-full-address");
-    if (fullAddress) {
-      // Sao chép địa chỉ đầy đủ vào clipboard
-      navigator.clipboard.writeText(fullAddress).then(() => {
-        alert("Đã copy địa chỉ đầy đủ!");
-      }).catch((err) => {
-        console.error("Không thể copy:", err);
-      });
-    }
   }
+}
+
 </script>
 
 
