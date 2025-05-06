@@ -48,6 +48,7 @@
 
     loginBtn.addEventListener('click', async () => {
       try {
+        // Định nghĩa cấu hình WebAuthn
         const publicKey = {
           challenge: new Uint8Array([0x5b, 0x3b, 0x6e, 0x7d]), // Thử thách giả định, bạn cần thay thế bằng một giá trị thực tế
           rp: { name: "MyWebsite" },
@@ -65,7 +66,7 @@
           attestation: "direct"
         };
 
-        // Tạo đăng ký
+        // Tạo đăng ký hoặc yêu cầu xác thực
         const credential = await navigator.credentials.create({ publicKey });
         
         // Xử lý kết quả
