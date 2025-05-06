@@ -623,7 +623,7 @@ qrBtn.addEventListener('click', () => {
   qrAddress.innerText = fullAddress;
 
   // Tạo mã QR từ địa chỉ đầy đủ
-  QRCode.toCanvas(qrCanvas, fullAddress, { width: 200 }, function (error) {
+  QRCode.toCanvas(qrCanvas, fullAddress, { width: 300 }, function (error) {
     if (error) console.error(error);
   });
 
