@@ -49,7 +49,7 @@ body {
   text-align: center;
   overflow-y: auto;
   max-height: 90vh;
-  margin-top: 85px;
+  margin-top: 90px;
   margin-bottom: 90px;
 }
 
@@ -75,7 +75,7 @@ h2 {
 #wallet-address {
   font-weight: 600;
   color: #0077cc;
-  font-size: 14px;
+  font-size: 20px;
   word-break: break-word;
 }
 
@@ -165,15 +165,12 @@ a:hover {
   font-size: 16px;
   margin-left: 3px;
   cursor: pointer;
-  color: #d32f2f;
+  color: #FFF;
   display: none;
   transition: transform 0.2s ease;
+
 }
 
-#disconnect:hover {
-  transform: scale(1.1);
-  color: #b71c1c;
-}
 
 @media (max-width: 600px) {
   .container {
@@ -187,7 +184,7 @@ a:hover {
 
   .info,
   .balance,
-  #wallet-address,
+
   .row,
   .address,
   .time {
@@ -203,9 +200,7 @@ a:hover {
     height: 18px;
   }
 
-  #disconnect {
-    font-size: 14px;
-  }
+
 }
 .memo {
   font-size: 13px;
@@ -302,6 +297,28 @@ a:hover {
 
 
 
+.max-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #007bff;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 25px;
+  cursor: pointer;
+  user-select: none;
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -349,12 +366,12 @@ a:hover {
 
   .info,
   .balance,
-  #wallet-address,
+
   .row,
   .address,
   .time,
   .memo {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .transaction-item {
@@ -367,9 +384,7 @@ a:hover {
     height: 18px;
   }
 
-  #disconnect {
-    font-size: 14px;
-  }
+
 }
 
 
@@ -422,8 +437,11 @@ a:hover {
   word-break: break-word;
 }
 
+
+
 .copy-btn {
-  margin-top: 10px;
+  display: block; /* Đảm bảo nút là block-level */
+  margin: 10px auto; /* Canh giữa nút copy */
   padding: 10px 20px;
   border: none;
   border-radius: 25px;
@@ -431,6 +449,54 @@ a:hover {
   color: white;
   font-weight: bold;
   cursor: pointer;
+  text-align: center; /* Canh giữa văn bản trong nút */
+}
+/* Đảm bảo các nút được căn chỉnh đúng */
+.button-container {
+  display: flex;
+  flex-direction: column; /* Xếp các nút theo chiều dọc */
+  align-items: stretch; /* Giãn rộng các nút theo chiều ngang */
+  width: 100%; /* Chiếm toàn bộ chiều rộng */
+}
+
+.button-container .button-row {
+  display: flex;
+  justify-content: space-between; /* Giãn cách đều các nút trong hàng ngang */
+  gap: 10px; /* Khoảng cách giữa các nút */
+  margin-top: 10px; /* Khoảng cách giữa hàng trên và hàng dưới */
+}
+
+button {
+  flex-grow: 1; /* Các nút sẽ giãn đều để lấp đầy không gian */
+  margin: 55px 0; /* Khoảng cách giữa các nút */
+  padding: 10px; /* Đảm bảo nút có đủ không gian bên trong */
+  text-align: center; /* Canh giữa văn bản trong nút */
+  display: flex;
+  align-items: center; /* Canh giữa biểu tượng và văn bản theo chiều dọc */
+  justify-content: center; /* Canh giữa cả biểu tượng và văn bản theo chiều ngang */
+  border: none; /* Bỏ viền cho nút */
+  outline: none; /* Bỏ đường viền ngoài khi nút được chọn */
+  background-color: #f0f0f0; /* Màu nền cho nút */
+  border-radius: 25px; /* Bo góc cho nút */
+  box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng đến chiều rộng */
+}
+
+button i {
+  margin-right: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+}
+
+button:hover {
+  background-color: #ddd; /* Thay đổi màu nền khi hover */
+}
+
+/* Nút ở hàng trên */
+#send-ton-btn {
+  margin-bottom: 10px; /* Khoảng cách giữa nút này và các nút dưới */
+}
+
+/* Các nút ở hàng dưới */
+#show-qr-btn, #disconnect {
+  width: auto; /* Đảm bảo chiều rộng tự động cho các nút */
 }
 
   </style>
@@ -442,16 +508,16 @@ a:hover {
   </div>
 
 
-
   <div class="container" id="main-content">
     <p class="info">
+      
       <span id="wallet-address" data-full-address=""></span>
+      
 
-      <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
     </p>
     <p id="wallet-balance" class="balance">Loading...</p>
     <div class="form-send">
-      <h2>Gửi TON</h2>
+      <h2>Sent TON</h2>
     
       <div class="input-icon">
         <span class="icon">📬</span>
@@ -462,16 +528,27 @@ a:hover {
       <div class="input-icon">
         <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
         <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
+        <span class="max-btn" onclick="setMaxTON()">Max</span>
       </div>
+      
+      
 
       <div class="input-icon">
         <span class="icon">📝</span>
         <input type="text" id="memo-text" placeholder="Memo" disabled>
       </div>
     
-      <button id="send-ton-btn">Sent Transaction</button>
-      <button id="show-qr-btn" style="margin-top: 10px; background: #4caf50;">Deposit</button>
+      
 
+      <div class="button-container">
+        <button id="send-ton-btn"><i class="fas fa-paper-plane"></i> Sent Transaction</button>
+        <div class="button-row">
+          <button id="show-qr-btn"><i class="fas fa-wallet"></i> Deposit TON</button>
+          <button id="disconnect"><i class="fas fa-sign-out-alt"></i> Disconnect</button>
+        </div>
+      </div>
+      
+      
     </div>
     
     <ul id="transactions-list"></ul>
@@ -552,6 +629,7 @@ function copyAddress() {
 
 
 
+
   <footer>
     <a href="/index/wallet_new.html" class="footer-item" data-page="wallet_new.html">
       <i class="fas fa-wallet"></i>
@@ -598,6 +676,8 @@ item.classList.add("active");
 const tg = window.Telegram.WebApp;
 tg.ready();
 
+let balanceTon = 0; // Khai báo biến toàn cục để lưu số dư
+
 const connector = new TON_CONNECT_UI.TonConnectUI({
   manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
   buttonRootId: "connect-wallet"
@@ -616,13 +696,13 @@ connector.onStatusChange(async (wallet) => {
 
       if (data.ok && data.result) {
         const accountAddress = data.result.address.account_address;
-        const balanceNanoTON = parseInt(data.result.balance); // Lấy số dư nanoTON
-        const balanceTon = safeParseNanoTON(balanceNanoTON); // Chuyển đổi nanoTON sang TON
-        document.getElementById("wallet-balance").textContent = `Số dư: ${truncateDecimal(balanceTon)} TON`;
+        const balanceNanoTON = parseInt(data.result.balance);
+        balanceTon = safeParseNanoTON(balanceNanoTON); // Gán vào biến toàn cục
+
+        document.getElementById("wallet-balance").textContent = `Balance: ${truncateDecimal(balanceTon)} TON`;
         document.getElementById("ton-amount").setAttribute("max", balanceTon);
 
-        // 👉 Hiển thị rút gọn, lưu địa chỉ đầy đủ
-        const shortAddress = accountAddress.slice(0, 6) + "..." + accountAddress.slice(-4);
+        const shortAddress = accountAddress.slice(0, 8) + "..." + accountAddress.slice(-8);
         const walletAddressEl = document.getElementById("wallet-address");
         walletAddressEl.textContent = shortAddress;
         walletAddressEl.setAttribute("data-full-address", accountAddress);
@@ -643,6 +723,27 @@ connector.onStatusChange(async (wallet) => {
     document.getElementById("connect-only").style.display = "flex";
   }
 });
+
+// 👉 Hàm chuyển đổi nanoTON -> TON
+function safeParseNanoTON(nano) {
+  return nano / 1e9;
+}
+
+// 👉 Làm tròn số để hiển thị gọn (nếu cần)
+function truncateDecimal(num) {
+  return parseFloat(num.toFixed(4));
+}
+
+// 👉 Gán full số dư vào input khi nhấn MAX
+function setMaxTON() {
+  if (balanceTon > 0) {
+    document.getElementById("ton-amount").value = balanceTon;
+  }
+}
+
+
+
+
 
 
 document.getElementById("disconnect").addEventListener("click", () => {
@@ -670,7 +771,7 @@ function base64ToHex(base64) {
 }
 
 function truncateBase64(addr) {
-  return addr.length > 12 ? addr.slice(0, 6) + "…" + addr.slice(-6) : addr;
+  return addr.length > 12 ? addr.slice(0, 4) + "…" + addr.slice(-4) : addr;
 }
 
 function toggleMemo(el) {
