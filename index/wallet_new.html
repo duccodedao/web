@@ -438,10 +438,11 @@ a:hover {
 }
 
 
-
+/* Nút Copy */
 .copy-btn {
-  display: block; /* Đảm bảo nút là block-level */
-  margin: 10px auto; /* Canh giữa nút copy */
+  width: 100%;
+  max-width: 300px;
+  margin-top: 20px;
   padding: 10px 20px;
   border: none;
   border-radius: 25px;
@@ -449,54 +450,87 @@ a:hover {
   color: white;
   font-weight: bold;
   cursor: pointer;
-  text-align: center; /* Canh giữa văn bản trong nút */
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.copy-btn i {
+  margin-right: 8px;
+}
+
+.copy-btn:hover {
+  background-color: #005fa3;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Đảm bảo các nút được căn chỉnh đúng */
 .button-container {
   display: flex;
   flex-direction: column; /* Xếp các nút theo chiều dọc */
-  align-items: stretch; /* Giãn rộng các nút theo chiều ngang */
+  align-items: stretch; /* Giãn các nút theo chiều ngang */
   width: 100%; /* Chiếm toàn bộ chiều rộng */
+  padding: 20px; /* Khoảng cách xung quanh container */
+  box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng đến kích thước */
 }
 
-.button-container .button-row {
-  display: flex;
-  justify-content: space-between; /* Giãn cách đều các nút trong hàng ngang */
-  gap: 10px; /* Khoảng cách giữa các nút */
-  margin-top: 10px; /* Khoảng cách giữa hàng trên và hàng dưới */
-}
-
+/* Các nút được giãn ngang với chiều dài tự động */
 button {
-  flex-grow: 1; /* Các nút sẽ giãn đều để lấp đầy không gian */
-  margin: 55px 0; /* Khoảng cách giữa các nút */
-  padding: 10px; /* Đảm bảo nút có đủ không gian bên trong */
-  text-align: center; /* Canh giữa văn bản trong nút */
+  width: 100%; /* Chiếm hết chiều rộng */
+  max-width: 100%; /* Giới hạn chiều rộng tối đa là 100% */
+  padding: 10px;
+  text-align: center; /* Canh giữa văn bản */
   display: flex;
-  align-items: center; /* Canh giữa biểu tượng và văn bản theo chiều dọc */
-  justify-content: center; /* Canh giữa cả biểu tượng và văn bản theo chiều ngang */
-  border: none; /* Bỏ viền cho nút */
-  outline: none; /* Bỏ đường viền ngoài khi nút được chọn */
-  background-color: #f0f0f0; /* Màu nền cho nút */
-  border-radius: 25px; /* Bo góc cho nút */
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  background-color: #f0f0f0;
+  border-radius: 25px;
+  margin: 10px 0; /* Khoảng cách giữa các nút */
+  cursor: pointer;
   box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng đến chiều rộng */
 }
 
+/* Khoảng cách giữa biểu tượng và văn bản trong nút */
 button i {
-  margin-right: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+  margin-right: 8px;
 }
 
-button:hover {
-  background-color: #ddd; /* Thay đổi màu nền khi hover */
-}
+
 
 /* Nút ở hàng trên */
 #send-ton-btn {
-  margin-bottom: 10px; /* Khoảng cách giữa nút này và các nút dưới */
+  margin-bottom: 20px; /* Khoảng cách giữa nút này và các nút dưới */
 }
 
-/* Các nút ở hàng dưới */
+/* Các nút ở hàng dưới sẽ hiển thị theo hàng ngang */
+.button-row {
+  display: flex;
+  justify-content: space-between; /* Giãn cách đều các nút */
+  width: 100%; /* Chiếm toàn bộ chiều rộng */
+  gap: 10px; /* Khoảng cách giữa các nút */
+  flex-wrap: wrap; /* Cho phép các nút gói gọn lại khi không đủ không gian */
+}
+
+/* Đặc biệt cho các nút ở hàng dưới */
 #show-qr-btn, #disconnect {
-  width: auto; /* Đảm bảo chiều rộng tự động cho các nút */
+  flex: 1 1 45%; /* Các nút sẽ chiếm 45% chiều rộng và có thể thu nhỏ hoặc giãn nở */
+  max-width: 100%; /* Đảm bảo chiều rộng không vượt quá 100% */
 }
 
   </style>
