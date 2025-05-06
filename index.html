@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đăng nhập bằng Face ID</title>
+  <title>Đăng nhập bằng Face ID hoặc Touch ID</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -32,7 +32,7 @@
   </style>
 </head>
 <body>
-  <h2>Đăng nhập bằng Face ID</h2>
+  <h2>Đăng nhập bằng Face ID hoặc Touch ID</h2>
   <button id="loginBtn">Đăng nhập</button>
   <div id="message"></div>
 
@@ -40,44 +40,83 @@
     const loginBtn = document.getElementById('loginBtn');
     const messageDiv = document.getElementById('message');
 
-    // Kiểm tra xem trình duyệt có hỗ trợ WebAuthn hay không
+    // Kiểm tra xem trình duyệt có hỗ trợ WebAuthn không
     if (!window.PublicKeyCredential) {
-      messageDiv.textContent = "Trình duyệt của bạn không hỗ trợ đăng nhập bằng Face ID.";
+      messageDiv.textContent = "Trình duyệt của bạn không hỗ trợ đăng nhập bằng Face ID hoặc Touch ID.";
       loginBtn.disabled = true;
     }
 
     loginBtn.addEventListener('click', async () => {
       try {
-        // Định nghĩa cấu hình WebAuthn
-        const publicKey = {
-          challenge: new Uint8Array([0x5b, 0x3b, 0x6e, 0x7d]), // Thử thách giả định, bạn cần thay thế bằng một giá trị thực tế
-          rp: { name: "MyWebsite" },
-          user: {
-            id: new TextEncoder().encode("user123"),
-            name: "user@example.com",
-            displayName: "User Example"
-          },
-          pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-          authenticatorSelection: {
-            authenticatorAttachment: "platform", // "platform" sẽ kích hoạt Face ID trên thiết bị hỗ trợ
-            userVerification: "required"
-          },
-          timeout: 60000, // Timeout cho yêu cầu
-          attestation: "direct"
-        };
-
-        // Tạo đăng ký hoặc yêu cầu xác thực
-        const credential = await navigator.credentials.create({ publicKey });
+        // Kiểm tra xem người dùng đã đăng ký chưa (kiểm tra thông tin từ localStorage)
+        const credentialId = localStorage.getItem('credentialId');
         
-        // Xử lý kết quả
-        messageDiv.textContent = "Đăng nhập thành công!";
-        console.log(credential);
-        // Lưu thông tin của credential vào server hoặc local storage nếu cần
+        if (credentialId) {
+          // Nếu có thông tin, xác thực người dùng ngay
+          await authenticate();
+        } else {
+          // Nếu chưa đăng ký, yêu cầu đăng ký
+          await register();
+        }
       } catch (error) {
         messageDiv.textContent = "Đăng nhập thất bại: " + error.message;
         console.error(error);
       }
     });
+
+    // Đăng ký người dùng mới với WebAuthn
+    async function register() {
+      const publicKey = {
+        challenge: new Uint8Array([0x5b, 0x3b, 0x6e, 0x7d]), // Giá trị thử thách giả, thay bằng giá trị thực tế từ server
+        rp: {
+          name: "MyWebsite"
+        },
+        user: {
+          id: new TextEncoder().encode("user123"), // ID người dùng
+          name: "user@example.com",
+          displayName: "User Example"
+        },
+        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform", // Sử dụng Face ID/Touch ID trên thiết bị hỗ trợ
+          userVerification: "required"
+        },
+        timeout: 60000, // Thời gian timeout cho yêu cầu
+        attestation: "direct"
+      };
+
+      // Tạo credential
+      const credential = await navigator.credentials.create({ publicKey });
+      
+      // Lưu credentialId vào localStorage để xác thực sau
+      localStorage.setItem('credentialId', credential.id);
+      messageDiv.textContent = "Đăng ký thành công!";
+      console.log(credential);
+      // Lưu khóa công khai trên server nếu cần
+    }
+
+    // Xác thực người dùng đã đăng ký trước đó
+    async function authenticate() {
+      const credentialId = localStorage.getItem('credentialId');
+
+      const publicKey = {
+        challenge: new Uint8Array([0x5b, 0x3b, 0x6e, 0x7d]), // Giá trị thử thách giả, thay bằng giá trị thực tế từ server
+        allowCredentials: [{
+          id: new TextEncoder().encode(credentialId), // Dùng credentialId đã lưu trước đó
+          type: "public-key"
+        }],
+        timeout: 60000, // Thời gian timeout cho yêu cầu
+        userVerification: "required"
+      };
+
+      // Xác thực người dùng
+      const credential = await navigator.credentials.get({ publicKey });
+      
+      // Xử lý kết quả
+      messageDiv.textContent = "Đăng nhập thành công!";
+      console.log(credential);
+      // Xử lý lưu trữ và xác thực sau khi đăng nhập thành công
+    }
   </script>
 </body>
 </html>
