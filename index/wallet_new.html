@@ -372,6 +372,67 @@ a:hover {
   }
 }
 
+
+
+
+
+
+
+
+
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 25px;
+  text-align: center;
+  width: 90%;
+  max-width: 350px;  /* Bạn có thể chỉnh sửa giá trị này nếu muốn */
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.qr-canvas {
+  margin: 10px auto;
+  width: 250px; /* Điều chỉnh kích thước QR code */
+  height: 250px; /* Điều chỉnh kích thước QR code */
+}
+
+.qr-address {
+  word-break: break-word;
+}
+
+.copy-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  background: #0077cc;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
   </style>
 </head>
 <body>
@@ -384,7 +445,8 @@ a:hover {
 
   <div class="container" id="main-content">
     <p class="info">
-      <span id="wallet-address">Loading...</span>
+      <span id="wallet-address" data-full-address=""></span>
+
       <span id="disconnect" title="Ngắt kết nối">Disconnect</span>
     </p>
     <p id="wallet-balance" class="balance">Loading...</p>
@@ -408,10 +470,70 @@ a:hover {
       </div>
     
       <button id="send-ton-btn">Sent Transaction</button>
+      <button id="show-qr-btn" style="margin-top: 10px; background: #4caf50;">Hiển thị QR</button>
+
     </div>
     
     <ul id="transactions-list"></ul>
 </div>
+
+
+
+
+
+
+<div id="qr-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-qr" class="close-btn">✖</span>
+    <h3>QR Code Địa Chỉ</h3>
+    <canvas id="qr-canvas" class="qr-canvas"></canvas>
+    <p id="qr-address" class="qr-address"></p>
+    <button onclick="copyAddress()" class="copy-btn">Copy Address</button>
+  </div>
+</div>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<script>
+  const qrBtn = document.getElementById('show-qr-btn');
+  const qrModal = document.getElementById('qr-modal');
+  const closeQr = document.getElementById('close-qr');
+  const qrCanvas = document.getElementById('qr-canvas');
+  const qrAddress = document.getElementById('qr-address');
+
+  qrBtn.addEventListener('click', () => {
+    // Lấy địa chỉ đầy đủ từ data-full-address
+    const fullAddress = document.getElementById('wallet-address').getAttribute("data-full-address");
+    qrAddress.innerText = fullAddress;
+
+    // Tạo mã QR từ địa chỉ đầy đủ
+    QRCode.toCanvas(qrCanvas, fullAddress, { width: 200 }, function (error) {
+      if (error) console.error(error);
+    });
+
+    qrModal.style.display = 'flex';
+  });
+
+  closeQr.addEventListener('click', () => {
+    qrModal.style.display = 'none';
+  });
+
+  function copyAddress() {
+    // Lấy địa chỉ đầy đủ từ data-full-address
+    const fullAddress = document.getElementById("wallet-address").getAttribute("data-full-address");
+    if (fullAddress) {
+      // Sao chép địa chỉ đầy đủ vào clipboard
+      navigator.clipboard.writeText(fullAddress).then(() => {
+        alert("Đã copy địa chỉ đầy đủ!");
+      }).catch((err) => {
+        console.error("Không thể copy:", err);
+      });
+    }
+  }
+</script>
 
 
 
@@ -490,8 +612,11 @@ connector.onStatusChange(async (wallet) => {
         document.getElementById("wallet-balance").textContent = `Số dư: ${truncateDecimal(balanceTon)} TON`;
         document.getElementById("ton-amount").setAttribute("max", balanceTon);
 
-        const shortAddress = accountAddress.slice(0, 10) + "..." + accountAddress.slice(-10);
-        document.getElementById("wallet-address").textContent = shortAddress;
+        // 👉 Hiển thị rút gọn, lưu địa chỉ đầy đủ
+        const shortAddress = accountAddress.slice(0, 6) + "..." + accountAddress.slice(-4);
+        const walletAddressEl = document.getElementById("wallet-address");
+        walletAddressEl.textContent = shortAddress;
+        walletAddressEl.setAttribute("data-full-address", accountAddress);
 
         document.getElementById("disconnect").style.display = 'inline-block';
 
@@ -502,12 +627,14 @@ connector.onStatusChange(async (wallet) => {
     }
   } else {
     document.getElementById("wallet-address").textContent = "...";
+    document.getElementById("wallet-address").setAttribute("data-full-address", "");
     document.getElementById("wallet-balance").textContent = "Số dư: ... TON";
     document.getElementById("disconnect").style.display = 'none';
     document.getElementById("main-content").style.display = "none";
     document.getElementById("connect-only").style.display = "flex";
   }
 });
+
 
 document.getElementById("disconnect").addEventListener("click", () => {
   connector.disconnect();
