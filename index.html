@@ -1,226 +1,82 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8PJY7SWBRR"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | BmassHD</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark/dark.css">
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Airdrop cùng BmassHD">
-    <meta property="og:description" content="Airdrop Telegram là một cơ hội tuyệt vời để nhận phần thưởng miễn phí từ các dự án blockchain, hãy cùng tham gia cùng BmsssK3 để khám phá những cơ hội hấp dẫn này!">
-    <meta property="og:image" content="https://bmasshd.click/logo/bia.png">
-    <meta property="og:url" content="https://bmasshd.click/">
-    <meta property="og:type" content="website">
-    
-    <link rel="shortcut icon" href="/logo/bm.png" type="image/png">
-    <link rel="icon" type="image/png" href="/logo/bm.png">
-    <link rel="stylesheet" href="/css/home.css">
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-
-
-</head>
-<style>
-.chart-container {
-    margin-top: 20px;
-    background: #0a0a0a;  /* Nền đen của biểu đồ */
-    border-radius: 25px;
-    padding: 10px;
-}
-
-</style>
-<body>
-    <header class="header">
-        <div class="logo-container">
-            <img src="/logo-coin/bmlogo.jpg" alt="Logo">
-            <div class="logo-text">BmassHD</div>
-        </div>
-        <div class="menu-icon" onclick="toggleMenu()">☰</div>
-        <nav class="nav" id="navbar">
-            <a href="/index/main.html">Airdrop</a>
-            <a href="/noti">Notification</a>
-            <a href="/wallet">Profile</a>
-            <a href="https://t.me/bmassk3_channel">Channel</a>
-            <a href="https://t.me/bmassk3">Contact</a>
-            <div id="user-info" class="user-info"></div>
-            <div id="tg-login-container">
-                <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="bmassk3_bot" data-size="large" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
-            </div>
-        </nav>
-    </header>
-    
-
-    
-    <div class="content">
-        <h1 id="welcome-text">Welcome to BmassHD</h1>
-        <p>Explore airdrops, notifications and your personal profile.</p>
-        <div id="ton-connect"></div>
-    </div>
-    <div id="wallet-info">
-        <div id="user-info" class="user-info"></div>
-        <div id="wallet-header">
-            <b>Address:</b> <span id="wallet-address">abcd****1234</span>
-        </div>
-        <div id="wallet-details">
-            <b>Balance:</b> <span id="wallet-balance">Not connected</span>
-            <p> <strong> </strong> <span id="wallet-usdt-value"></span></p>
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-    <div class="language-selector">
-        <label for="language">Choose Language:</label>
-        <select id="language" onchange="changeLanguage()">
-            <option>English</option>
-            <option value="vi">Vietnamese</option>
-            <option value="en">English</option>
-        </select>
-    </div>
-
-            <div class="marquee-container">
-        <div class="marquee-content">
-            <span>The website will undergo maintenance on May 15, 2025.</span>
-        </div>
-    </div>
-
-
-    <div class="container">
-
-        <div class="chart-container">
-            <div id="tradingview-widget"></div>
-        </div>
-    </div>
-
-<script>
-const script = document.createElement("script");
-script.src = "https://s3.tradingview.com/tv.js";
-script.onload = function () {
-    new TradingView.widget({
-        "container_id": "tradingview-widget",
-        "width": "100%",
-        "height": 400,
-        "symbol": "BINANCE:TONUSDT",
-        "interval": "30",
-        "timezone": "Asia/Ho_Chi_Minh",
-        "theme": "dark",  // Đổi sang nền tối
-        "style": "1",
-        "locale": "vi",
-        "toolbar_bg": "#0a0a0a",  // Màu nền thanh toolbar
-        "enable_publishing": false,
-        "hide_top_toolbar": true,
-        "save_image": false,
-        "studies": [],
-        "show_popup_button": true,
-        "popup_width": "1000",
-        "popup_height": "650"
-    });
-};
-document.body.appendChild(script);
-
-</script>
-
-
-    <script>
-        function toggleMenu() {
-            document.getElementById("navbar").classList.toggle("active");
-        }
-        
-        function onTelegramAuth(user) {
-            var userInfo = document.getElementById("user-info");
-            var avatarUrl = user.photo_url ? user.photo_url : 'https://via.placeholder.com/30';
-            var userHtml = '<img src="' + avatarUrl + '" class="user-avatar">' + user.first_name + (user.last_name ? ' ' + user.last_name : '') + ' (@' + user.username + ')';
-            userInfo.innerHTML = userHtml;
-            userInfo.style.display = "flex";
-            document.getElementById("tg-login-container").style.display = "none";
-            
-            var userData = {
-                first_name: user.first_name,
-                last_name: user.last_name || '',
-                username: user.username,
-                photo_url: avatarUrl,
-                timestamp: new Date().getTime()
-            };
-            localStorage.setItem("userData", JSON.stringify(userData));
-        }
-        
-        function checkLoginStatus() {
-            var storedData = localStorage.getItem("userData");
-            if (storedData) {
-                var userData = JSON.parse(storedData);
-                var currentTime = new Date().getTime();
-                if (currentTime - userData.timestamp < 60 * 60 * 1000) {
-                    var userInfo = document.getElementById("user-info");
-                    var userHtml = '<img src="' + userData.photo_url + '" class="user-avatar">' + userData.first_name + (userData.last_name ? ' ' + userData.last_name : '') + ' (@' + userData.username + ')';
-                    userInfo.innerHTML = userHtml;
-                    userInfo.style.display = "flex";
-                    document.getElementById("tg-login-container").style.display = "none";
-                } else {
-                    localStorage.removeItem("userData");
-                }
-            }
-        }
-        
-        document.addEventListener("DOMContentLoaded", checkLoginStatus);
-
-
-
-
-
-
-        function checkLoginStatus() {
-    var storedData = localStorage.getItem("userData");
-    if (storedData) {
-        var userData = JSON.parse(storedData);
-        var currentTime = new Date().getTime();
-        if (currentTime - userData.timestamp < 60 * 60 * 1000) {
-            var userInfo = document.getElementById("user-info");
-            var userHtml = '<img src="' + userData.photo_url + '" class="user-avatar">' + userData.first_name + (userData.last_name ? ' ' + userData.last_name : '') + ' (@' + userData.username + ')';
-            userInfo.innerHTML = userHtml;
-            userInfo.style.display = "flex";
-            document.getElementById("tg-login-container").style.display = "none";
-
-            // Cập nhật tiêu đề Welcome
-            document.getElementById("welcome-text").innerText = `Welcome ${userData.first_name} ${userData.last_name} to BmassHD`;
-        } else {
-            localStorage.removeItem("userData");
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập bằng Face ID</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
     }
-}
 
+    button {
+      padding: 15px 25px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
 
+    button:hover {
+      background-color: #45a049;
+    }
 
+    #message {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Đăng nhập bằng Face ID</h2>
+  <button id="loginBtn">Đăng nhập</button>
+  <div id="message"></div>
 
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+    const messageDiv = document.getElementById('message');
 
+    // Kiểm tra xem trình duyệt có hỗ trợ WebAuthn hay không
+    if (!window.PublicKeyCredential) {
+      messageDiv.textContent = "Trình duyệt của bạn không hỗ trợ đăng nhập bằng Face ID.";
+      loginBtn.disabled = true;
+    }
 
+    loginBtn.addEventListener('click', async () => {
+      try {
+        const publicKey = {
+          challenge: new Uint8Array([0x5b, 0x3b, 0x6e, 0x7d]), // Thử thách giả định, bạn cần thay thế bằng một giá trị thực tế
+          rp: { name: "MyWebsite" },
+          user: {
+            id: new TextEncoder().encode("user123"),
+            name: "user@example.com",
+            displayName: "User Example"
+          },
+          pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+          authenticatorSelection: {
+            authenticatorAttachment: "platform", // "platform" sẽ kích hoạt Face ID trên thiết bị hỗ trợ
+            userVerification: "required"
+          },
+          timeout: 60000, // Timeout cho yêu cầu
+          attestation: "direct"
+        };
 
-
-
-
-
-function toggleMenu() {
-            document.getElementById("navbar").classList.toggle("active");
-        }
-        function changeLanguage() {
-            var lang = document.getElementById("language").value;
-            document.documentElement.lang = lang;
-            window.location.href = `/${lang}/index.html`;
-        }
-    </script>
-
-
-
+        // Tạo đăng ký
+        const credential = await navigator.credentials.create({ publicKey });
+        
+        // Xử lý kết quả
+        messageDiv.textContent = "Đăng nhập thành công!";
+        console.log(credential);
+        // Lưu thông tin của credential vào server hoặc local storage nếu cần
+      } catch (error) {
+        messageDiv.textContent = "Đăng nhập thất bại: " + error.message;
+        console.error(error);
+      }
+    });
+  </script>
 </body>
-<script src="/js/login-tg.js"></script>
-<script src="/js/wallet.js"></script>
 </html>
