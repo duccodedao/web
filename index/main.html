@@ -139,13 +139,14 @@ footer {
 }
 </style>
 <body>
-
-
-
-
-
-
+    <div id="connect-only">
+        <div id="connect-wallet"></div>
+    </div>
     
+
+
+
+
 
     <header class="header">
         <div class="profile-container">
@@ -155,7 +156,6 @@ footer {
             </div>
         </div>
         <!-- Nút ton-connect -->
-        <button class="ton-connect-btn" id="ton-connect"></button>
     </header>
     
     <div class="header-wrapper">
@@ -168,6 +168,9 @@ footer {
     
 
     
+
+
+<div id="main-content" style="display: none;">   
     <div class="table-container">
         <table>
             <tbody>
@@ -197,7 +200,7 @@ footer {
                     <td class="countdown-time" data-time="2025-03-25T12:00:00Z">Loading...</td>
                     <td><a href="https://t.me/W3BFLIXBot?start=iv2ac3fc1201" class="action-btn">Start</a></td>
                 </tr>
-                <tr>
+                
                 <tr>
                     <td class="logo"><img src="/logo-coin/14.jpg" alt="Wcoin Logo"></td>
                     <td>$SWITCH</td>
@@ -216,14 +219,7 @@ footer {
                     <td class="countdown-time" data-time="2025-02-02T17:00:00Z">Loading...</td>
                     <td><a href="https://t.me/DurovCapsBot/caps?startapp=5387725104" class="action-btn">Start</a></td>
                 </tr>
-     
 
-                <tr>
-                    <td class="logo"><img src="/logo-coin/2.jpg" alt="Seed Logo"></td>
-                    <td>$SEED</td>
-                    <td class="countdown-time" data-time="2025-01-15T00:00:00Z">Loading...</td>
-                    <td><a href="http://t.me/seed_coin_bot/app?startapp=5387725104" class="action-btn">Start</a></td>
-                </tr>
                 <tr>
                     <td class="logo"><img src="/logo-coin/7.jpg" alt="Yescoin Logo"></td>
                     <td>$YES</td>
@@ -280,7 +276,7 @@ footer {
 
 
 
-        <div class="app-category">
+    <div class="app-category">
         <h2>Seeson 2 🕹️</h2>
         <div class="menu">
             <div class="app"><a href="https://t.me/tonstationgames_bot/app?startapp=ref_vyjqderh4emwxsssun3hza"><img src="/logo-coin/20.jpg" alt="App 32"></a><span>SS2</span></div>
@@ -290,7 +286,7 @@ footer {
             <div class="app"><a href="https://t.me/tapswap_mirror_bot?start=r_5387725104"><img src="/logo-coin/9.jpg" alt="App 30"></a><span>SS2</span></div>
 
         </div>
-        </div>
+        
     </div>
 
 
@@ -413,6 +409,7 @@ footer {
         <h2>Listed</h2>
         <div class="menu">
             <!-- 5 ứng dụng trong mục Khác 2 -->
+            <div class="app"><a> <img src="/logo-coin/2.jpg" alt="App 1"></a><span>SEED</span></div>
             <div class="app"><a> <img src="/logo-coin/paws.jpg" alt="App 1"></a><span>PAWS</span></div>
             <div class="app"><a> <img src="/logo-coin/dc.jpg" alt="App 1"></a><span>DUCK</span></div>
             <div class="app"><a> <img src="/logo-coin/IMG_20240930_101506_596.jpg" alt="App 1"></a><span>CLAY</span></div>
@@ -444,7 +441,7 @@ footer {
     </div>
 </div>
 
-
+</div>
 
 
     
@@ -498,32 +495,45 @@ items.forEach(item => {
 </script>
 
 
-    
-    
+
+
+
+
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  Swal.fire({
-    title: '🚀 Get 50 FD Points!',
-    text: 'Join @UnichAirdropBot and claim your reward!',
-    imageUrl: '/logo-coin/IMG_20241108_121723_913.jpg',
-    imageWidth: 120,
-    imageHeight: 120,
-    imageAlt: 'Logo Coin',
-    confirmButtonText: 'Start Now',
-    showCloseButton: true,
-    customClass: {
-      popup: 'swal2-popup',
-      title: 'swal2-title',
-      confirmButton: 'swal2-confirm',
-      image: 'swal2-image'
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      window.location.href = 'https://t.me/UnichAirdropBot/start';
-    }
-  });
+const tg = window.Telegram.WebApp;
+tg.ready();
+
+let balanceTon = 0; // Khai báo biến toàn cục để lưu số dư
+
+const connector = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: "https://bmasshd.click/tonconnect-manifest.json",
+  buttonRootId: "connect-wallet"
+});
+
+    connector.onStatusChange(async (wallet) => {
+  if (wallet) {
+    // Ẩn phần chờ kết nối, hiện phần nội dung chính
+    document.getElementById("connect-only").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
+
+    // ... phần còn lại như bạn đã làm
+  } else {
+    // Nếu mất kết nối hoặc chưa kết nối ví
+    document.getElementById("wallet-address").textContent = "...";
+    document.getElementById("wallet-address").setAttribute("data-full-address", "");
+    document.getElementById("wallet-balance").textContent = "Số dư: ... TON";
+    document.getElementById("disconnect").style.display = 'none';
+    document.getElementById("main-content").style.display = "none";
+    document.getElementById("connect-only").style.display = "flex";
+  }
 });
 </script>
+
+
+    
+    
+
 
 
 
@@ -536,4 +546,4 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/js/js.js"></script>
     <script src="/js/ton-connect.js"></script>
 </body>
-    </html>                                                                                
+</html>                                                                                
