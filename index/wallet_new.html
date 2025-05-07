@@ -758,15 +758,7 @@ connector.onStatusChange(async (wallet) => {
   }
 });
 
-// 👉 Hàm chuyển đổi nanoTON -> TON
-function safeParseNanoTON(nano) {
-  return nano / 1e9;
-}
 
-// 👉 Làm tròn số để hiển thị gọn (nếu cần)
-function truncateDecimal(num) {
-  return parseFloat(num.toFixed(4));
-}
 
 // 👉 Gán full số dư vào input khi nhấn MAX
 function setMaxTON() {
