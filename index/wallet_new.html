@@ -533,6 +533,41 @@ button i {
   max-width: 100%; /* Đảm bảo chiều rộng không vượt quá 100% */
 }
 
+
+
+
+    
+
+#list {
+  min-height: 100px; /* đảm bảo có đủ không gian để căn giữa */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #666;
+  font-size: 16px;
+  gap: 10px;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 4px solid #ccc;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
   </style>
 </head>
 <body>
@@ -873,7 +908,12 @@ async function fetchTransactionHistory(walletAddress) {
         list.appendChild(li);
       }
     } else {
-      list.innerHTML = "<li>Không có giao dịch nào</li>";
+      list.innerHTML = `
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <div>Đang tải giao dịch...</div>
+  </div>
+`;
     }
   } catch (error) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
