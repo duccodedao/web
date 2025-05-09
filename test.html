@@ -28,13 +28,14 @@
       color: #444;
     }
     button {
-      margin-top: 15px;
+      margin: 8px;
       padding: 10px 20px;
       font-size: 16px;
       border: none;
       border-radius: 10px;
       background-color: #2ea5ff;
       color: white;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -52,7 +53,9 @@
     <button onclick="openLink()">🔗 Mở Liên Kết</button>
     <button onclick="showPopup()">💬 Mở Popup</button>
     <button onclick="closeApp()">❌ Đóng App</button>
-    <button onclick="tg.showScanQrPopup({text: 'Scan Me'})">📷 Mở QR Scanner</button>
+    <button onclick="openQrScanner()">📷 Mở QR Scanner</button>
+    <button onclick="toggleBackButton()">🔙 Hiện/Nhấn BackButton</button>
+    <button onclick="toggleMainButton()">🧩 Ẩn/Hiện MainButton</button>
   </div>
 
   <script>
@@ -118,6 +121,30 @@
 
     function closeApp() {
       tg.close();
+    }
+
+    function openQrScanner() {
+      tg.showScanQrPopup({ text: 'Scan Me' });
+    }
+
+    function toggleBackButton() {
+      if (!tg.BackButton.isVisible) {
+        tg.BackButton.show();
+        tg.BackButton.onClick(() => {
+          alert("BackButton được nhấn");
+          tg.BackButton.hide();
+        });
+      } else {
+        tg.BackButton.hide();
+      }
+    }
+
+    function toggleMainButton() {
+      if (tg.MainButton.isVisible) {
+        tg.MainButton.hide();
+      } else {
+        tg.MainButton.show();
+      }
     }
 
     const themeInfo = document.getElementById("theme-info");
