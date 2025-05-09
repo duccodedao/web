@@ -130,6 +130,7 @@ ul#transactions-list {
   font-size: 13px;
   color: #444;
   word-break: break-word;
+  padding-left: 24px;
 }
 
 .time {
@@ -215,6 +216,7 @@ a:hover {
   transition: max-height 0.3s ease;
   max-height: 20px;
   margin-bottom: 6px;
+  padding-left: 24px;
 }
 
 .memo.expanded {
@@ -297,19 +299,56 @@ a:hover {
 
 
 
+
+
+
+
+
+.dan,
 .max-btn {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #007bff;
-  color: #fff;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 25px;
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  color: white;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
   cursor: pointer;
   user-select: none;
+  transition: all 0.3s ease;
+  animation: popIn 0.4s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
+
+.dan:hover,
+.max-btn:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+  background: linear-gradient(135deg, #0056b3, #00a2ff);
+}
+
+@keyframes popIn {
+  0% {
+    transform: translateY(-50%) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+
+
+
+
+
+
 
 
 
@@ -376,7 +415,7 @@ a:hover {
 
   .transaction-item {
     padding: 14px;
-    padding-bottom: 40px;
+    padding-bottom: 6px;
   }
 
   .icon img {
@@ -568,6 +607,30 @@ button i {
     transform: rotate(360deg);
   }
 }
+
+
+
+
+
+
+
+
+.amount {
+  font-weight: bold;
+}
+
+.amount.red {
+  color: red;
+}
+
+.amount.green {
+  color: green;
+}
+
+.amount.black {
+  color: black;
+}
+
   </style>
 </head>
 <body>
@@ -587,19 +650,29 @@ button i {
     <p id="wallet-balance" class="balance">Loading...</p>
     <div class="form-send">
       <h2>Sent TON</h2>
-    
-      <div class="input-icon">
-        <span class="icon">📬</span>
-        <input type="text" id="to-address" placeholder="Address">
-     
-      </div>
-    
-      <div class="input-icon">
-        <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
-        <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
-        <span class="max-btn" onclick="setMaxTON()">Max</span>
-      </div>
-      
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Ô Address có nút Dán -->
+<div class="input-icon">
+  <span class="icon">📬</span>
+  <input type="text" id="to-address" placeholder="Address">
+  <span class="dan" onclick="pasteFromClipboard()">
+    <i class="fa-solid fa-paste"></i> Dán
+  </span>
+</div>
+
+<!-- Ô Amount có nút Max -->
+<div class="input-icon">
+  <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
+  <input type="number" id="ton-amount" placeholder="Amount" step="0.01" min="0">
+  <span class="max-btn" onclick="setMaxTON()">
+    <i class="fa-solid fa-arrow-up-right-dots"></i> Max
+  </span>
+</div>
+
+
       
 
       <div class="input-icon">
@@ -861,7 +934,7 @@ async function fetchTransactionHistory(walletAddress) {
         const amountTon = safeParseNanoTON(amountRaw); // Chuyển đổi số tiền từ nanoTON sang TON
 
         const time = new Date(tx.utime * 1000).toLocaleString(); // Chuyển đổi thời gian UTC sang định dạng người dùng
-        const label = isReceived ? 'Received' : (isSent ? 'Sent' : 'Unknown');
+        const label = isReceived ? '' : (isSent ? '' : 'Unknown');
         const sign = isReceived ? '+ ' : (isSent ? '- ' : '');
         const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
@@ -873,36 +946,44 @@ async function fetchTransactionHistory(walletAddress) {
         const txHex = base64ToHex(txBase64);
         const txLink = `https://tonviewer.com/transaction/${txHex}`;
 
-        let addressInfo = '';
+        let labelText = '';
         if (isSent && toAddress) {
-          addressInfo = `<strong>To:</strong> ${truncateBase64(toAddress)}`;
+          labelText = `To: ${truncateBase64(toAddress)}`;
         } else if (isReceived && fromAddress) {
-          addressInfo = `<strong>From:</strong> ${truncateBase64(fromAddress)}`;
+          labelText = `From: ${truncateBase64(fromAddress)}`;
+        } else {
+          labelText = label; // fallback
         }
 
         const li = document.createElement("li");
         li.className = "transaction-item";
+        
+        // Determine color for the amount
+        const amountColor = isSent ? "red" : (isReceived ? "green" : "black"); // red for sent, green for received
+        
         li.innerHTML = `
-  <div class="row">
-    <div class="icon-label">
-      <span class="icon"><img src="${iconPath}" alt="icon"></span>
-      <span>${label}</span>
-    </div>
-    <div class="amount">${sign}${truncateDecimal(amountTon)} TON</div>
-  </div>
-  <div class="row">
-    <div class="address">${addressInfo}</div>
-    <div class="time">${time}</div>
-  </div>
-  <div class="row tx-link-row">
-    <div class="address" title="${txHex}">
-      <a href="${txLink}" target="_blank">Tonviewer</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="memo" onclick="toggleMemo(this)">${memo}</div>
-  </div>
-`;
+          <div class="row">
+            <div class="icon-label">
+              <span class="icon"><img src="${iconPath}" alt="icon"></span>
+              <span>${labelText}</span>
+            </div>
+            <div class="amount" style="color: ${amountColor};">${sign}${truncateDecimal(amountTon)} TON</div>
+          </div>
+          <div class="row justify-between">
+            <div class="address" title="${txHex}">
+              <a href="${txLink}" target="_blank">🔎 Tonviewer</a>
+            </div>
+            <div class="time">${time}</div>
+          </div>
+          <div class="row justify-between">
+            <div class="memo" onclick="toggleMemo(this)">${memo}</div>
+          </div>
+        `;
+
+
+
+
+
 
 
         list.appendChild(li);
@@ -919,7 +1000,6 @@ async function fetchTransactionHistory(walletAddress) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
   }
 }
-
 
 
 
@@ -1005,6 +1085,24 @@ function toggleMemo(element) {
 
 
 </script>
+
+
+
+<script>
+  async function pasteFromClipboard() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        document.getElementById("to-address").value = text.trim();
+      } else {
+        alert("Không tìm thấy nội dung nào trong clipboard.");
+      }
+    } catch (err) {
+      alert("Trình duyệt không cho phép truy cập clipboard.\nHãy thử dán thủ công: Ctrl + V.");
+    }
+  }
+</script>
+
 
 
   
