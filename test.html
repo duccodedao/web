@@ -1,120 +1,51 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Telegram Mini App - Chọn Ngôn Ngữ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--tg-theme-bg-color, #fff);
-      color: var(--tg-theme-text-color, #000);
-      padding: 20px;
-      text-align: center;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      background-color: #2ea5ff;
-      color: white;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TON Connect with Telegram Web App</title>
 </head>
 <body>
-  <h2 id="header">🚀 Telegram Mini App</h2>
+    <h1>Web App Telegram và TON Connect</h1>
+    
+    <!-- Nút Kết Nối Telegram -->
+    <button id="ton-connect-btn">Kết nối với ví TON</button>
 
-  <div class="info-box">
-    <button onclick="setLanguage('vi')">🇻🇳 Tiếng Việt</button>
-    <button onclick="setLanguage('en')">🇺🇸 English</button>
-    <button onclick="setLanguage('ru')">🇷🇺 Русский</button>
-    <button onclick="setLanguage('ko')">🇰🇷 한국어</button>
-    <button onclick="setLanguage('zh')">🇨🇳 中文</button>
-  </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest"></script>
+    
+    <script>
+        // Chạy Telegram Web App
+        const tg = window.Telegram.WebApp;
 
-  <div id="user-info">Đang tải thông tin người dùng...</div>
-  <div class="info-box" id="token-info">🎁 Bạn có: <span id="balance">0</span> BMC</div>
-  <button id="claim-token" onclick="claimToken()">Nhận 1000 Token</button>
+        // Thiết lập đối tượng TonConnectUI
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect'
+        });
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+        // Chức năng kết nối với ví TON
+        async function connectToWallet() {
+            try {
+                const connectedWallet = await tonConnectUI.connectWallet();
+                console.log(connectedWallet);
+                // Có thể thực hiện hành động sau khi kết nối ví thành công
+            } catch (error) {
+                console.error("Lỗi kết nối ví:", error);
+            }
+        }
 
-    const text = {
-      vi: {
-        header: "🚀 Telegram Mini App - Tính Năng",
-        balance: "🎁 Bạn có: ",
-        claim: "Nhận 1000 Token",
-      },
-      en: {
-        header: "🚀 Telegram Mini App - Features",
-        balance: "🎁 You have: ",
-        claim: "Claim 1000 Tokens",
-      },
-      ru: {
-        header: "🚀 Telegram Mini App - Функции",
-        balance: "🎁 У вас: ",
-        claim: "Получить 1000 токенов",
-      },
-      ko: {
-        header: "🚀 Telegram Mini App - 기능",
-        balance: "🎁 당신의 잔액: ",
-        claim: "1000 토큰 받기",
-      },
-      zh: {
-        header: "🚀 Telegram Mini App - 功能",
-        balance: "🎁 您有: ",
-        claim: "领取 1000 个代币",
-      }
-    };
+        // Định nghĩa sự kiện khi nhấn nút "Kết nối với ví TON"
+        document.getElementById('ton-connect-btn').addEventListener('click', function () {
+            // Mở giao diện kết nối ví TON
+            connectToWallet().catch((error) => {
+                console.error('Error connecting to wallet:', error);
+            });
+        });
 
-    let lang = localStorage.getItem("lang") || "en";  // Mặc định tiếng Anh
+        // Khởi động ứng dụng Telegram Web
+        tg.ready();
 
-    function setLanguage(selectedLang) {
-      lang = selectedLang;
-      localStorage.setItem("lang", lang);
-      applyLanguage();
-    }
-
-    function applyLanguage() {
-      const t = text[lang];
-      document.querySelector("#header").innerText = t.header;
-      document.querySelector("#token-info").innerHTML = `${t.balance} <span id="balance">0</span> BMC`;
-      document.querySelector("#claim-token").innerText = t.claim;
-      tg.MainButton.setText(t.claim);  // Cập nhật nút Telegram
-    }
-
-    // Thực thi khi lần đầu tải trang
-    applyLanguage();
-
-    let balance = localStorage.getItem("bmc_balance") || 0;
-    document.getElementById("balance").innerText = balance;
-
-    function claimToken() {
-      tg.HapticFeedback.notificationOccurred("success");
-      balance = parseInt(balance) + 1000;
-      localStorage.setItem("bmc_balance", balance);
-      document.getElementById("balance").innerText = balance;
-
-      tg.sendData(JSON.stringify({
-        action: "claim",
-        user_id: tg.initDataUnsafe.user.id,
-        amount: 1000,
-        balance: balance
-      }));
-    }
-
-    tg.MainButton.setText("✅ Nhận Token");
-    tg.MainButton.show();
-
-    tg.MainButton.onClick(() => {
-      claimToken();
-    });
-
-  </script>
+    </script>
 </body>
 </html>
