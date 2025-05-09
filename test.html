@@ -2,101 +2,144 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Nhận Token Telegram Mini App</title>
+  <title>Telegram Mini App Full Features</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: var(--tg-theme-bg-color, #ffffff);
-      color: var(--tg-theme-text-color, #000000);
-      text-align: center;
+      font-family: Arial, sans-serif;
+      background-color: var(--tg-theme-bg-color, #fff);
+      color: var(--tg-theme-text-color, #000);
       padding: 20px;
-      transition: all 0.3s ease;
+      text-align: center;
     }
     img.avatar {
       width: 100px;
       border-radius: 50%;
-      margin: 20px auto;
+      margin-top: 20px;
     }
     .username {
       font-size: 20px;
       font-weight: bold;
     }
-    .token {
-      margin-top: 20px;
-      font-size: 22px;
-      font-weight: bold;
-      color: green;
-    }
     .info-box {
-      margin-top: 10px;
-      font-size: 14px;
-      color: gray;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #444;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2ea5ff;
+      color: white;
     }
   </style>
 </head>
 <body>
+  <h2>🚀 Telegram Mini App Full Tính Năng</h2>
+  <div id="user-info">Đang tải thông tin người dùng...</div>
 
-  <h2>🎁 Mini App Nhận Token</h2>
-  <div id="user-info">
-    <p>Đang tải thông tin...</p>
+  <div class="info-box" id="token-info">🎁 Bạn có: <span id="balance">0</span> BMC</div>
+  <button onclick="claimToken()">Nhận 1000 Token</button>
+
+  <div class="info-box" id="theme-info">🌗 Chế độ: đang tải...</div>
+  <div class="info-box" id="viewport-info"></div>
+
+  <div class="info-box">
+    <button onclick="openLink()">🔗 Mở Liên Kết</button>
+    <button onclick="showPopup()">💬 Mở Popup</button>
+    <button onclick="closeApp()">❌ Đóng App</button>
+    <button onclick="tg.showScanQrPopup({text: 'Scan Me'})">📷 Mở QR Scanner</button>
   </div>
-  <div class="token">🎉 Bạn sẽ nhận: <span id="amount">1000</span> BMC</div>
-  <div class="info-box">Chỉ nhận được 1 lần, vui lòng kiểm tra kỹ!</div>
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.ready();            // Kích hoạt WebApp
-    tg.expand();           // Mở rộng giao diện
-    const user = tg.initDataUnsafe?.user;
+    tg.ready();
+    tg.expand();
 
-    // Xử lý hiển thị thông tin người dùng
+    tg.HapticFeedback.impactOccurred('light');
+
+    const user = tg.initDataUnsafe?.user;
+    const userInfoDiv = document.getElementById("user-info");
+    let balance = localStorage.getItem("bmc_balance") || 0;
+    document.getElementById("balance").innerText = balance;
+
     if (user) {
-      document.getElementById("user-info").innerHTML = `
+      userInfoDiv.innerHTML = `
         <img src="${user.photo_url}" class="avatar"><br>
         <div class="username">${user.first_name} ${user.last_name || ''}</div>
         <div>@${user.username || 'Không có username'}</div>
         <div>ID: ${user.id}</div>
       `;
     } else {
-      document.getElementById("user-info").innerHTML = `<p>Không thể lấy thông tin người dùng.</p>`;
+      userInfoDiv.innerHTML = `<p>Không thể lấy thông tin người dùng.</p>`;
     }
 
-    // Main Button
-    tg.MainButton.setText("✅ Nhận Token Ngay");
+    tg.MainButton.setText("✅ Nhận Token");
     tg.MainButton.show();
 
     tg.MainButton.onClick(() => {
-      // Rung phản hồi
-      tg.HapticFeedback.impactOccurred("medium");
-
-      // Gửi dữ liệu về bot
-      const data = {
-        action: "reward_token",
-        user_id: user?.id,
-        name: `${user?.first_name} ${user?.last_name || ''}`,
-        username: user?.username,
-        amount: 1000,
-      };
-
-      tg.sendData(JSON.stringify(data));
+      claimToken();
     });
 
-    // Đổi màu theo theme Telegram
-    function applyTheme() {
-      document.body.style.backgroundColor = tg.themeParams.bg_color || "#ffffff";
-      document.body.style.color = tg.themeParams.text_color || "#000000";
+    function claimToken() {
+      tg.HapticFeedback.notificationOccurred("success");
+      balance = parseInt(balance) + 1000;
+      localStorage.setItem("bmc_balance", balance);
+      document.getElementById("balance").innerText = balance;
+
+      tg.sendData(JSON.stringify({
+        action: "claim",
+        user_id: user?.id,
+        amount: 1000,
+        balance: balance
+      }));
     }
 
-    tg.onEvent("themeChanged", applyTheme);
-    applyTheme(); // Gọi lần đầu
+    function openLink() {
+      tg.openLink("https://t.me/bmassk3_channel");
+    }
 
-    // Theo dõi thay đổi kích thước (nếu bạn cần điều chỉnh responsive)
-    tg.onEvent("viewportChanged", () => {
-      console.log("Viewport thay đổi:", tg.viewportHeight, tg.viewportStableHeight);
+    function showPopup() {
+      tg.showPopup({
+        title: "Thông báo",
+        message: "Bạn muốn nhận thêm token không?",
+        buttons: [
+          { id: "yes", type: "default", text: "Có" },
+          { id: "no", type: "destructive", text: "Không" }
+        ]
+      }, (btnId) => {
+        if (btnId === "yes") claimToken();
+      });
+    }
+
+    function closeApp() {
+      tg.close();
+    }
+
+    const themeInfo = document.getElementById("theme-info");
+    function updateTheme() {
+      const theme = tg.colorScheme;
+      themeInfo.innerText = `🌗 Chế độ: ${theme}`;
+      document.body.style.backgroundColor = tg.themeParams.bg_color;
+      document.body.style.color = tg.themeParams.text_color;
+    }
+    updateTheme();
+    tg.onEvent("themeChanged", updateTheme);
+
+    const viewportInfo = document.getElementById("viewport-info");
+    function updateViewport() {
+      viewportInfo.innerText = `🔳 Viewport: ${tg.viewportHeight}px (ổn định: ${tg.viewportStableHeight}px)`;
+    }
+    updateViewport();
+    tg.onEvent("viewportChanged", updateViewport);
+
+    tg.onEvent("qrTextReceived", (text) => {
+      alert("Đã quét QR: " + text);
     });
   </script>
-
 </body>
 </html>
