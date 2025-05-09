@@ -607,6 +607,7 @@ button i {
 
 
 
+
     
       <div class="input-icon">
         <img src="/logo-coin/ton.jpg" alt="TON Logo" class="input-logo">
@@ -1022,18 +1023,20 @@ function toggleMemo(element) {
 
 
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
+
   function openQrScanner() {
-    tg.showScanQrPopup({ text: 'Hãy quét mã QR' });
+    tg.showScanQrPopup({ text: 'Quét mã QR để lấy địa chỉ ví' });
   }
 
   tg.onEvent("qrTextReceived", (text) => {
-    alert("Đã quét QR: " + text);
-    document.getElementById('to-address').value = text;
+    if (text) {
+      document.getElementById('to-address').value = text.trim(); // điền liền vào input
+      tg.closeScanQrPopup(); // tự đóng popup sau khi quét (đảm bảo độ mượt)
+    }
   });
 
-  tg.ready(); // Đảm bảo WebApp đã khởi động
+  tg.ready(); // đảm bảo WebApp hoạt động
 </script>
 
 
