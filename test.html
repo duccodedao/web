@@ -598,11 +598,12 @@ button i {
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 
-      <div class="input-icon">
-        <span class="icon">📬</span>
-        <input type="text" id="to-address" placeholder="Address">
-        <span class="qr-btn" onclick="openQrScanner()">Scan</span>
-      </div>
+<div class="input-icon">
+  <span class="icon">📬</span>
+  <input type="text" id="to-address" placeholder="Address">
+  <span class="qr-btn" onclick="openQrScanner()">📷 Scan</span>
+</div>
+
 
 
 
@@ -1021,51 +1022,19 @@ function toggleMemo(element) {
 
 
 
-
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
   function openQrScanner() {
-    const video = document.createElement('video');
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-
-    // Thiết lập video
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-      .then(stream => {
-        video.srcObject = stream;
-        video.setAttribute('playsinline', true); // Dành cho iPhone
-        video.play();
-
-        // Vẽ khung hình mỗi giây để quét mã QR
-        requestAnimationFrame(scanQRCode);
-
-        function scanQRCode() {
-          if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            canvas.height = video.videoHeight;
-            canvas.width = video.videoWidth;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, canvas.width, canvas.height, {
-              inversionAttempts: "dontInvert",
-            });
-
-            if (code) {
-              // Điền dữ liệu vào ô "Address"
-              document.getElementById('to-address').value = code.data;
-              stream.getTracks().forEach(track => track.stop()); // Dừng camera
-            }
-          }
-
-          requestAnimationFrame(scanQRCode);
-        }
-      })
-      .catch(err => {
-        console.error("Lỗi quét QR: ", err);
-        alert("Không thể mở camera để quét QR.");
-      });
+    tg.showScanQrPopup({ text: 'Hãy quét mã QR' });
   }
-</script>
 
+  tg.onEvent("qrTextReceived", (text) => {
+    alert("Đã quét QR: " + text);
+    document.getElementById('to-address').value = text;
+  });
+
+  tg.ready(); // Đảm bảo WebApp đã khởi động
+</script>
 
 
   
