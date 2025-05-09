@@ -1023,7 +1023,6 @@ function toggleMemo(element) {
 
 
 
-
 <script>
   document.getElementById("send-ton-btn").addEventListener("click", async () => {
     const toAddress = document.getElementById("to-address").value.trim();
@@ -1035,8 +1034,15 @@ function toggleMemo(element) {
     if (!toAddress || isNaN(amountTON) || amountTON <= 0) {
       Swal.fire({
         icon: 'warning',
-        title: 'Invalid Input',
         html: '<strong>Please enter a valid address and amount.</strong>',
+        position: 'top-right', // Popup hiển thị ở góc phải trên
+        toast: true, // Hiển thị dưới dạng toast
+        timer: 3000, // Tự động đóng sau 3 giây
+        showConfirmButton: false, // Không hiển thị nút xác nhận
+        padding: '10px', // Padding cho thông báo
+        customClass: {
+          popup: 'swal-popup-custom' // Thêm lớp tùy chỉnh cho popup
+        }
       });
       return;
     }
@@ -1044,8 +1050,15 @@ function toggleMemo(element) {
     if (amountTON > maxAmount) {
       Swal.fire({
         icon: 'error',
-        title: 'Amount Exceeded',
         html: `You can only send up to <strong>${truncateDecimal(maxAmount)}</strong> TON.`,
+        position: 'top-right', // Popup hiển thị ở góc phải trên
+        toast: true, // Hiển thị dưới dạng toast
+        timer: 3000, // Tự động đóng sau 3 giây
+        showConfirmButton: false, // Không hiển thị nút xác nhận
+        padding: '10px', // Padding cho thông báo
+        customClass: {
+          popup: 'swal-popup-custom' // Thêm lớp tùy chỉnh cho popup
+        }
       });
       return;
     }
@@ -1066,8 +1079,15 @@ function toggleMemo(element) {
 
       Swal.fire({
         icon: 'success',
-        title: 'Transaction Sent',
         html: `You have successfully sent <strong>${truncateDecimal(amountTON)}</strong> TON<br>to address <strong>${toAddress}</strong>.`,
+        position: 'top-right', // Popup hiển thị ở góc phải trên
+        toast: true, // Hiển thị dưới dạng toast
+        timer: 3000, // Tự động đóng sau 3 giây
+        showConfirmButton: false, // Không hiển thị nút xác nhận
+        padding: '10px', // Padding cho thông báo
+        customClass: {
+          popup: 'swal-popup-custom' // Thêm lớp tùy chỉnh cho popup
+        }
       });
 
       console.log("Result:", result);
@@ -1075,16 +1095,27 @@ function toggleMemo(element) {
       console.error("Error while sending TON:", err);
       Swal.fire({
         icon: 'error',
-        title: 'Transaction Failed',
         html: `<strong>Unknown error</strong>`,
+        position: 'top-right', // Popup hiển thị ở góc phải trên
+        toast: true, // Hiển thị dưới dạng toast
+        timer: 3000, // Tự động đóng sau 3 giây
+        showConfirmButton: false, // Không hiển thị nút xác nhận
+        padding: '10px', // Padding cho thông báo
+        customClass: {
+          popup: 'swal-popup-custom' // Thêm lớp tùy chỉnh cho popup
+        }
       });
     }
   });
-
-
-
-
 </script>
+
+<style>
+  .swal-popup-custom {
+    top: 90px !important; /* Điều chỉnh khoảng cách từ trên xuống */
+    border-radius: 25px;
+  }
+</style>
+
 
 
 
