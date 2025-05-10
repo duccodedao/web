@@ -939,8 +939,8 @@ async function fetchTransactionHistory(walletAddress) {
         const iconPath = isReceived ? '/logo-coin/nhan.png' : (isSent ? '/logo-coin/gui.png' : '/logo-coin/loi.png');
 
         const memo = isReceived
-          ? inMsg.message || 'No memo'
-          : (isSent ? outMsgs[0].message || '📝 No memo' : '📝 No memo');
+          ? inMsg.message || 'No Memo/Comment'
+          : (isSent ? outMsgs[0].message || 'No Memo/Comment' : 'Error');
 
         const txBase64 = tx.transaction_id?.hash || '';
         const txHex = base64ToHex(txBase64);
