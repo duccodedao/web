@@ -1,51 +1,21 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Connect with Telegram Web App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <h1>Web App Telegram và TON Connect</h1>
-    
-    <!-- Nút Kết Nối Telegram -->
-    <button id="ton-connect-btn">Kết nối với ví TON</button>
+  <button id="backBtn">Back</button>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest"></script>
-    
-    <script>
-        // Chạy Telegram Web App
-        const tg = window.Telegram.WebApp;
+  <script>
+    const backBtn = document.getElementById("backBtn");
 
-        // Thiết lập đối tượng TonConnectUI
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://bmasshd.click/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
-        });
+    backBtn.addEventListener("click", () => {
+      // Option 1: Close the Web App
+      Telegram.WebApp.close();
 
-        // Chức năng kết nối với ví TON
-        async function connectToWallet() {
-            try {
-                const connectedWallet = await tonConnectUI.connectWallet();
-                console.log(connectedWallet);
-                // Có thể thực hiện hành động sau khi kết nối ví thành công
-            } catch (error) {
-                console.error("Lỗi kết nối ví:", error);
-            }
-        }
-
-        // Định nghĩa sự kiện khi nhấn nút "Kết nối với ví TON"
-        document.getElementById('ton-connect-btn').addEventListener('click', function () {
-            // Mở giao diện kết nối ví TON
-            connectToWallet().catch((error) => {
-                console.error('Error connecting to wallet:', error);
-            });
-        });
-
-        // Khởi động ứng dụng Telegram Web
-        tg.ready();
-
-    </script>
+      // Option 2: Implement custom back logic
+      // e.g., go to previous screen or state in your single-page app
+    });
+  </script>
 </body>
 </html>
