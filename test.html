@@ -1,21 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini App Telegram - Nút Quay Lại</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-  <button id="backBtn">Back</button>
+
+  <h2>Mini App Telegram</h2>
+  <p>Nhấn nút dưới đây để quay lại.</p>
+
+  <!-- Nút quay lại -->
+  <button id="backButton">Quay lại</button>
 
   <script>
-    const backBtn = document.getElementById("backBtn");
+    const tg = Telegram.WebApp;
 
-    backBtn.addEventListener("click", () => {
-      // Option 1: Close the Web App
-      Telegram.WebApp.close();
+    // Sẵn sàng cho WebApp
+    tg.ready();
 
-      // Option 2: Implement custom back logic
-      // e.g., go to previous screen or state in your single-page app
+    // Hiển thị nút Back của Telegram WebApp
+    tg.BackButton.show();
+
+    // Lắng nghe sự kiện bấm nút Back
+    tg.BackButton.onClick(() => {
+      alert("Bạn vừa bấm nút Quay Lại!");
+      tg.close(); // Đóng mini app hoặc có thể thay đổi hành động khác
+    });
+
+    // Tùy chỉnh hành động của nút Back (nếu muốn)
+    document.getElementById("backButton").addEventListener("click", () => {
+      tg.BackButton.onClick();
     });
   </script>
+
 </body>
 </html>
