@@ -924,6 +924,17 @@ document.getElementById("disconnect").onclick = async () => {
 
 
 </script>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready(); // Kích hoạt WebApp
 
+  // Hiển thị nút Back của Telegram
+  tg.BackButton.show();
+
+  // Khi bấm nút back
+  tg.BackButton.onClick(() => {
+    tg.close(); // Đóng WebApp, quay lại Telegram
+  });
+</script>
 </body>
 </html>
