@@ -631,6 +631,117 @@ button i {
   color: black;
 }
 
+
+
+
+
+
+
+
+
+
+/* Overlay: nền mờ toàn màn hình */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+  cursor: pointer; /* Thêm con trỏ để người dùng nhận biết có thể nhấn vào */
+}
+
+/* Nội dung popup */
+.popup-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 25px;
+  max-width: 480px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  animation: popupFadeIn 0.3s ease-out;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2b2b2b;
+  cursor: default; /* Đảm bảo rằng nội dung popup không có cursor pointer */
+}
+
+/* Nút đóng X */
+.popup-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #888;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.popup-close:before {
+  content: "×";
+  font-size: 22px;
+  color: #888;
+}
+
+.popup-close:hover {
+  color: #fff;
+  background-color: #f44336; /* Màu đỏ khi hover */
+  transform: scale(1.1);
+}
+
+/* Tiêu đề popup */
+.popup-content h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Đoạn văn bản */
+.popup-content p {
+  margin: 10px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Link xem trên Tonviewer */
+.popup-content a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.popup-content a:hover {
+  text-decoration: underline;
+}
+
+/* Hiệu ứng mở popup */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+
   </style>
 </head>
 <body>
@@ -697,6 +808,14 @@ button i {
 </div>
 
 
+<!-- Modal popup -->
+<div id="transaction-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Thông tin giao dịch</h2>
+    <div id="transaction-details"></div>
+  </div>
+</div>
 
 
 
@@ -980,21 +1099,20 @@ async function fetchTransactionHistory(walletAddress) {
           </div>
         `;
 
-
-
-
-
-
+        // Add event listener for opening popup on click
+        li.addEventListener("click", function() {
+          openTransactionPopup(tx); // Open the popup with full transaction details
+        });
 
         list.appendChild(li);
       }
     } else {
       list.innerHTML = `
-  <div class="loading-spinner">
-    <div class="spinner"></div>
-    <div>Đang tải giao dịch...</div>
-  </div>
-`;
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <div>Đang tải giao dịch...</div>
+        </div>
+      `;
     }
   } catch (error) {
     console.error("Lỗi khi lấy lịch sử giao dịch:", error);
@@ -1006,6 +1124,79 @@ async function fetchTransactionHistory(walletAddress) {
 
 
 
+
+function openTransactionPopup(tx) {
+  closePopup(); // Đảm bảo không có popup cũ
+
+  const popup = document.createElement("div");
+  popup.className = "popup-overlay";
+
+  const inMsg = tx.in_msg;
+  const outMsgs = tx.out_msgs || [];
+
+  const isReceived = inMsg && parseInt(inMsg.value) > 0;
+  const isSent = outMsgs.length > 0 && parseInt(outMsgs[0].value) > 0;
+
+  const amountRaw = isReceived ? inMsg.value : (isSent ? outMsgs[0].value : "0");
+  const amountTon = safeParseNanoTON(amountRaw);
+
+  const time = new Date(tx.utime * 1000).toLocaleString();
+  const txBase64 = tx.transaction_id?.hash || '';
+  const txHex = base64ToHex(txBase64);
+  const txLink = `https://tonviewer.com/transaction/${txHex}`;
+  const fee = safeParseNanoTON(tx.fee);
+  const storageFee = safeParseNanoTON(tx.storage_fee);
+  const otherFee = safeParseNanoTON(tx.other_fee);
+
+  const fromAddress = inMsg?.source || "Unknown";
+  const toAddress = outMsgs.length > 0
+    ? outMsgs[0].destination
+    : (inMsg?.destination || "Unknown");
+
+  const memo = isReceived
+    ? inMsg?.message || "No Memo/Comment"
+    : (isSent && outMsgs[0]?.message) || "No Memo/Comment";
+
+  const directionInfo = isSent
+    ? `<p><strong>To Address:</strong> ${truncateBase64(toAddress)}</p>`
+    : (isReceived
+        ? `<p><strong>From Address:</strong> ${truncateBase64(fromAddress)}</p>`
+        : '');
+
+  popup.innerHTML = `
+    <div class="popup-content">
+      <button class="popup-close" onclick="closePopup()"></button>
+      <h2>Transaction Details</h2>
+      <p><strong>Transaction ID:</strong> ${txHex}</p>
+      <p><strong>Amount:</strong> ${truncateDecimal(amountTon)} TON</p>
+      <p><strong>Fee:</strong> ${truncateDecimal(fee)} TON</p>
+      <p><strong>Storage Fee:</strong> ${truncateDecimal(storageFee)} TON</p>
+      <p><strong>Other Fee:</strong> ${truncateDecimal(otherFee)} TON</p>
+      ${directionInfo}
+      <p><strong>Memo:</strong> ${memo}</p>
+      <p><strong>Transaction Time:</strong> ${time}</p>
+      <p><strong>View on Tonviewer:</strong> <a href="${txLink}" target="_blank">🔎 Click Here</a></p>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+
+  // Mở popup
+  document.body.appendChild(popup);
+
+  // Thêm sự kiện để đóng popup khi click vào overlay
+  popup.addEventListener('click', function(event) {
+    if (event.target === popup) {
+      closePopup();
+    }
+  });
+}
+
+function closePopup() {
+  const popup = document.querySelector(".popup-overlay");
+  if (popup) popup.remove();
+}
 
 
 
