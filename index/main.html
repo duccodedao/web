@@ -461,7 +461,7 @@ footer {
     </a>
   
     <!-- Thêm Profile thay vì Home và Shop -->
-    <a href="/index/profile2.html" class="footer-item" data-page="profile.html">
+    <a href="/index/profile.html" class="footer-item" data-page="profile.html">
       <i class="fas fa-user"></i>
       <span>Profile</span>
     </a>
@@ -503,7 +503,14 @@ items.forEach(item => {
 <script>
 const tg = window.Telegram.WebApp;
 tg.ready();
+// Nút back luôn luôn bật
+    tg.BackButton.show();
 
+    // Khi bấm vào nút back của Telegram
+    tg.BackButton.onClick(() => {
+      window.history.back(); // Quay lại trang trước khi người dùng mở trang này
+    });
+    
 let balanceTon = 0; // Khai báo biến toàn cục để lưu số dư
 
 const connector = new TON_CONNECT_UI.TonConnectUI({
