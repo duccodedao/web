@@ -11,28 +11,15 @@
       padding: 20px;
       text-align: center;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 20px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-    button:hover {
-      background-color: #45a049;
+    h2 {
+      margin-top: 50px;
     }
   </style>
 </head>
 <body>
 
-  <h2>Mini App Telegram</h2>
-  <p>Nhấn nút dưới đây để quay lại.</p>
-
-  <!-- Nút quay lại -->
-  <button id="backButton">Quay lại</button>
+  <h2>Mini App Telegram - Nút Quay Lại</h2>
+  <p>Nhấn nút "Quay lại" để thoát hoặc quay lại trang trước.</p>
 
   <script>
     const tg = Telegram.WebApp;
@@ -40,18 +27,12 @@
     // Sẵn sàng cho WebApp
     tg.ready();
 
-    // Hiển thị nút Back của Telegram WebApp
+    // Hiển thị nút Back
     tg.BackButton.show();
 
-    // Lắng nghe sự kiện bấm nút Back
+    // Định nghĩa hành động khi bấm nút Back mà không hiển thị thông báo
     tg.BackButton.onClick(() => {
-      alert("Bạn vừa bấm nút Quay Lại!");
-      tg.close(); // Đóng mini app hoặc có thể thay đổi hành động khác
-    });
-
-    // Tùy chỉnh hành động của nút Back (nếu muốn)
-    document.getElementById("backButton").addEventListener("click", () => {
-      tg.BackButton.onClick();
+      tg.close(); // Đóng mini app hoặc làm hành động khác mà bạn muốn
     });
   </script>
 
