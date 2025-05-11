@@ -502,14 +502,7 @@ items.forEach(item => {
 
 <script>
 const tg = window.Telegram.WebApp;
-tg.ready();
-// Nút back luôn luôn bật
-    tg.BackButton.show();
 
-    // Khi bấm vào nút back của Telegram
-    tg.BackButton.onClick(() => {
-      window.history.back(); // Quay lại trang trước khi người dùng mở trang này
-    });
     
 let balanceTon = 0; // Khai báo biến toàn cục để lưu số dư
 
