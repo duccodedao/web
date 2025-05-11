@@ -726,7 +726,13 @@ footer {
 <script>
 const tg = window.Telegram.WebApp;
 tg.ready();
+// Nút back luôn luôn bật
+    tg.BackButton.show();
 
+    // Khi bấm vào nút back của Telegram
+    tg.BackButton.onClick(() => {
+      window.history.back(); // Quay lại trang trước khi người dùng mở trang này
+    });
 const user = tg.initDataUnsafe.user;
 if (user) {
   const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
